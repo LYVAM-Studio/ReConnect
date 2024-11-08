@@ -70,3 +70,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# --------------------------------------------------------------------------------------
+# The following lines are not initially present in the default .gitignore file for Unity
+# --------------------------------------------------------------------------------------
+.idea/
