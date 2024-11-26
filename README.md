@@ -2,9 +2,7 @@
 
 ## About the game
 
-ReConnect is an Unity powered game project. It uses PUN (Photon Unity Networking) for the multiplayer side.
-
-It is currently based on this [tutorial](https://www.youtube.com/watch?v=-dnTnykgwKs). Feel free to watch it if you want to understand better the project.
+ReConnect is an Unity powered game project. It uses Miror for the multiplayer side.
 
 ## About versioning
 
