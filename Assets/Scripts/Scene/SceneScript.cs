@@ -1,13 +1,15 @@
 using Mirror;
+using Player;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace QuickStart
+namespace Scene
 {
     public class SceneScript : NetworkBehaviour
     {
         public Text canvasStatusText;
-        public PlayerScript playerScript;
+        [FormerlySerializedAs("playerScript")] public PlayerNetwork playerNetwork;
 
         [SyncVar(hook = nameof(OnStatusTextChanged))]
         public string statusText;
@@ -20,8 +22,8 @@ namespace QuickStart
 
         public void ButtonSendMessage()
         {
-            if (playerScript != null)  
-                playerScript.CmdSendPlayerMessage();
+            if (playerNetwork != null)  
+                playerNetwork.CmdSendPlayerMessage();
         }
     }
 }

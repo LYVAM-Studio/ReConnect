@@ -1,16 +1,20 @@
 using System;
 using System.Linq;
+using Mirror;
+using Player;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Reconnect.Player
 {
-    public class PlayerMovements : MonoBehaviour
+    public class PlayerMovementsNetwork : PlayerNetwork
     {
         // parameters that can be edited in Editor
+        [Header("Gravity force constant")]
         public float gravity = -9.81f; // gravity strength (default: -9.81, earth gravity)
-        public float jumpHeight = 2.0f; // the height the player should jump
+        public float jumpHeight = 0.7f; // the height the player should jump
+        [Header("Speed settings")]
         public float defaultSpeed = 12.0f; // the walking speed of the player
         public float sprintingFactor = 1.5f; // the sprinting speed modifier to be applied to the defaultSpeed
         public float crouchingFactor = 0.7f; // the crouching speed modifier to be applied to the defaultSpeed
@@ -21,10 +25,8 @@ namespace Reconnect.Player
         private float _velocityY; // the velocity on the Y axis (jumping and falling)
         
         // imported components
-        private PlayerInput _playerInput;
-        private CharacterController _characterController;
-        private Animator _animator; // the animator component on the 3D model of the Player inside the current GameObject
-        private Transform _cameraTransform; // the MainCamera 3rd person inside the current GameObject
+        protected Animator Animator; // the animator component on the 3D model of the Player inside the current GameObject
+        protected Transform CameraTransform; // the MainCamera 3rd person inside the current GameObject
         
         // movement
         private Vector2 _currentMovementInput;
@@ -38,6 +40,7 @@ namespace Reconnect.Player
         private bool _isJumping;
         private bool _isFalling;
         private bool _isGrounded;
+        private bool _isDancing;
         
         // animations states hashes
         private int _isWalkingHash;
@@ -46,37 +49,36 @@ namespace Reconnect.Player
         private int _isJumpingHash;
         private int _isFallingHash;
         private int _isGroundedHash;
-        
-        
+        private int _isDancingHash;
         
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Awake()
         {
-            _playerInput = GetComponent<PlayerInput>();
-            _playerInput.actions["Move"].started += OnMove;
-            _playerInput.actions["Move"].performed += OnMove;
-            _playerInput.actions["Move"].canceled += OnMove;
-            _playerInput.actions["Sprint"].started += OnSprint;
-            _playerInput.actions["Sprint"].canceled += OnSprint;
-            _playerInput.actions["Crouch"].started += OnCrouch;
-            _playerInput.actions["Jump"].started += OnJump;
+            base.Awake();
             
-            _characterController = GetComponent<CharacterController>();
-            _animator = gameObject.FindComponentsInChildrenWithTag<Animator>("PlayerModel")[0] ??
-                        throw new ArgumentException(
-                            "There is no Animator component in the children of the current GameObject");
+            PlayerInput.actions["Move"].started += OnMove;
+            PlayerInput.actions["Move"].performed += OnMove;
+            PlayerInput.actions["Move"].canceled += OnMove;
+            PlayerInput.actions["Sprint"].started += OnSprint;
+            PlayerInput.actions["Sprint"].canceled += OnSprint;
+            PlayerInput.actions["Crouch"].started += OnCrouch;
+            PlayerInput.actions["Jump"].started += OnJump;
+            PlayerInput.actions["Dance"].started += OnDance;
+
+            Animator = GetComponent<Animator>() ??
+                       throw new ArgumentException(
+                           "There is no Animator component in the children of the current GameObject");
             
-            _cameraTransform = gameObject.FindComponentsInChildrenWithTag<Transform>("MainCamera")[0] ??
-                               throw new ArgumentException(
-                                   "There is no MainCamera tagged gameObject in the children of the current GameObject");
+            CameraTransform = GameObject.FindGameObjectWithTag("MainCamera")?.transform 
+                              ?? throw new ArgumentException("There is no MainCamera tagged GameObject.");
+            
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");
             _isCrouchingHash = Animator.StringToHash("isCrouching");
             _isJumpingHash = Animator.StringToHash("isJumping");
             _isFallingHash = Animator.StringToHash("isFalling");
             _isGroundedHash = Animator.StringToHash("isGrounded");
-            //Locking the cursor to the middle of the screen and making it invisible
-            Cursor.lockState = CursorLockMode.Locked;
+            _isDancingHash = Animator.StringToHash("isDancing");
         }
 
         public void OnMove(InputAction.CallbackContext context)
@@ -105,6 +107,11 @@ namespace Reconnect.Player
             else if (context.canceled)
                 _isRunning = false;
         }
+        
+        public void OnDance(InputAction.CallbackContext context)
+        {
+            _isDancing = true;
+        }
 
         private void HandleInputs()
         {
@@ -117,31 +124,31 @@ namespace Reconnect.Player
 
         private void JumpAnimation()
         {
-            bool isJumping = _animator.GetBool(_isJumpingHash);
-            bool isFalling = _animator.GetBool(_isFallingHash);
-            bool isGrounded = _animator.GetBool(_isGroundedHash);
+            bool isJumping = Animator.GetBool(_isJumpingHash);
+            bool isFalling = Animator.GetBool(_isFallingHash);
+            bool isGrounded = Animator.GetBool(_isGroundedHash);
 
             if (_isJumpingPressed)
             {
-                _animator.SetBool(_isJumpingHash, true);
+                Animator.SetBool(_isJumpingHash, true);
                 _isJumpingPressed = false;
             }
-            else if (_characterController.isGrounded) // is character grounded, no more falling nor jumping
+            else if (CharacterController.isGrounded) // is character grounded, no more falling nor jumping
             {
                 if (!isGrounded)
                 {
-                    _animator.SetBool(_isGroundedHash, true);
+                    Animator.SetBool(_isGroundedHash, true);
                     _isGrounded = true;
                 }
                     
                 if (isJumping)
                 {
-                    _animator.SetBool(_isJumpingHash, false);
+                    Animator.SetBool(_isJumpingHash, false);
                     _isJumping = false;
                 }
                 if (isFalling)
                 {
-                    _animator.SetBool(_isFallingHash, false);
+                    Animator.SetBool(_isFallingHash, false);
                     _isFalling = false;
                 }
                 
@@ -151,7 +158,7 @@ namespace Reconnect.Player
                 if (isGrounded)
                 {
                     _isGrounded = false;
-                    _animator.SetBool(_isGroundedHash, false);
+                    Animator.SetBool(_isGroundedHash, false);
                 }
                 
                 // if not grounded, it's falling if it's on the decending part of the jump or if it fell from a height (with velocityY threshold of -2f)
@@ -159,7 +166,7 @@ namespace Reconnect.Player
                 {
                     if (!isFalling)
                     {
-                        _animator.SetBool(_isFallingHash, true);
+                        Animator.SetBool(_isFallingHash, true);
                         _isFalling = true;
                     }
                 }
@@ -168,29 +175,38 @@ namespace Reconnect.Player
         
         private void HandleAnimation()
         {
-            bool isWalking = _animator.GetBool(_isWalkingHash);
-            bool isRunning = _animator.GetBool(_isRunningHash);
-            bool isCrouching = _animator.GetBool(_isCrouchingHash);
-            
+            bool isWalking = Animator.GetBool(_isWalkingHash);
+            bool isRunning = Animator.GetBool(_isRunningHash);
+            bool isCrouching = Animator.GetBool(_isCrouchingHash);
+            bool isDancing = Animator.GetBool(_isDancingHash);
             JumpAnimation();
             
+            if(_isDancing && !isDancing && !_isMovementPressed)
+                Animator.SetBool(_isDancingHash, true);
+
+            if (isDancing && _isMovementPressed)
+            {
+                Animator.SetBool(_isDancingHash, false);
+                _isDancing = false;
+            }
+            
             if (_isMovementPressed && !isWalking)
-                _animator.SetBool(_isWalkingHash, true);
+                Animator.SetBool(_isWalkingHash, true);
 
             if (_isRunning && !isRunning)
-                _animator.SetBool(_isRunningHash, true);
+                Animator.SetBool(_isRunningHash, true);
 
             if (_isCrouching && !isCrouching)
-                _animator.SetBool(_isCrouchingHash, true);
+                Animator.SetBool(_isCrouchingHash, true);
             
             if (!_isMovementPressed && isWalking)
-                _animator.SetBool(_isWalkingHash, false);
+                Animator.SetBool(_isWalkingHash, false);
 
             if (!_isRunning && isRunning)
-                _animator.SetBool(_isRunningHash, false);
+                Animator.SetBool(_isRunningHash, false);
 
             if (!_isCrouching && isCrouching)
-                _animator.SetBool(_isCrouchingHash, false);
+                Animator.SetBool(_isCrouchingHash, false);
         }
         
         private void HandleRotation2()
@@ -207,7 +223,7 @@ namespace Reconnect.Player
             {
                 // Calculate target rotation based on camera orientation
                 float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg +
-                                    _cameraTransform.eulerAngles.y;
+                                    CameraTransform.eulerAngles.y;
 
                 // Smooth the player's rotation
                 float smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
@@ -232,21 +248,30 @@ namespace Reconnect.Player
             }
             
             Vector3 move = new Vector3(_currentMovement.x * speed, _velocityY, _currentMovement.z * speed);
-            _characterController.Move(move * (Time.deltaTime ));
+            CharacterController.Move(move * (Time.deltaTime ));
         }
 
         private void HandleGravityAndJump()
         {
-            if (_characterController.isGrounded && _isJumpingPressed)
+            if (CharacterController.isGrounded && _isJumpingPressed) // jumping vertical velocity
             {
                 _velocityY = Mathf.Sqrt(jumpHeight * -2f * gravity);
             }
-            _velocityY += gravity * Time.deltaTime;
+            else if (CharacterController.isGrounded) // on ground vertical velocity
+            {
+                _velocityY = gravity * Time.deltaTime;
+            }
+            else
+            {
+                _velocityY += gravity * Time.deltaTime;
+            }
         }
         
         // Update is called once per frame
         void Update()
         {
+            if (!isLocalPlayer) return;
+            
             HandleInputs();
             HandleGravityAndJump();
             HandleAnimation();
@@ -257,24 +282,26 @@ namespace Reconnect.Player
 
         private void OnEnable()
         {
-            _playerInput.actions.Enable();
+            PlayerInput.actions.Enable();
         }
 
         private void OnDisable()
         {
-            _playerInput.actions.Disable();
+            PlayerInput.actions.Disable();
         }
 
-        void OnDestroy()
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             // It's a good practice to unsubscribe from actions when the object is destroyed
-            _playerInput.actions["Move"].started -= OnMove;
-            _playerInput.actions["Move"].performed -= OnMove;
-            _playerInput.actions["Move"].canceled -= OnMove;
-            _playerInput.actions["Sprint"].started -= OnSprint;
-            _playerInput.actions["Sprint"].canceled -= OnSprint;
-            _playerInput.actions["Crouch"].started -= OnCrouch;
-            _playerInput.actions["Jump"].started -= OnJump;
+            PlayerInput.actions["Move"].started -= OnMove;
+            PlayerInput.actions["Move"].performed -= OnMove;
+            PlayerInput.actions["Move"].canceled -= OnMove;
+            PlayerInput.actions["Sprint"].started -= OnSprint;
+            PlayerInput.actions["Sprint"].canceled -= OnSprint;
+            PlayerInput.actions["Crouch"].started -= OnCrouch;
+            PlayerInput.actions["Jump"].started -= OnJump;
+            PlayerInput.actions["Dance"].started -= OnDance;
         }
     }
 }

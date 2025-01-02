@@ -1,7 +1,11 @@
+using System;
 using Mirror;
+using Unity.Cinemachine;
 using UnityEngine;
+using Scene;
+using Random = UnityEngine.Random;
 
-namespace QuickStart
+namespace Player
 {
     public class PlayerScript : NetworkBehaviour
     {
@@ -11,6 +15,9 @@ namespace QuickStart
         private Material _playerMaterialClone;
         
         private SceneScript sceneScript;
+
+        private CinemachineCamera _freeLookCamera;
+        private Transform _lookAtObject;
         
         private int selectedWeaponLocal = 1;
         public GameObject[] weaponArray;
@@ -27,7 +34,17 @@ namespace QuickStart
         void Awake()
         {
             //allow all players to run this
-            sceneScript = GameObject.FindFirstObjectByType<SceneScript>(); // Changed the deprecated FindObjectOfType
+            sceneScript = FindFirstObjectByType<SceneScript>(); // Changed the deprecated FindObjectOfType
+            
+            // get the FreeLookCamera game object
+            _freeLookCamera = FindFirstObjectByType<CinemachineCamera>()??
+                              throw new ArgumentException(
+                                  "There is no freeLook Camera in this Scene");
+            // get the object to look at
+            _lookAtObject = gameObject.FindComponentsInChildrenWithName<Transform>("LookAt")[0] ??
+                            throw new ArgumentException(
+                                "There is no LookAt named gameObject in the children of the current GameObject");
+            
             // disable all weapons
             foreach (var item in weaponArray)
                 if (item != null)
@@ -65,10 +82,14 @@ namespace QuickStart
 
         public override void OnStartLocalPlayer()
         {
-            sceneScript.playerScript = this;
-            
+            //sceneScript.playerNetwork = this;
+            /*
             Camera.main.transform.SetParent(transform);
             Camera.main.transform.localPosition = new Vector3(0, 0, 0);
+            */
+            
+            _freeLookCamera.Follow = transform;
+            _freeLookCamera.LookAt = _lookAtObject;
             
             floatingInfo.transform.localPosition = new Vector3(0, -0.3f, 0.6f);
             floatingInfo.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
