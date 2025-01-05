@@ -52,7 +52,7 @@ namespace Reconnect.Player
         private int _isDancingHash;
         
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Awake()
+        public override void Awake()
         {
             base.Awake();
             
