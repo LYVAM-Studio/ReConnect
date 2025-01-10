@@ -6,10 +6,18 @@ namespace Reconnect.Interactions
 {
     public class InteractionDetector : MonoBehaviour
     {
+        [Header("Display of the interaction range")]
         public GameObject visualRange;
-        private bool _showRange = true;
+        public bool isShownByDefault = false;
+        private bool _showRange;
         private Dictionary<IInteractable, double> _interactablesInRange = new();
-    
+
+        public void Start()
+        {
+            _showRange = isShownByDefault;
+            visualRange.SetActive(_showRange);
+        }
+
         // Update is called once per frame
         void Update()
         {

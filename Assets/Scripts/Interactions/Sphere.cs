@@ -5,12 +5,11 @@ namespace Reconnect.Interactions
     public class Sphere : MonoBehaviour, IInteractable
     {
         // public string destinationScene = "SphereScene";
-        private bool _isBig;
+        private bool _isBig = false;
         private Transform _transform;
 
         public void Start()
         {
-            _isBig = false;
             _transform = GetComponent<Transform>();
         }
         
