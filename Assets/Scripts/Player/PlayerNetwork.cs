@@ -17,9 +17,6 @@ namespace Player
         protected PlayerInput PlayerInput;
         protected CharacterController CharacterController;
         
-        private int _selectedWeaponLocal = 1;
-        public GameObject[] weaponArray;
-
         [SyncVar(hook = nameof(OnNameChanged))]
         public string playerName;
 
@@ -47,10 +44,6 @@ namespace Player
             if (!isLocalPlayer) PlayerInput.actions["UnlockCursor"].started += OnEscape;
             
             CharacterController = GetComponent<CharacterController>();
-            // disable all weapons
-            foreach (var item in weaponArray)
-                if (item != null)
-                    item.SetActive(false);
         }
 
         private void OnEscape(InputAction.CallbackContext context)

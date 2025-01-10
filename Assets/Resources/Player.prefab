@@ -107,8 +107,8 @@ MonoBehaviour:
   playerColor: {r: 1, g: 1, b: 1, a: 1}
   gravity: -9.81
   jumpHeight: 0.7
-  defaultSpeed: 7
-  sprintingFactor: 1.5
+  defaultSpeed: 6
+  sprintingFactor: 1.8
   crouchingFactor: 0.7
   turnSmoothTime: 0.1
 --- !u!114 &3873924975942647633
