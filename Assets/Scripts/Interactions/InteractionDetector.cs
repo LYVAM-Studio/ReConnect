@@ -6,11 +6,20 @@ namespace Reconnect.Interactions
 {
     public class InteractionDetector : MonoBehaviour
     {
+        public GameObject visualRange;
+        private bool _showRange = true;
         private Dictionary<IInteractable, double> _interactablesInRange = new();
     
         // Update is called once per frame
         void Update()
         {
+            // Toggle display of the interaction range
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                _showRange = !_showRange;
+                visualRange.SetActive(_showRange);
+            }
+            
             // If right click and can interact
             if (Input.GetMouseButtonDown(3) && _interactablesInRange.Count > 0)
             {
