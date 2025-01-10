@@ -84,7 +84,7 @@ namespace Reconnect.Player
         public void OnMove(InputAction.CallbackContext context)
         {
             _currentMovementInput = context.ReadValue<Vector2>();
-            Debug.Log($"{_currentMovementInput.x}, {_currentMovementInput.y}");
+            //Debug.Log($"{_currentMovementInput.x}, {_currentMovementInput.y}");
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
             _isMovementPressed = _currentMovement != Vector3.zero;
