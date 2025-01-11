@@ -1380,14 +1380,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   runInBackground: 1
-  headlessStartMode: 0
+  headlessStartMode: 1
   editorAutoStart: 0
   sendRate: 30
-  offlineScene: Assets/Scenes/Scene.unity
-  onlineScene: Assets/Scenes/Scene.unity
+  offlineScene: 
+  onlineScene: 
   offlineSceneLoadDelay: 0
-  transport: {fileID: 0}
-  networkAddress: localhost
+  transport: {fileID: 1553958382}
+  networkAddress: reconnect.lyvam.studio
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
