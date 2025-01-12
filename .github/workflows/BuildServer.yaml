@@ -1,0 +1,38 @@
+name: Build Server (Linux only)
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  buildLinuxServer:
+    name: Build Linux Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Cache the libraries
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-LinuxServer
+          restore-keys: Library-
+      - name: Build the unity project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          buildName: ReConnect-Server-Linux
+          buildsPath: build/LinuxServer
+          targetPlatform: StandaloneLinux64
+          customParameters: -standaloneBuildSubtarget Server
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ReConnect-Server-Linux
+          path: build/LinuxServer

@@ -1,0 +1,43 @@
+name: Build Client (All Platforms)
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  buildForAllSupportedPlatforms:
+    name: Build client for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
+          - StandaloneWindows64 # Build a Windows 64-bit standalone.
+          - StandaloneLinux64 # Build a Linux 64-bit standalone.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      - name: Cache the libraries
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: Library-
+      - name: Build the unity project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          buildName: ReConnect-${{ matrix.targetPlatform }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ReConnect-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}

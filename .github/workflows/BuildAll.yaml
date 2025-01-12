@@ -1,0 +1,15 @@
+name: Build Client + Server
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  callBuildServer:
+    name: Call the Build Server workflow
+    uses: ./.github/workflows/BuildServer.yaml
+    secrets: inherit
+  callBuildClient:
+    name: Call the Build Client workflow
+    uses: ./.github/workflows/BuildClient.yaml
+    secrets: inherit
