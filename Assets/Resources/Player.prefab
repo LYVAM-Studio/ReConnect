@@ -59,8 +59,8 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 1.8
-  m_Radius: 0.35
-  m_SlopeLimit: 45
+  m_Radius: 0.2
+  m_SlopeLimit: 30
   m_StepOffset: 0.7
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.0001
@@ -102,7 +102,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  weaponArray: []
   playerName: 
   playerColor: {r: 1, g: 1, b: 1, a: 1}
   gravity: -9.81
