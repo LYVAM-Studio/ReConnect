@@ -45,7 +45,7 @@ namespace Player
             
             CharacterController = GetComponent<CharacterController>();
         }
-
+        
         private void OnEscape(InputAction.CallbackContext context)
         {
             Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
