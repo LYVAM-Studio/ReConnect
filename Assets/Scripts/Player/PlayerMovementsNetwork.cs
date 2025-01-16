@@ -192,7 +192,14 @@ namespace Reconnect.Player
             if (!_isMovementPressed && isWalking)
                 Animator.SetBool(_isWalkingHash, false);
 
+            // stop running if key released
             if (!_isRunning && isRunning)
+            {
+                Animator.SetBool(_isRunningHash, false);
+            }
+            
+            // stop running if no more moving (even though the key is still pressed)
+            if (!_isMovementPressed && isRunning)
                 Animator.SetBool(_isRunningHash, false);
 
             if (!_isCrouching && isCrouching)
