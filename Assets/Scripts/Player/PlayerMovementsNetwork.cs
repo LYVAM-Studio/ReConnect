@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
-using Mirror;
 using Player;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -38,8 +35,6 @@ namespace Reconnect.Player
         private bool _isRunning;
         private bool _isJumpingPressed;
         private bool _isJumping;
-        private bool _isFalling;
-        private bool _isGrounded;
         private bool _isDancing;
         
         // animations states hashes
@@ -84,7 +79,6 @@ namespace Reconnect.Player
         public void OnMove(InputAction.CallbackContext context)
         {
             _currentMovementInput = context.ReadValue<Vector2>();
-            //Debug.Log($"{_currentMovementInput.x}, {_currentMovementInput.y}");
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
             _isMovementPressed = _currentMovement != Vector3.zero;
@@ -124,12 +118,6 @@ namespace Reconnect.Player
 
         private void JumpAnimation()
         {
-            // bool isJumping = Animator.GetBool(_isJumpingHash);
-            // bool isFalling = Animator.GetBool(_isFallingHash);
-            // bool isGrounded = Animator.GetBool(_isGroundedHash);
-            
-            // Debug.Log($"grounded : {CharacterController.isGrounded} {isGrounded} {_isGrounded}");
-            // Debug.Log($"states : {_isFalling} {_isJumping} {_isGrounded}");
             if (_isJumpingPressed && !_isJumping)
             {
                 Animator.SetBool(_isJumpingHash, true);
@@ -139,25 +127,18 @@ namespace Reconnect.Player
             else if (CharacterController.isGrounded) // is character grounded, no more falling nor jumping
             {
                 Animator.SetBool(_isGroundedHash, true);
-                _isGrounded = true;
-                    
                 Animator.SetBool(_isJumpingHash, false);
                 _isJumping = false;
-                
                 Animator.SetBool(_isFallingHash, false);
-                _isFalling = false;
-                
             }
             else // if the character is not grounded, then it is maybe falling
             {
-                _isGrounded = false;
                 Animator.SetBool(_isGroundedHash, false);
                 
-                // if not grounded, it's falling if it's on the decending part of the jump or if it fell from a height (with velocityY threshold of -2f)
+                // if not grounded, it's falling if it's on the descending part of the jump or if it fell from a height (with velocityY threshold of -2f)
                 if ((_velocityY < 0 && _isJumping) || _velocityY < -2f)
                 {
                     Animator.SetBool(_isFallingHash, true);
-                    _isFalling = true;
                 }
             }
         }
@@ -169,7 +150,6 @@ namespace Reconnect.Player
             bool isCrouching = Animator.GetBool(_isCrouchingHash);
             bool isDancing = Animator.GetBool(_isDancingHash);
             JumpAnimation();
-            //Debug.Log($"states : w{isWalking} r{isRunning} c{isCrouching} d{isDancing}");
             
             if(_isDancing && !isDancing && !_isMovementPressed)
                 Animator.SetBool(_isDancingHash, true);
@@ -268,7 +248,6 @@ namespace Reconnect.Player
         void Update()
         {
             if (!isLocalPlayer) return;
-            //Debug.Log($"{CharacterController.isGrounded} {_isGrounded}");
             HandleInputs();
             HandleGravityAndJump();
             HandleAnimation();
