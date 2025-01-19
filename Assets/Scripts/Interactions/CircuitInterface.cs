@@ -10,11 +10,23 @@ namespace Reconnect.Interactions
 
         private void Start()
         {
+            // By default, the interface is closed
             _isActive = false;
             circuitInterface.SetActive(false);
         }
+        
 
+        public void Interact()
+        {
+            Debug.Log("Interacted");
+            _isActive = !_isActive;
+            circuitInterface.SetActive(_isActive);
+        }
 
+        // This object can always be interacted with.
+        public bool CanInteract() => true;
+        
+        
         // Makes the cursor free to be moved and displayed on the screen
         private void ShowCursor()
         {
@@ -27,28 +39,6 @@ namespace Reconnect.Interactions
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-        }
-
-        public void Interact()
-        {
-            Debug.Log("Interacted");
-            if (_isActive)
-            {
-                _isActive = false;
-                circuitInterface.SetActive(false);
-                HideCursor();
-            }
-            else
-            {
-                _isActive = true;
-                circuitInterface.SetActive(true);
-                ShowCursor();
-            }
-        }
-
-        public bool CanInteract()
-        {
-            return true;
         }
     }
 }

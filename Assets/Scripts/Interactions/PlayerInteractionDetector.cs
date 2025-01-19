@@ -18,6 +18,7 @@ namespace Reconnect.Interactions
         {
             _showRange = isShownByDefault;
             visualRange.SetActive(_showRange);
+            Debug.Log("Started");
         }
 
         // Update is called once per frame
@@ -31,20 +32,28 @@ namespace Reconnect.Interactions
             }
             
             // If right click and can interact
-            if (Input.GetMouseButtonDown(3) && _interactableInRange.Count > 0)
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                Debug.Log("Interaction");
-                var interactable = GetNearestInteractable();
-                interactable.Interact();
-                // If interaction is no longer possible
-                if (!interactable.CanInteract())
-                    _interactableInRange.Remove(interactable);
+                if (_interactableInRange.Count > 0)
+                {
+                    Debug.Log("Interaction");
+                    var interactable = GetNearestInteractable();
+                    interactable.Interact();
+                    // If interaction is no longer possible
+                    if (!interactable.CanInteract())
+                        _interactableInRange.Remove(interactable);
+                }
+                else
+                {
+                    Debug.Log("No interactable objects in range");
+                }
             }
             
             // Debug _interactableInRange
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.I))
             {
-                Debug.Log(_interactableInRange);
+                var count = _interactableInRange.Count;
+                Debug.Log($"Count: {count}\nFirst: {(count > 0 ? GetNearestInteractable().ToString() : "none")}");
             }
         }
     
@@ -52,12 +61,12 @@ namespace Reconnect.Interactions
         {
             Debug.Log("Interactable entered");
             var interactable = other.GetComponent<IInteractable>();
-            var distance = Vector3.Distance(
-                other.GetComponent<Transform>().position,
-                playerPrefab.GetComponent<Transform>().position
-            );
             if (interactable is not null && interactable.CanInteract())
             {
+                var distance = Vector3.Distance(
+                    other.GetComponent<Transform>().position,
+                    playerPrefab.GetComponent<Transform>().position
+                );
                 _interactableInRange.Add(interactable, distance);
             }
         }
