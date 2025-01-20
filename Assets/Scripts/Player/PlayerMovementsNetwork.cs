@@ -78,6 +78,9 @@ namespace Reconnect.Player
 
         public void OnMove(InputAction.CallbackContext context)
         {
+            if (isLocked)
+                return;
+            
             _currentMovementInput = context.ReadValue<Vector2>();
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
@@ -86,16 +89,25 @@ namespace Reconnect.Player
         
         public void OnJump(InputAction.CallbackContext context)
         {
+            if (isLocked)
+                return;
+
             _isJumpingPressed = context.ReadValue<float>() != 0f;
         }
 
         public void OnCrouch(InputAction.CallbackContext context)
         {
+            if (isLocked)
+                return;
+
             _isCrouching = !_isCrouching;
         }
 
         public void OnSprint (InputAction.CallbackContext context)
         {
+            if (isLocked)
+                return;
+
             if (context.started)
                 _isRunning = true;
             else if (context.canceled)
@@ -104,11 +116,15 @@ namespace Reconnect.Player
         
         public void OnDance(InputAction.CallbackContext context)
         {
+            if (isLocked)
+                return;
+
             _isDancing = true;
         }
 
         private void HandleInputs()
         {
+            
             if (_isJumpingPressed && _isCrouching)
             {
                 _isCrouching = false; // jumping cancels crouching
@@ -188,6 +204,9 @@ namespace Reconnect.Player
         
         private void HandleRotation2()
         {
+            if (isLocked)
+                return;
+            
             // Extract input directions
             float x = _currentMovementInput.x;
             float z = _currentMovementInput.y;
@@ -243,11 +262,24 @@ namespace Reconnect.Player
                 _velocityY += gravity * Time.deltaTime;
             }
         }
+
+        private void HandleLockedPlayer()
+        {
+            // overwrite the movement to avoid it from moving
+            _currentMovement.x = 0;
+            _currentMovement.z = 0;
+            _isMovementPressed = false;
+            _currentMovementInput = Vector2.zero;
+        }
         
         // Update is called once per frame
         void Update()
         {
             if (!isLocalPlayer) return;
+            if (isLocked)
+            {
+                HandleLockedPlayer();
+            }
             HandleInputs();
             HandleGravityAndJump();
             HandleAnimation();

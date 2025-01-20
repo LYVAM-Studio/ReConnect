@@ -1,4 +1,8 @@
+using Mirror;
+using Player;
+using Reconnect.Player;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -11,7 +15,7 @@ namespace Reconnect.Interactions
         private bool _isActive;
 
         private CinemachineInputAxisController _cinemachineInputAxisController;
-
+        
         public void Awake()
         {
             _cinemachineInputAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
@@ -25,7 +29,7 @@ namespace Reconnect.Interactions
             circuitInterface.SetActive(false);
         }
         
-        public void Interact()
+        public void Interact(GameObject player)
         {
             Debug.Log("Interacted");
             // Toggle state
@@ -34,6 +38,7 @@ namespace Reconnect.Interactions
             circuitInterface.SetActive(_isActive);
             ToggleCursor();
             ToggleCameraInput();
+            TogglePlayerLock(player);
         }
 
         // This object can always be interacted with.
@@ -49,6 +54,11 @@ namespace Reconnect.Interactions
         private void ToggleCameraInput()
         {
             _cinemachineInputAxisController.enabled = !_isActive;
+        }
+
+        private void TogglePlayerLock(GameObject player)
+        {
+            player.GetComponent<PlayerNetwork>().isLocked = _isActive;
         }
 
     }

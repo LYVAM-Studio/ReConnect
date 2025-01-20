@@ -11,10 +11,10 @@ namespace Reconnect.Interactions
         [Header("Display of the interaction range")]
         [SerializeField]
         [Tooltip("The player prefab object so the distance with interactable objects can be computed.")]
-        private GameObject playerPrefab;
+        private GameObject player;
         [SerializeField]
         [Tooltip("A sphere to display so the player can see its own interaction range.")]
-        private GameObject visualRange;
+        private MeshRenderer visualRange;
         [SerializeField]
         [Tooltip("Whether the visual range is shown by default (at the player instantiation).")]
         private bool isShownByDefault;
@@ -29,7 +29,9 @@ namespace Reconnect.Interactions
         public void Start()
         {
             _showRange = isShownByDefault;
-            visualRange.SetActive(_showRange);
+            visualRange = GetComponent<MeshRenderer>();
+            visualRange.enabled = _showRange;
+            player = transform.parent.gameObject;
         }
 
         // Update is called once per frame
@@ -37,7 +39,7 @@ namespace Reconnect.Interactions
         {
             if (Input.GetKeyDown(KeyCode.R) && _interactableInRange.Count > 0) // TODO -> use new input system
             {
-                GetNearestInteractable().Interact();
+                GetNearestInteractable().Interact(player);
             }
 
             
@@ -51,7 +53,7 @@ namespace Reconnect.Interactions
             if (Input.GetKeyDown(KeyCode.N)) // Debug key
             {
                 _showRange = !_showRange;
-                visualRange.SetActive(_showRange);
+                visualRange.enabled = _showRange;
             }
         }
     
@@ -83,11 +85,11 @@ namespace Reconnect.Interactions
     
             IInteractable nearest = null;
             var minDistance = double.MaxValue;
-            foreach (var (interactable, transform) in _interactableInRange)
+            foreach (var (interactable, transformComponent) in _interactableInRange)
             {
                 if (interactable.CanInteract())
                 {
-                    var distance = Dist(transform);
+                    var distance = Dist(transformComponent);
                     if (distance < minDistance)
                     {
                         minDistance = distance;
@@ -101,7 +103,7 @@ namespace Reconnect.Interactions
 
         // Returns the distance between the given transform and the player transform
         private double Dist(Transform otherTransform) =>
-            Vector3.Distance(otherTransform.position, playerPrefab.transform.position);
+            Vector3.Distance(otherTransform.position, player.transform.position);
     }
 
 }

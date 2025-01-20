@@ -16,6 +16,8 @@ namespace Player
         protected Transform LookAtObject;
         protected PlayerInput PlayerInput;
         protected CharacterController CharacterController;
+
+        public bool isLocked;
         
         [SyncVar(hook = nameof(OnNameChanged))]
         public string playerName;
@@ -25,6 +27,8 @@ namespace Player
         
         public virtual void Awake()
         {
+            isLocked = false;
+            
             //Locking the cursor to the middle of the screen and making it invisible
             Cursor.lockState = CursorLockMode.Locked;
             
@@ -45,7 +49,7 @@ namespace Player
             
             CharacterController = GetComponent<CharacterController>();
         }
-        
+        // TODO : this is a debug capability
         private void OnEscape(InputAction.CallbackContext context)
         {
             Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
@@ -65,20 +69,20 @@ namespace Player
         }
 
         [Command]
-        public void CmdSetupPlayer(string _name, Color _col)
+        public void CmdSetupPlayer(string name, Color col)
         {
             //player info sent to server, then server updates sync vars which handles it on all clients
-            playerName = _name;
-            playerColor = _col;
+            playerName = name;
+            playerColor = col;
             SceneScript.statusText = $"{playerName} joined.";
         }
 
-        private void OnNameChanged(string _Old, string _New)
+        private void OnNameChanged(string old, string @new)
         {
             //not implemented
         }
 
-        private void OnColorChanged(Color _Old, Color _New)
+        private void OnColorChanged(Color old, Color @new)
         {
             //not implemented
         }
