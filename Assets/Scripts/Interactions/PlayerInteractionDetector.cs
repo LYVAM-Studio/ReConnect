@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -7,77 +8,69 @@ namespace Reconnect.Interactions
     public class InteractionDetector : MonoBehaviour
     {
         [Header("Display of the interaction range")]
-        public GameObject playerPrefab;
-        public GameObject visualRange;
-        public bool isShownByDefault;
+        [SerializeField]
+        [Tooltip("The player prefab object so the distance with interactable objects can be computed.")]
+        private GameObject playerPrefab;
+        [SerializeField]
+        [Tooltip("A sphere to display so the player can see its own interaction range.")]
+        private GameObject visualRange;
+        [SerializeField]
+        [Tooltip("Whether the visual range is shown by default (at the player instantiation).")]
+        private bool isShownByDefault;
+        
+        // Whether the interaction range is shown or not
         private bool _showRange;
-        // A dictionary containing every interactable objects in the interaction range of the player, stored with their distance with respect to the player
-        private readonly Dictionary<IInteractable, double> _interactableInRange = new();
+        // A list containing every interactable objects in the interaction range of the player, stored with their distance with respect to the player.
+        private readonly List<(IInteractable interactable, Transform transform)> _interactableInRange = new();
+        // // Whether the player has already started an interaction
+        // private bool _isInteracting;
 
         public void Start()
         {
             _showRange = isShownByDefault;
             visualRange.SetActive(_showRange);
-            Debug.Log("Started");
         }
 
         // Update is called once per frame
         void Update()
         {
-            // Toggle display of the interaction range
-            if (Input.GetKeyDown(KeyCode.N))
+            if (Input.GetKeyDown(KeyCode.R) && _interactableInRange.Count > 0) // TODO -> use new input system
             {
-                _showRange = !_showRange;
-                visualRange.SetActive(_showRange);
+                GetNearestInteractable().Interact();
             }
-            
-            // If right click and can interact
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                if (_interactableInRange.Count > 0)
-                {
-                    Debug.Log("Interaction");
-                    var interactable = GetNearestInteractable();
-                    interactable.Interact();
-                    // If interaction is no longer possible
-                    if (!interactable.CanInteract())
-                        _interactableInRange.Remove(interactable);
-                }
-                else
-                {
-                    Debug.Log("No interactable objects in range");
-                }
-            }
+
             
             // Debug _interactableInRange
-            if (Input.GetKeyDown(KeyCode.I))
+            if (Input.GetKeyDown(KeyCode.I)) // Debug key
             {
                 var count = _interactableInRange.Count;
                 Debug.Log($"Count: {count}\nFirst: {(count > 0 ? GetNearestInteractable().ToString() : "none")}");
+            }
+            // Toggle display of the interaction range
+            if (Input.GetKeyDown(KeyCode.N)) // Debug key
+            {
+                _showRange = !_showRange;
+                visualRange.SetActive(_showRange);
             }
         }
     
         public void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Interactable entered");
             var interactable = other.GetComponent<IInteractable>();
-            if (interactable is not null && interactable.CanInteract())
+            if (interactable is not null)
             {
-                var distance = Vector3.Distance(
-                    other.GetComponent<Transform>().position,
-                    playerPrefab.GetComponent<Transform>().position
-                );
-                _interactableInRange.Add(interactable, distance);
+                Debug.Log("Interactable entered");
+                _interactableInRange.Add((interactable, other.transform));
             }
         }
     
         public void OnTriggerExit(Collider other)
         {
-            Debug.Log("Interactable exited");
             var interactable = other.GetComponent<IInteractable>();
-            if (interactable is not null && _interactableInRange.ContainsKey(interactable))
+            if (interactable is not null && _interactableInRange.Any(e => e.interactable.Equals(interactable)))
             {
-                _interactableInRange.Remove(interactable);
+                Debug.Log("Interactable exited");
+                _interactableInRange.RemoveAll(e => e.interactable.Equals(interactable));
             }
         }
     
@@ -87,19 +80,27 @@ namespace Reconnect.Interactions
             if (_interactableInRange.Count == 0)
                 throw new ArgumentException("Cannot find the nearest interactable if no interactable is in range.");
     
-            IInteractable interactable = null;
+            IInteractable nearest = null;
             var minDistance = double.MaxValue;
-            foreach (var (i, d) in _interactableInRange)
+            foreach (var (interactable, transform) in _interactableInRange)
             {
-                if (d < minDistance)
+                if (interactable.CanInteract())
                 {
-                    minDistance = d;
-                    interactable = i;
+                    var distance = Dist(transform);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        nearest = interactable;
+                    }
                 }
             }
     
-            return interactable;
+            return nearest;
         }
+
+        // Returns the distance between the given transform and the player transform
+        private double Dist(Transform otherTransform) =>
+            Vector3.Distance(otherTransform.position, playerPrefab.transform.position);
     }
 
 }
