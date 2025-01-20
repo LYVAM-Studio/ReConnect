@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -9,6 +10,14 @@ namespace Reconnect.Interactions
         
         private bool _isActive;
 
+        private CinemachineInputAxisController _cinemachineInputAxisController;
+
+        public void Awake()
+        {
+            _cinemachineInputAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
+                .GetComponent<CinemachineInputAxisController>();
+        }
+        
         private void Start()
         {
             // By default, the interface is closed
@@ -23,17 +32,23 @@ namespace Reconnect.Interactions
             _isActive = !_isActive;
             // Update 
             circuitInterface.SetActive(_isActive);
-            ShowCursor(_isActive);
+            ToggleCursor();
+            ToggleCameraInput();
         }
 
         // This object can always be interacted with.
         public bool CanInteract() => true;
         
         // Shows the cursor if true, otherwise hides it.
-        private void ShowCursor(bool value)
+        private void ToggleCursor()
         {
-            Cursor.visible = value;
-            Cursor.lockState = value ? CursorLockMode.Confined : CursorLockMode.Locked;
+            Cursor.visible = _isActive;
+            Cursor.lockState = _isActive ? CursorLockMode.Confined : CursorLockMode.Locked;
+        }
+
+        private void ToggleCameraInput()
+        {
+            _cinemachineInputAxisController.enabled = !_isActive;
         }
 
     }
