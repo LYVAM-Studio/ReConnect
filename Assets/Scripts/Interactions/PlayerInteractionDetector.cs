@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -22,13 +23,16 @@ namespace Reconnect.Interactions
         // Whether the interaction range is shown or not
         private bool _showRange;
         // A list containing every interactable objects in the interaction range of the player, stored with their distance with respect to the player.
-        private readonly List<(IInteractable interactable, Transform transform)> _interactableInRange = new();
+        private readonly List<(Interactable interactable, Transform transform)> _interactableInRange = new();
+        // The most recently calculated nearest interactable in range (avoids recalculation).
+        [CanBeNull] private Interactable _currentNearest;
         // // Whether the player has already started an interaction
         // private bool _isInteracting;
 
         public void Start()
         {
             _showRange = isShownByDefault;
+            _currentNearest = null;
             visualRange = GetComponent<MeshRenderer>();
             visualRange.enabled = _showRange;
             player = transform.parent.gameObject;
@@ -39,51 +43,59 @@ namespace Reconnect.Interactions
         {
             if (Input.GetKeyDown(KeyCode.R) && _interactableInRange.Count > 0) // TODO -> use new input system
             {
-                GetNearestInteractable().Interact(player);
+                GetNearestInteractable()!.Interact(player);
             }
+            
+            // Make the nearest interactable glow more
+            if (_currentNearest is not null) _currentNearest.ResetNearest();
+            var newNearest = GetNearestInteractable();
+            if (newNearest is not null) newNearest.SetNearest();
 
             
-            // Debug _interactableInRange
-            if (Input.GetKeyDown(KeyCode.I)) // Debug key
+            // Debug key: Debug _interactableInRange
+            if (Input.GetKeyDown(KeyCode.I))
             {
                 var count = _interactableInRange.Count;
-                Debug.Log($"Count: {count}\nFirst: {(count > 0 ? GetNearestInteractable().ToString() : "none")}");
+                Debug.Log($"Count: {count}\nFirst: {(count > 0 ? GetNearestInteractable()!.ToString() : "none")}");
             }
-            // Toggle display of the interaction range
-            if (Input.GetKeyDown(KeyCode.N)) // Debug key
+            
+            // Debug key: Toggle display of the interaction range
+            if (Input.GetKeyDown(KeyCode.N))
             {
                 _showRange = !_showRange;
                 visualRange.enabled = _showRange;
             }
         }
     
+        // This method is called when a trigger enters the player interaction range.
         public void OnTriggerEnter(Collider other)
         {
-            var interactable = other.GetComponent<IInteractable>();
+            var interactable = other.GetComponent<Interactable>();
             if (interactable is not null)
             {
-                Debug.Log("Interactable entered");
+                // Debug.Log("Interactable entered");
+                interactable.OnEnterPlayerRange();
                 _interactableInRange.Add((interactable, other.transform));
             }
         }
     
+        // This method is called when a trigger leaves the player interaction range.
         public void OnTriggerExit(Collider other)
         {
-            var interactable = other.GetComponent<IInteractable>();
+            var interactable = other.GetComponent<Interactable>();
             if (interactable is not null && _interactableInRange.Any(e => e.interactable.Equals(interactable)))
             {
-                Debug.Log("Interactable exited");
+                // Debug.Log("Interactable exited");
+                interactable.OnExitPlayerRange();
                 _interactableInRange.RemoveAll(e => e.interactable.Equals(interactable));
             }
         }
     
-        // Gets the nearest interactable in the range of the player
-        private IInteractable GetNearestInteractable()
+        // Gets the nearest interactable in the range of the player. If none is found, returns null.
+        [CanBeNull]
+        private Interactable GetNearestInteractable()
         {
-            if (_interactableInRange.Count == 0)
-                throw new ArgumentException("Cannot find the nearest interactable if no interactable is in range.");
-    
-            IInteractable nearest = null;
+            Interactable nearest = null;
             var minDistance = double.MaxValue;
             foreach (var (interactable, transformComponent) in _interactableInRange)
             {
@@ -97,7 +109,8 @@ namespace Reconnect.Interactions
                     }
                 }
             }
-    
+
+            _currentNearest = nearest;
             return nearest;
         }
 

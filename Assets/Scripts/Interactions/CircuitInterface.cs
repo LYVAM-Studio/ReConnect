@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Reconnect.Interactions
 {
-    public class CircuitInterface : MonoBehaviour, IInteractable
+    public class CircuitInterface : Interactable
     {
         [Tooltip("The interface that will be opened and closed when the player interacts.")]
         public GameObject circuitInterface;
@@ -22,16 +22,17 @@ namespace Reconnect.Interactions
                 .GetComponent<CinemachineInputAxisController>();
         }
         
-        private void Start()
+        private new void Start()
         {
+            base.Start();
             // By default, the interface is closed
             _isActive = false;
             circuitInterface.SetActive(false);
         }
         
-        public void Interact(GameObject player)
+        public override void Interact(GameObject player)
         {
-            Debug.Log("Interacted");
+            // Debug.Log("Interacted");
             // Toggle state
             _isActive = !_isActive;
             // Update 
@@ -42,7 +43,7 @@ namespace Reconnect.Interactions
         }
 
         // This object can always be interacted with.
-        public bool CanInteract() => true;
+        public override bool CanInteract() => true;
         
         // Shows the cursor if true, otherwise hides it.
         private void ToggleCursor()
