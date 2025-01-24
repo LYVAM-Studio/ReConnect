@@ -1,0 +1,70 @@
+name: Build For All Plateforms
+
+on:
+  workflow_call:
+    inputs:
+      versionName:
+        description: 'Version name (present in the name of the built artifacts)'
+        required: false
+        type: string
+
+
+jobs:
+  buildForAll:
+    name: Build client for ${{ matrix.targetPlatform.buildName }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - { plateformName: StandaloneOSX, buildName: MacOS } # Build a macOS standalone (Intel 64-bit).
+          - { plateformName: StandaloneWindows64, buildName: Windows } # Build a Windows 64-bit standalone.
+          - { plateformName: StandaloneLinux64, buildName: Linux } # Build a Linux 64-bit standalone.
+          - { plateformName: StandaloneLinux64, buildName: Server } # Build a Linux 64-bit standalone.
+    
+    steps:
+      # Set the version name
+      - name: Set Default Version Name
+        id: version
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "no-tag")
+          COMMIT_HASH=$(git rev-parse --short=8 HEAD)
+          DEFAULT_VERSION="${LAST_TAG}-snapshot-${COMMIT_HASH}"
+
+          if [ -z "${{ inputs.versionName }}" ]; then
+            echo "VERSION_NAME=${DEFAULT_VERSION}" >> $GITHUB_ENV
+          else
+            echo "VERSION_NAME=${{ inputs.versionName }}" >> $GITHUB_ENV
+          fi
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+      # Cache libraries
+      - name: Cache the libraries
+        uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-${{ matrix.targetPlatform.buildName }}
+          restore-keys: Library-
+      # Set up Unity
+      - name: Build the unity project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          VERSION_NAME: $VERSION_NAME
+        with:
+          buildName: ReConnect-${{ env.VERSION_NAME }}-${{ matrix.targetPlatform.buildName }}
+          targetPlatform: ${{ matrix.targetPlatform.plateformName }}
+          customParameters: ${{ matrix.targetPlatform.buildName == 'Server' && '-standaloneBuildSubtarget Server' || '' }}
+      # Upload artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReConnect-${{ matrix.targetPlatform }}
+          path: build/${{ matrix.targetPlatform }}
