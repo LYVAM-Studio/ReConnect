@@ -4582,6 +4582,7 @@ GameObject:
   - component: {fileID: 1342110459}
   - component: {fileID: 1342110460}
   - component: {fileID: 1342110461}
+  - component: {fileID: 1342110462}
   m_Layer: 0
   m_Name: Dipole
   m_TagString: Untagged
@@ -4619,8 +4620,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 8
-  xDistanceToMainPole: 0
-  yDistanceToMainPole: 0.5
+  mainPoleAnchor: {x: 0, y: 0.5}
+  poles:
+  - x: 0
+    y: 0
+  - x: 0
+    y: -1
 --- !u!65 &1342110461
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4640,8 +4645,26 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.3, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1342110462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1342110458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 2
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &1423606919
 GameObject:
   m_ObjectHideFlags: 0

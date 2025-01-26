@@ -1,20 +1,19 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Reconnect.Electronics
 {
-    public class DragAndDrop : MonoBehaviour
+    public class BreadBoxComponent : MonoBehaviour
     {
         [Tooltip("Distance between the camera and the breadboard.")]
         public float distance = 8;
         
-        [Tooltip("Difference between the x coordinate of this object and the x coordinate of its main pole.")]
-        public float xDistanceToMainPole = 0;
-        [Tooltip("Difference between the y coordinate of this object and the y coordinate of its main pole.")]
-        public float yDistanceToMainPole = 0.5f;
-        
-        // The vector form the real unity center of gravity of this object to the anchor position used for the breadboard positioning.
-        private Vector3 _mainPoleAnchor;
+        [Header("Poles management")]
+        [Tooltip("The vector from the center of gravity of this object to the main pole position used for the breadboard positioning.")]
+        public Vector2 mainPoleAnchor;
+        [Tooltip("The poles coordinates. Note that the first pole is considered as the main one.")]
+        public Point[] poles;
         
         // Whether this object is being dragged or not
         private bool _isDragging;
@@ -22,12 +21,22 @@ namespace Reconnect.Electronics
         
         // The main camera. Avoids to access it everytime a position is calculated.
         private Camera _cam;
+        
+        // The component responsible for the outlines
+        private Outline _outline;
+        
+        [Serializable]
+        public class Point
+        {
+            public float x, y;
+        }
 
         private void Start()
         {
-            _mainPoleAnchor = new Vector3(xDistanceToMainPole, yDistanceToMainPole, 0);
             _isDragging = false;
             _cam = Camera.main;
+            _outline = GetComponent<Outline>();
+            if (_outline is not null) _outline.enabled = false;
         }
 
         void OnMouseDown()
@@ -44,7 +53,17 @@ namespace Reconnect.Electronics
                 : GetNearestValidPos(); // otherwise go to the nearest slot
         }
 
-        void Update()
+        private void OnMouseEnter()
+        {
+            if (_outline is not null) _outline.enabled = true;
+        }
+        
+        private void OnMouseExit()
+        {
+            if (_outline is not null) _outline.enabled = false;
+        }
+
+        void Update() // OnMouseDrag?
         {
             if (_isDragging)
                 transform.localPosition = GetFlattedCursorPos();
@@ -64,19 +83,25 @@ namespace Reconnect.Electronics
                 0);
         }
 
-        // Returns whether this object is in the bounds of the breadboard.
+        // Returns whether this object is in the bounds of the breadboard ot not.
         private bool IsOutsideOfBreadboard()
-            => transform.localPosition.x + _mainPoleAnchor.x is < -4.25f or > 4.25f
-               || transform.localPosition.y + _mainPoleAnchor.y is < -4.25f or > 4.25f;
+        {
+            // Returns true if any of the poles is outside the breadboard
+            return poles.Any(pole =>
+                transform.localPosition.x + mainPoleAnchor.x + pole.x is < -4.25f or > 4.25f
+                || transform.localPosition.y + mainPoleAnchor.y + pole.y is < -4.25f or > 4.25f);
+        }
         
+        // Assuming that this object is not out of the bounds of the breadboard, returns the nearest valid position.
         private Vector3 GetNearestValidPos()
         {
             return new Vector3(
-                NearestHalf(transform.localPosition.x + _mainPoleAnchor.x) - _mainPoleAnchor.x,
-                NearestHalf(transform.localPosition.y + _mainPoleAnchor.y) - _mainPoleAnchor.y,
+                NearestHalf(transform.localPosition.x + mainPoleAnchor.x) - mainPoleAnchor.x,
+                NearestHalf(transform.localPosition.y + mainPoleAnchor.y) - mainPoleAnchor.y,
                 0);
         }
 
+        // Returns the nearest n such that n = k + 0.5 with k an integer. In other words, rounds the given value to the half.
         private float NearestHalf(float x) => (float)Math.Round(x - 0.5f) + 0.5f;
 
     }
