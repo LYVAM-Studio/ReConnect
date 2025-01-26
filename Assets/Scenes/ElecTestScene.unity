@@ -4619,6 +4619,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 8
+  xDistanceToMainPole: 0
+  yDistanceToMainPole: 0.5
 --- !u!65 &1342110461
 BoxCollider:
   m_ObjectHideFlags: 0
