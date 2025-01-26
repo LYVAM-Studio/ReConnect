@@ -1,72 +1,77 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Reconnect.Electronics
 {
-    public class BreadBoxComponent : MonoBehaviour
+    public class BreadboardComponent : MonoBehaviour
     {
+        [Tooltip("Distance between the camera and the breadboard.")]
+        public ComponentType type;
+        
         [Tooltip("Distance between the camera and the breadboard.")]
         public float distance = 8;
         
         [Header("Poles management")]
         [Tooltip("The vector from the center of gravity of this object to the main pole position used for the breadboard positioning.")]
         public Vector2 mainPoleAnchor;
-        [Tooltip("The poles coordinates. Note that the first pole is considered as the main one.")]
+        
+        [Tooltip("The poles coordinates. Note that the first pole is considered as the main one. The y axis is from bottom to top like in the Unity editor.")]
         public Point[] poles;
         
-        // Whether this object is being dragged or not
-        private bool _isDragging;
+        // The last position occupied by this component
         private Vector3 _startPosition;
-        
         // The main camera. Avoids to access it everytime a position is calculated.
         private Camera _cam;
-        
         // The component responsible for the outlines
         private Outline _outline;
+        // The distance between the cursor and the center of this object
+        private Vector3 _deltaCursor;
         
         [Serializable]
         public class Point
         {
-            public float x, y;
+            // The coordinates in the Unity editor
+            public int x, y;
+            // The coordinates on a breadboard
+            public int GetH() => -y;
+            public int GetW() => x;
         }
 
         private void Start()
         {
-            _isDragging = false;
             _cam = Camera.main;
             _outline = GetComponent<Outline>();
-            if (_outline is not null) _outline.enabled = false;
+            _outline.enabled = false;
         }
 
         void OnMouseDown()
         {
             _startPosition = transform.localPosition;
-            _isDragging = true;
+            _deltaCursor = transform.localPosition - GetFlattedCursorPos();
         }
 
         void OnMouseUp()
         {
-            _isDragging = false;
             transform.localPosition = IsOutsideOfBreadboard()
                 ? _startPosition // return to the previous pos if invalid
                 : GetNearestValidPos(); // otherwise go to the nearest slot
         }
+        
+        void OnMouseDrag()
+        {
+            transform.localPosition = GetFlattedCursorPos() + _deltaCursor;
+        }
 
         private void OnMouseEnter()
         {
-            if (_outline is not null) _outline.enabled = true;
+            _outline.enabled = true;
         }
         
         private void OnMouseExit()
         {
-            if (_outline is not null) _outline.enabled = false;
-        }
-
-        void Update() // OnMouseDrag?
-        {
-            if (_isDragging)
-                transform.localPosition = GetFlattedCursorPos();
+            _outline.enabled = false;
         }
 
         // Gets the position of the cursor projected on the breadboard plane. This vector's z component is therefore always 0.
@@ -103,6 +108,12 @@ namespace Reconnect.Electronics
 
         // Returns the nearest n such that n = k + 0.5 with k an integer. In other words, rounds the given value to the half.
         private float NearestHalf(float x) => (float)Math.Round(x - 0.5f) + 0.5f;
+
+        public (int h, int w) GetNormalizedPos()
+        {
+            return ((int)Math.Round(transform.localPosition.y + mainPoleAnchor.x + 3.5f),
+                (int)Math.Round(-(transform.localPosition.x + mainPoleAnchor.y) + 3.5f));
+        }
 
     }
 
