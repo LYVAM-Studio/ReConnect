@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Reconnect.Electronics
 {
-    public class BreadboardComponent : MonoBehaviour
+    public class ELecComponent : MonoBehaviour
     {
         [Tooltip("Distance between the camera and the breadboard.")]
         public ComponentType type;

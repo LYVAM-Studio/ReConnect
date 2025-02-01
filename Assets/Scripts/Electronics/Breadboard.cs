@@ -8,11 +8,11 @@ namespace Reconnect.Electronics
     public class Breadboard : MonoBehaviour
     {
         // The list of the components in the breadboard
-        private List<BreadboardComponent> _components;
+        private List<ELecComponent> _components;
 
         void Start()
         {
-            _components = new List<BreadboardComponent>();
+            _components = new List<ELecComponent>();
         }
         
         // The following methods are research about how to traverse the circuit graph and to calculate 'U' and 'I' etc...
@@ -27,7 +27,7 @@ namespace Reconnect.Electronics
             LaunchElectronsRec(circuit, explored, 0, 0);
         }
 
-        public void LaunchElectronsRec(List<BreadboardComponent>[,] circuit, List<(int h, int w)> explored, int h,
+        public void LaunchElectronsRec(List<ELecComponent>[,] circuit, List<(int h, int w)> explored, int h,
             int w)
         {
             // Forward while there is a wire
@@ -36,13 +36,13 @@ namespace Reconnect.Electronics
         }
 
         // Returns the current circuit as a 2-dimensional array. Each element of this array represents the list of every component (given by ref, no copy) that has a pole there (i.e. is plugged in the corresponding breadboard hole).  
-        private List<BreadboardComponent>[,] InitCircuit()
+        private List<ELecComponent>[,] InitCircuit()
         {
             // Init the 2-dimensional array with empty lists
-            var circuit = new List<BreadboardComponent>[8, 8];
+            var circuit = new List<ELecComponent>[8, 8];
             for (int h = 0; h < 8; h++)
             for (int w = 0; w < 8; w++)
-                circuit[h, w] = new List<BreadboardComponent>();
+                circuit[h, w] = new List<ELecComponent>();
 
             // Add the components in the empty 2-dimensional array
             foreach (var component in _components)
@@ -62,14 +62,14 @@ namespace Reconnect.Electronics
         }
 
 
-        public void RegisterComponent(BreadboardComponent component)
+        public void RegisterComponent(ELecComponent component)
         {
             if (_components.Contains(component))
                 return;
             _components.Add(component);
         }
 
-        public void UnRegisterComponent(BreadboardComponent component)
+        public void UnRegisterComponent(ELecComponent component)
         {
             if (!_components.Contains(component))
                 return;
