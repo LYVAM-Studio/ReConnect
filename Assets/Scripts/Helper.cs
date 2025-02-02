@@ -36,4 +36,11 @@ public static class Helper
         }
         return list.ToArray();
     }
+    
+    public static GameObject GetPrefabByName(string prefabName)
+    {
+        GameObject prefab = Resources.Load<GameObject>(prefabName);
+        return prefab;
+    }
+
 }

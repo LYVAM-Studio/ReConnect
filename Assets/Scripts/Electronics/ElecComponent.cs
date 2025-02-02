@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Reconnect.Electronics
 {
-    public class ELecComponent : MonoBehaviour
+    public class ElecComponent : MonoBehaviour
     {
         [Tooltip("Distance between the camera and the breadboard.")]
         public ComponentType type;
@@ -49,7 +49,7 @@ namespace Reconnect.Electronics
         void OnMouseDown()
         {
             _startPosition = transform.localPosition;
-            _deltaCursor = transform.localPosition - GetFlattedCursorPos();
+            _deltaCursor = transform.localPosition - ElecHelper.GetFlattedCursorPos();
         }
 
         void OnMouseUp()
@@ -61,7 +61,7 @@ namespace Reconnect.Electronics
         
         void OnMouseDrag()
         {
-            transform.localPosition = GetFlattedCursorPos() + _deltaCursor;
+            transform.localPosition = ElecHelper.GetFlattedCursorPos() + _deltaCursor;
         }
 
         private void OnMouseEnter()
@@ -74,19 +74,7 @@ namespace Reconnect.Electronics
             _outline.enabled = false;
         }
 
-        // Gets the position of the cursor projected on the breadboard plane. This vector's z component is therefore always 0.
-        private Vector3 GetFlattedCursorPos()
-        {
-            if (_cam is null)
-                throw new NullReferenceException("No main camera has been found for the drag and drop script.");
-            
-            var ray = _cam.ScreenPointToRay(Input.mousePosition);
-            var rayDirection = ray.direction;
-            return new Vector3(
-                rayDirection.x / rayDirection.z * distance,
-                rayDirection.y / rayDirection.z * distance,
-                0);
-        }
+        
 
         // Returns whether this object is in the bounds of the breadboard ot not.
         private bool IsOutsideOfBreadboard()

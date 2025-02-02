@@ -8,16 +8,66 @@ namespace Reconnect.Electronics
     public class Breadboard : MonoBehaviour
     {
         // The list of the components in the breadboard
-        private List<ELecComponent> _components;
+        private List<ElecComponent> _components;
+        private bool _onWireCreation;
+        private Vector3 _wireStart;
 
         void Start()
         {
-            _components = new List<ELecComponent>();
+            _components = new List<ElecComponent>();
+            _onWireCreation = false;
         }
         
-        // The following methods are research about how to traverse the circuit graph and to calculate 'U' and 'I' etc...
-        // It is not used yet.
+        // #########################
+        // #    WIRE MANAGEMENT    #
+        // #########################
 
+        public void StartWire(Vector3 nodePosition)
+        {
+            _onWireCreation = true;
+            _wireStart = nodePosition;
+        }
+
+        public void EndWire()
+        {
+            _onWireCreation = false;
+        }
+
+        public void OnNodeCollision(Vector3 nodePosition)
+        {
+            if (!_onWireCreation) return;
+            
+            // The difference between the two positions, ignoring the z component.
+            var delta = (Vector2)nodePosition - (Vector2)_wireStart;
+
+            if (delta.magnitude > 1.5f)
+            {
+                // The user skipped one or more node. A wire cannot be created that way.
+                EndWire();
+            }
+            else if (delta != Vector2.zero)
+            {
+                // instantiate a wire from the wire prefab
+                var wire = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
+                if (wire is null)
+                    throw new Exception("The wire prefab could not be found.");
+                // set position
+                wire.transform.position = (_wireStart + nodePosition) / 2;
+                // set rotation
+                wire.transform.LookAt(nodePosition);
+                wire.transform.eulerAngles += new Vector3(90, 0, 0);
+                // set scale (length of the wire)
+                var scale = wire.transform.localScale;
+                scale[1] = (nodePosition - _wireStart).magnitude / 2f;
+                wire.transform.localScale = scale;
+                // set the start to the current end
+                _wireStart = nodePosition;
+            }
+        }
+        
+        
+        
+        
         
         // Traverses the circuit calculating U and I.
         public void LaunchElectrons()
@@ -27,22 +77,26 @@ namespace Reconnect.Electronics
             LaunchElectronsRec(circuit, explored, 0, 0);
         }
 
-        public void LaunchElectronsRec(List<ELecComponent>[,] circuit, List<(int h, int w)> explored, int h,
+        public void LaunchElectronsRec(List<ElecComponent>[,] circuit, List<(int h, int w)> explored, int h,
             int w)
         {
             // Forward while there is a wire
             while (circuit[h, w].Count == 1 && circuit[h, w][0].type == ComponentType.Wire)
                 (h, w) = circuit[h, w][0].GetNormalizedPos();
+            foreach (var component in circuit[h, w])
+            {
+                
+            }
         }
 
         // Returns the current circuit as a 2-dimensional array. Each element of this array represents the list of every component (given by ref, no copy) that has a pole there (i.e. is plugged in the corresponding breadboard hole).  
-        private List<ELecComponent>[,] InitCircuit()
+        private List<ElecComponent>[,] InitCircuit()
         {
             // Init the 2-dimensional array with empty lists
-            var circuit = new List<ELecComponent>[8, 8];
+            var circuit = new List<ElecComponent>[8, 8];
             for (int h = 0; h < 8; h++)
             for (int w = 0; w < 8; w++)
-                circuit[h, w] = new List<ELecComponent>();
+                circuit[h, w] = new List<ElecComponent>();
 
             // Add the components in the empty 2-dimensional array
             foreach (var component in _components)
@@ -60,16 +114,15 @@ namespace Reconnect.Electronics
             
             return circuit;
         }
-
-
-        public void RegisterComponent(ELecComponent component)
+        
+        public void RegisterComponent(ElecComponent component)
         {
             if (_components.Contains(component))
                 return;
             _components.Add(component);
         }
 
-        public void UnRegisterComponent(ELecComponent component)
+        public void UnRegisterComponent(ElecComponent component)
         {
             if (!_components.Contains(component))
                 return;
