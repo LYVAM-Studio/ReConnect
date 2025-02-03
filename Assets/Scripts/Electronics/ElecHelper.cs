@@ -1,6 +1,6 @@
 using System;
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics
 {
@@ -25,7 +25,7 @@ namespace Reconnect.Electronics
         // Gets the position of the cursor projected on the breadboard plane. This vector's z component is therefore always 0.
         public static Vector3 GetFlattedCursorPos(float distanceCamBreadboard = 8f)
         {
-            var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+            var ray = MainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
             // Raycast version:
             // Physics.Raycast(MainCamera.transform.position, ray.direction, out var hit);
             // return new Vector3(hit.point.x, hit.point.y, 0);
