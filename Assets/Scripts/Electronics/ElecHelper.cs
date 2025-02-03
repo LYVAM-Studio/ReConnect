@@ -26,6 +26,9 @@ namespace Reconnect.Electronics
         public static Vector3 GetFlattedCursorPos(float distanceCamBreadboard = 8f)
         {
             var ray = MainCamera.ScreenPointToRay(Input.mousePosition);
+            // Raycast version:
+            // Physics.Raycast(MainCamera.transform.position, ray.direction, out var hit);
+            // return new Vector3(hit.point.x, hit.point.y, 0);
             var rayDirection = ray.direction;
             return new Vector3(
                 rayDirection.x / rayDirection.z * distanceCamBreadboard,
