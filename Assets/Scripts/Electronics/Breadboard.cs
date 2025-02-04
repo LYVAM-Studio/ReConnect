@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Reconnect.Electronics.Components;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Reconnect.Electronics
@@ -9,15 +9,19 @@ namespace Reconnect.Electronics
     public class Breadboard : MonoBehaviour
     {
         // The list of the components in the breadboard
-        private List<ElecComponent> _components;
+        private List<Dipole> _components;
+        // The list of the wires on the breadboard
         private List<WireScript> _wires;
+        // Whether a wire is being created (implies that the mouse is down)
         private bool _onWireCreation;
+        // Whether the wire creation is in deletion mode (removes wires instead of placing them)
         private bool _onDeletionMode;
-        private Vector3 _wireStart;
+        // The start of the wire ig _onWireCreation
+        private Vector3 _lastNodePosition;
 
         void Start()
         {
-            _components = new List<ElecComponent>();
+            _components = new List<Dipole>();
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
@@ -31,7 +35,7 @@ namespace Reconnect.Electronics
         {
             _onWireCreation = true;
             _onDeletionMode = false;
-            _wireStart = nodePosition;
+            _lastNodePosition = nodePosition;
         }
 
         public void EndWire()
@@ -39,35 +43,41 @@ namespace Reconnect.Electronics
             _onWireCreation = false;
         }
 
-        public void OnNodeCollision(Vector3 nodePosition)
+        // This function is called by a breadboard node when the mouse collides it
+        public void OnMouseNodeCollision(Vector3 nodePosition)
         {
+            // If not no wire creation, then does nothing
             if (!_onWireCreation) return;
             
-            // The difference between the two positions, ignoring the z component.
-            var delta = (Vector2)nodePosition - (Vector2)_wireStart;
+            // The difference between the two wire start position and the current mouse position, ignoring the z component
+            // This vector corresponds to the future wire
+            var delta = (Vector2)nodePosition - (Vector2)_lastNodePosition;
 
             if (delta.magnitude > 1.5f)
             {
-                // The user skipped one or more node. A wire cannot be created that way.
+                // The user skipped one or more node. A wire cannot be created that way
+                // Enter in deletion mode to delete wires if the users wants to
                 _onDeletionMode = true;
-                // set the start to the current end
-                _wireStart = nodePosition;
+                // Set the start to the current end
+                _lastNodePosition = nodePosition;
             }
             else if (delta != Vector2.zero)
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wire = _wires.Find(w =>
-                    w.Pole1 == PositionToPole(_wireStart) && w.Pole2 == PositionToPole(nodePosition) ||
-                    w.Pole2 == PositionToPole(_wireStart) && w.Pole1 == PositionToPole(nodePosition));
+                    w.Pole1 == Pole.PositionToPole(_lastNodePosition) && w.Pole2 == Pole.PositionToPole(nodePosition) ||
+                    w.Pole2 == Pole.PositionToPole(_lastNodePosition) && w.Pole1 == Pole.PositionToPole(nodePosition));
                 if (wire is not null)
                 {
-                    DeleteWire(wire.GetComponent<WireScript>());
-                    Destroy(wire.gameObject);
+                    // A wire is already at this position
+                    // Delete the wire at this position
+                    DeleteWire(wire);
+                    // Enter the deletion mode
                     _onDeletionMode = true;
                 }
-                else if (!_onDeletionMode) // create a new wire
+                else if (!_onDeletionMode)
                 {
-                    // instantiate a wire from the wire prefab
+                    // Instantiate a wire from the wire prefab
                     var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
                     if (wireGameObj is null)
                         throw new Exception("The wire prefab could not be found.");
@@ -75,28 +85,28 @@ namespace Reconnect.Electronics
                     if (wireScript is null)
                         throw new Exception("The WireScript component could not be found in the wire prefab.");
                     wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
-                    wireScript.Init(this, PositionToPole(_wireStart), PositionToPole(nodePosition));
+                    wireScript.Init(this, Pole.PositionToPole(_lastNodePosition), Pole.PositionToPole(nodePosition));
                     _wires.Add(wireScript);
-                    // set position
-                    wireGameObj.transform.position = (_wireStart + nodePosition) / 2;
-                    // set rotation
+                    // Set the wire's position
+                    wireGameObj.transform.position = (_lastNodePosition + nodePosition) / 2;
+                    // Set the wire's rotation
                     wireGameObj.transform.LookAt(nodePosition);
                     wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-                    // set scale (length of the wire)
+                    // Set the wire's scale (length of the wire)
                     var scale = wireGameObj.transform.localScale;
-                    scale[1] = (nodePosition - _wireStart).magnitude / 2f;
+                    scale[1] /* y component */ = (nodePosition - _lastNodePosition).magnitude / 2f;
                     wireGameObj.transform.localScale = scale;
                 }
-                // set the start to the current end
-                _wireStart = nodePosition;
+                // Set the start to the current end
+                _lastNodePosition = nodePosition;
             }
         }
 
         public void DeleteWire(WireScript wire)
         {
             _wires.Remove(wire);
+            Destroy(wire.gameObject);
         }
-        
         
         
         
@@ -146,24 +156,50 @@ namespace Reconnect.Electronics
         //     return circuit;
         // }
         
-        public void RegisterComponent(ElecComponent component)
+        public void RegisterComponent(Dipole component)
         {
             if (_components.Contains(component))
                 return;
             _components.Add(component);
         }
 
-        public void UnRegisterComponent(ElecComponent component)
+        public void UnRegisterComponent(Dipole component)
         {
             if (!_components.Contains(component))
                 return;
             _components.Remove(component);
         }
+        
+        public Vector3? GetClosestValidPosition(Dipole component)
+        {
+            var closest =  new Vector3(
+                ClosestHalf(component.transform.position.x + component.mainPoleAnchor.x) - component.mainPoleAnchor.x,
+                ClosestHalf(component.transform.position.y + component.mainPoleAnchor.y) - component.mainPoleAnchor.y,
+                7.5f);
+            
+            // The poles of the component if it was at the closest position
+            var poles = component.GetPoles(closest);
+            Debug.Log(string.Join(", ", from p in poles select p.ToString()));
+            
+            if (poles.Any(pole => pole.H is < 0 or >= 8 || pole.W is < 0 or >= 8))
+            {
+                // A pole is outside the breadboard
+                Debug.Log("A pole is outside the breadboard");
+                return null;
+            }
 
-        // Helper methods
+            if (_components.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
+            {
+                // A component is already here
+                Debug.Log("A component is already here");
+                return null;
+            }
+            
+            return closest;
+        }
         
-        
-        public static Pole PositionToPole(Vector2 position) => new((int)(position.y - 3.5f), (int)(position.x - 3.5f));
-        
+        // Returns the given number rounded to the closet half
+        private static float ClosestHalf(float x) => (float)Math.Round(x - 0.5f) + 0.5f;
+
     }
 }

@@ -1,16 +1,15 @@
 using System;
-using Reconnect.Electronics;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Components
 {
     public class WireScript : MonoBehaviour
     {
-        public Breadboard Breadboard { get; private set; }
+        private Breadboard Breadboard { get; set; }
         public Pole Pole1 { get; private set; }
         public Pole Pole2 { get; private set; }
 
-        private bool _isInitialized = false;
+        private bool _isInitialized;
 
         public void Init(Breadboard breadboard, Pole pole1, Pole pole2)
         {
@@ -24,7 +23,6 @@ namespace Reconnect.Electronics.Components
         private void OnMouseUpAsButton()
         {
             Breadboard.DeleteWire(this);
-            Destroy(gameObject);
         }
     
         // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);

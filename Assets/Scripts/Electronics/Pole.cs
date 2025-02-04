@@ -1,7 +1,9 @@
 using System;
+using UnityEngine;
 
 namespace Reconnect.Electronics
 {
+    [Serializable]
     public sealed class Pole
     {
         public int H {get;}
@@ -17,5 +19,8 @@ namespace Reconnect.Electronics
         public override bool Equals(object obj) => obj is Pole pole && Equals(pole) ;
         private bool Equals(Pole other) => H == other.H && W == other.W;
         public override int GetHashCode() => HashCode.Combine(H, W);
+        public override string ToString() => $"(h:{H},w:{W})";
+
+        public static Pole PositionToPole(Vector2 position) => new((int)(position.y - 3.5f), (int)(position.x - 3.5f));
     }
 }

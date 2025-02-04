@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Reconnect.Electronics
 {
-    public class BbNodeScript : MonoBehaviour
+    public class BbNode : MonoBehaviour
     {
         private Breadboard _breadboard;
 
+        // Returns the parent breadboard
         public Breadboard Breadboard
         {
-            // Returns the parent breadboard
             get
             {
                 if (_breadboard is null)
@@ -34,7 +34,7 @@ namespace Reconnect.Electronics
 
         private void OnMouseEnter()
         {
-            Breadboard.OnNodeCollision(transform.position);
+            Breadboard.OnMouseNodeCollision(transform.position);
         }
     }
 }
