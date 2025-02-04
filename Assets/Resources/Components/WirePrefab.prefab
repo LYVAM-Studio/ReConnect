@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5949453036458595953}
   - component: {fileID: 7412369774057208200}
   - component: {fileID: 3018021941352675812}
+  - component: {fileID: 6370047421448741998}
   m_Layer: 0
   m_Name: WirePrefab
   m_TagString: Untagged
@@ -110,3 +111,15 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!114 &6370047421448741998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8146397133818690620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72867c76f9185b21b9ff58804792caac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
