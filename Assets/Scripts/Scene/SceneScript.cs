@@ -1,6 +1,5 @@
 using Mirror;
 using Player;
-using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -14,7 +13,7 @@ namespace Scene
         [SyncVar(hook = nameof(OnStatusTextChanged))]
         public string statusText;
 
-        void OnStatusTextChanged(string _Old, string _New)
+        private void OnStatusTextChanged(string _Old, string _New)
         {
             //called from sync var hook, to update info on screen for all players
             canvasStatusText.text = statusText;
@@ -22,7 +21,7 @@ namespace Scene
 
         public void ButtonSendMessage()
         {
-            if (playerNetwork != null)  
+            if (playerNetwork != null)
                 playerNetwork.CmdSendPlayerMessage();
         }
     }

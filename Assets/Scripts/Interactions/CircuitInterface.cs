@@ -1,8 +1,5 @@
-using Mirror;
 using Player;
-using Reconnect.Player;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -11,17 +8,17 @@ namespace Reconnect.Interactions
     {
         [Tooltip("The interface that will be opened and closed when the player interacts.")]
         public GameObject circuitInterface;
-        
-        private bool _isActive;
 
         private CinemachineInputAxisController _cinemachineInputAxisController;
-        
+
+        private bool _isActive;
+
         public void Awake()
         {
             _cinemachineInputAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
                 .GetComponent<CinemachineInputAxisController>();
         }
-        
+
         private new void Start()
         {
             base.Start();
@@ -29,7 +26,7 @@ namespace Reconnect.Interactions
             _isActive = false;
             circuitInterface.SetActive(false);
         }
-        
+
         public override void Interact(GameObject player)
         {
             // Debug.Log("Interacted");
@@ -43,8 +40,11 @@ namespace Reconnect.Interactions
         }
 
         // This object can always be interacted with.
-        public override bool CanInteract() => true;
-        
+        public override bool CanInteract()
+        {
+            return true;
+        }
+
         // Shows the cursor if true, otherwise hides it.
         private void ToggleCursor()
         {
@@ -61,6 +61,5 @@ namespace Reconnect.Interactions
         {
             player.GetComponent<PlayerNetwork>().isLocked = _isActive;
         }
-
     }
 }

@@ -4969,7 +4969,7 @@ MonoBehaviour:
   mainPoleAnchor: {x: 0, y: 0.5}
   poles:
   - {x: 0, y: 0}
-  - {x: 0, y: 0}
+  - {x: 0, y: -1}
 --- !u!65 &1342110461
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -18,6 +18,7 @@ namespace Reconnect.Electronics
                     if (_cam is null)
                         throw new Exception("No main camera has been found.");
                 }
+
                 return _cam;
             }
         }
@@ -35,7 +36,5 @@ namespace Reconnect.Electronics
                 rayDirection.y / rayDirection.z * distanceCamBreadboard,
                 0);
         }
-        
     }
-
 }

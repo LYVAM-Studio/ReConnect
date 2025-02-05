@@ -5,11 +5,15 @@ namespace Reconnect.Electronics.Components
 {
     public class WireScript : MonoBehaviour
     {
+        private bool _isInitialized;
         private Breadboard Breadboard { get; set; }
         public Pole Pole1 { get; private set; }
         public Pole Pole2 { get; private set; }
 
-        private bool _isInitialized;
+        private void OnMouseUpAsButton()
+        {
+            Breadboard.DeleteWire(this);
+        }
 
         public void Init(Breadboard breadboard, Pole pole1, Pole pole2)
         {
@@ -19,12 +23,7 @@ namespace Reconnect.Electronics.Components
             Pole2 = pole2;
             _isInitialized = true;
         }
-    
-        private void OnMouseUpAsButton()
-        {
-            Breadboard.DeleteWire(this);
-        }
-    
+
         // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);
         // public static bool operator!=(WireScript left, WireScript right) => !(left == right);
         // public override bool Equals(object obj) => obj is WireScript pole && Equals(pole) ;

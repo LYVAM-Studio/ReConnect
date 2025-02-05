@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -6,6 +5,7 @@ namespace Reconnect.Interactions
     public abstract class Interactable : MonoBehaviour
     {
         private Outline _glowScript;
+
         protected void Start()
         {
             _glowScript = GetComponent<Outline>();
@@ -15,7 +15,7 @@ namespace Reconnect.Interactions
 
         public abstract void Interact(GameObject player);
         public abstract bool CanInteract();
-        
+
         // This method is called by the player when this interactable enters its range.
         public void OnEnterPlayerRange()
         {
@@ -41,6 +41,5 @@ namespace Reconnect.Interactions
             // Make it glow more
             _glowScript.OutlineWidth = 5;
         }
-        
     }
 }

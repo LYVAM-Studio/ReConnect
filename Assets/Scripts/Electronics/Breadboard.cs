@@ -10,23 +10,27 @@ namespace Reconnect.Electronics
     {
         // The list of the components in the breadboard
         private List<Dipole> _components;
-        // The list of the wires on the breadboard
-        private List<WireScript> _wires;
-        // Whether a wire is being created (implies that the mouse is down)
-        private bool _onWireCreation;
-        // Whether the wire creation is in deletion mode (removes wires instead of placing them)
-        private bool _onDeletionMode;
+
         // The start of the wire ig _onWireCreation
         private Vector3 _lastNodePosition;
 
-        void Start()
+        // Whether the wire creation is in deletion mode (removes wires instead of placing them)
+        private bool _onDeletionMode;
+
+        // Whether a wire is being created (implies that the mouse is down)
+        private bool _onWireCreation;
+
+        // The list of the wires on the breadboard
+        private List<WireScript> _wires;
+
+        private void Start()
         {
             _components = new List<Dipole>();
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
         }
-        
+
         // #########################
         // #    WIRE MANAGEMENT    #
         // #########################
@@ -48,7 +52,7 @@ namespace Reconnect.Electronics
         {
             // If not no wire creation, then does nothing
             if (!_onWireCreation) return;
-            
+
             // The difference between the two wire start position and the current mouse position, ignoring the z component
             // This vector corresponds to the future wire
             var delta = (Vector2)nodePosition - (Vector2)_lastNodePosition;
@@ -65,8 +69,10 @@ namespace Reconnect.Electronics
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wire = _wires.Find(w =>
-                    w.Pole1 == Pole.PositionToPole(_lastNodePosition) && w.Pole2 == Pole.PositionToPole(nodePosition) ||
-                    w.Pole2 == Pole.PositionToPole(_lastNodePosition) && w.Pole1 == Pole.PositionToPole(nodePosition));
+                    (w.Pole1 == Pole.PositionToPole(_lastNodePosition) &&
+                     w.Pole2 == Pole.PositionToPole(nodePosition)) ||
+                    (w.Pole2 == Pole.PositionToPole(_lastNodePosition) &&
+                     w.Pole1 == Pole.PositionToPole(nodePosition)));
                 if (wire is not null)
                 {
                     // A wire is already at this position
@@ -97,6 +103,7 @@ namespace Reconnect.Electronics
                     scale[1] /* y component */ = (nodePosition - _lastNodePosition).magnitude / 2f;
                     wireGameObj.transform.localScale = scale;
                 }
+
                 // Set the start to the current end
                 _lastNodePosition = nodePosition;
             }
@@ -107,10 +114,8 @@ namespace Reconnect.Electronics
             _wires.Remove(wire);
             Destroy(wire.gameObject);
         }
-        
-        
-        
-        
+
+
         // // Traverses the circuit calculating U and I.
         // public void LaunchElectrons()
         // {
@@ -155,7 +160,7 @@ namespace Reconnect.Electronics
         //     
         //     return circuit;
         // }
-        
+
         public void RegisterComponent(Dipole component)
         {
             if (_components.Contains(component))
@@ -169,18 +174,25 @@ namespace Reconnect.Electronics
                 return;
             _components.Remove(component);
         }
-        
+
+        public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 ifNull)
+        {
+            var pos = GetClosestValidPosition(dipole);
+            if (pos is { } notNull)
+                return notNull;
+            return ifNull;
+        }
+
         public Vector3? GetClosestValidPosition(Dipole component)
         {
-            var closest =  new Vector3(
+            var closest = new Vector3(
                 ClosestHalf(component.transform.position.x + component.mainPoleAnchor.x) - component.mainPoleAnchor.x,
                 ClosestHalf(component.transform.position.y + component.mainPoleAnchor.y) - component.mainPoleAnchor.y,
                 7.5f);
-            
+
             // The poles of the component if it was at the closest position
             var poles = component.GetPoles(closest);
-            Debug.Log(string.Join(", ", from p in poles select p.ToString()));
-            
+
             if (poles.Any(pole => pole.H is < 0 or >= 8 || pole.W is < 0 or >= 8))
             {
                 // A pole is outside the breadboard
@@ -194,12 +206,14 @@ namespace Reconnect.Electronics
                 Debug.Log("A component is already here");
                 return null;
             }
-            
+
             return closest;
         }
-        
-        // Returns the given number rounded to the closet half
-        private static float ClosestHalf(float x) => (float)Math.Round(x - 0.5f) + 0.5f;
 
+        // Returns the given number rounded to the closet half
+        private static float ClosestHalf(float x)
+        {
+            return (float)Math.Round(x - 0.5f) + 0.5f;
+        }
     }
 }

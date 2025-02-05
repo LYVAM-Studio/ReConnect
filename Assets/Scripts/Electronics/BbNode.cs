@@ -19,22 +19,24 @@ namespace Reconnect.Electronics
                         throw new Exception(
                             $"Breadboard not found by BreadboardNode at position ({transform.position.x}, {transform.position.y}, {transform.position.z}).");
                 }
+
                 return _breadboard;
             }
         }
+
         private void OnMouseDown()
         {
             Breadboard.StartWire(transform.position);
         }
 
-        private void OnMouseUp()
-        {
-            Breadboard.EndWire();
-        }
-
         private void OnMouseEnter()
         {
             Breadboard.OnMouseNodeCollision(transform.position);
+        }
+
+        private void OnMouseUp()
+        {
+            Breadboard.EndWire();
         }
     }
 }
