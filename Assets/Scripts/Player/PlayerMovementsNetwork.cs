@@ -169,6 +169,11 @@ namespace Reconnect.Player
                 _isCrouching = false; // jumping cancels crouching
                 _isJumpingPressed = false;
             }
+            
+            if (_isJumpingPressed && !CharacterController.isGrounded)
+            {
+                _isJumpingPressed = false; // cancel double jump
+            }
         }
 
         private void JumpAnimation()
