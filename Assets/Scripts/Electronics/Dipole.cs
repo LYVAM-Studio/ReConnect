@@ -25,6 +25,9 @@ namespace Reconnect.Electronics
 
         // The last position occupied by this component
         private Vector3 _lastPosition;
+        
+        // Whether this was rotated or not on its last position
+        private bool _lastRotation;
 
         // The component responsible for the outlines
         private Outline _outline;
@@ -42,6 +45,7 @@ namespace Reconnect.Electronics
         private void OnMouseDown()
         {
             _lastPosition = transform.position;
+            _lastRotation = _isRotated;
             _deltaCursor = transform.position - ElecHelper.GetFlattedCursorPos();
         }
 
@@ -50,20 +54,8 @@ namespace Reconnect.Electronics
             transform.position = ElecHelper.GetFlattedCursorPos() + _deltaCursor;
             if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
             {
-                if (_isRotated)
-                {
-                    _isRotated = false;
-                    poles[1] = new Vector2(0, -1);
-                    transform.eulerAngles = Vector3.zero;
-                    mainPoleAnchor = new Vector2(0, 0.5f);
-                }
-                else
-                {
-                    _isRotated = true;
-                    poles[1] = new Vector2(1, 0);
-                    transform.eulerAngles = new Vector3(0, 0, 90);
-                    mainPoleAnchor = new Vector2(-0.5f, 0);
-                }
+                // Toggles the rotation
+                SetRotation(!_isRotated);
             }
         }
 
@@ -79,7 +71,17 @@ namespace Reconnect.Electronics
 
         private void OnMouseUp()
         {
-            transform.position = _breadboard.GetClosestValidPosition(this, _lastPosition);
+            var pos = _breadboard.GetClosestValidPosition(this);
+            if (pos is Vector3 validPos)
+            {
+                transform.position = validPos;
+            }
+            else
+            {
+                // Restore the last valid position and rotation
+                transform.position = _lastPosition;
+                SetRotation(_lastRotation);
+            }
         }
 
         public Pole[] GetPoles(Vector2 position)
@@ -91,6 +93,26 @@ namespace Reconnect.Electronics
         public Pole[] GetPoles()
         {
             return GetPoles(transform.position);
+        }
+
+        public void SetRotation(bool rotated)
+        {
+            if (rotated == _isRotated) return;
+
+            if (rotated)
+            {
+                _isRotated = true;
+                poles[1] = new Vector2(1, 0);
+                transform.eulerAngles = new Vector3(0, 0, 90);
+                mainPoleAnchor = new Vector2(-0.5f, 0);
+            }
+            else
+            {
+                _isRotated = false;
+                poles[1] = new Vector2(0, -1);
+                transform.eulerAngles = Vector3.zero;
+                mainPoleAnchor = new Vector2(0, 0.5f);
+            }
         }
     }
 }
