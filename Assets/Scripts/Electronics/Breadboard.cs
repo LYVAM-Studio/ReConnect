@@ -23,6 +23,9 @@ namespace Reconnect.Electronics
         // The list of the wires on the breadboard
         private List<WireScript> _wires;
 
+        // The Z coordinate at which the dipoles are positioned on the breadboard
+        // it is the Z position of the breadboard (8f) minus half its thickness (1f/2) to have it sunk into the board
+        private float _zPositionDipoles = 7.5f;
         private void Start()
         {
             _components = new List<Dipole>();
@@ -57,6 +60,8 @@ namespace Reconnect.Electronics
             // This vector corresponds to the future wire
             var delta = (Vector2)nodePosition - (Vector2)_lastNodePosition;
 
+            // nodes are spaced by 1.0f, the diagonal distance would be sqrt(2) ~ 1.41
+            // We check if the distance is greater because we want to avoid skipping surrounding nodes.
             if (delta.magnitude > 1.5f)
             {
                 // The user skipped one or more node. A wire cannot be created that way
@@ -175,12 +180,10 @@ namespace Reconnect.Electronics
             _components.Remove(component);
         }
 
-        public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 ifNull)
+        public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 defaultPos)
         {
             var pos = GetClosestValidPosition(dipole);
-            if (pos is { } notNull)
-                return notNull;
-            return ifNull;
+            return pos ?? defaultPos;
         }
 
         public Vector3? GetClosestValidPosition(Dipole component)
@@ -188,7 +191,7 @@ namespace Reconnect.Electronics
             var closest = new Vector3(
                 ClosestHalf(component.transform.position.x + component.mainPoleAnchor.x) - component.mainPoleAnchor.x,
                 ClosestHalf(component.transform.position.y + component.mainPoleAnchor.y) - component.mainPoleAnchor.y,
-                7.5f);
+                _zPositionDipoles);
 
             // The poles of the component if it was at the closest position
             var poles = component.GetPoles(closest);
