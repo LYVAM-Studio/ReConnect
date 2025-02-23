@@ -20,3 +20,5 @@ Please avoid merge conflicts! Note that, for everything that is not code (e. g. 
 
 ## test
 I am testing the git lfs workaround to clone without lfs bandwidth limit.
+
+COUCOU MAXIME DEAD
