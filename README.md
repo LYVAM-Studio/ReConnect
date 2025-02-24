@@ -17,3 +17,8 @@ Please avoid merge conflicts! Note that, for everything that is not code (e. g. 
 ## Task planning / Gantt Chart
 
 ![image](https://github.com/user-attachments/assets/582c74a4-e272-4f5b-92b9-aca684b06d5a)
+
+## test
+I am testing the git lfs workaround to clone without lfs bandwidth limit.
+
+COUCOU MAXIME DEAD
