@@ -49,5 +49,10 @@ namespace Reconnect.Electronics
         {
             return new Pole((int)(-position.y + 3.5f), (int)(position.x + 3.5f));
         }
+        
+        public static Vector3 PoleToPosition(Pole pole, float zPosition)
+        {
+            return new Vector3((pole.W - 3.5f),(-pole.H + 3.5f),zPosition);
+        }
     }
 }

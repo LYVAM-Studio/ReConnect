@@ -1,0 +1,6 @@
+object,from_h,from_w,to_h,to_w
+wire,0,4,1,4
+wire,1,4,2,4
+wire,2,4,3,4
+wire,4,4,5,4
+wire,5,4,6,4

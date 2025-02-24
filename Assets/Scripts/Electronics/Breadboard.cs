@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics
 {
@@ -32,8 +34,31 @@ namespace Reconnect.Electronics
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
+            LoadCircuit("1_series_lvl_1");
         }
 
+        public void LoadCircuit(string circuitName)
+        {
+            string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
+            string[] lines = File.ReadAllLines(filePath);
+            foreach (string line in lines)
+            {
+                string[] content = line.Split(',');
+                switch (content[0])
+                {
+                    case "wire" :
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4]));
+                        Vector3 fromPos = Pole.PoleToPosition(new Pole(from.h, from.w), _zPositionDipoles);
+                        Vector3 toPos = Pole.PoleToPosition(new Pole(to.h, to.w), _zPositionDipoles);
+                        CreateWire(fromPos, toPos);
+                        break;
+                    case "dipole" :
+                        break;
+                }
+            }
+        }
+        
         // #########################
         // #    WIRE MANAGEMENT    #
         // #########################
@@ -88,25 +113,7 @@ namespace Reconnect.Electronics
                 }
                 else if (!_onDeletionMode)
                 {
-                    // Instantiate a wire from the wire prefab
-                    var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
-                    if (wireGameObj is null)
-                        throw new Exception("The wire prefab could not be found.");
-                    var wireScript = wireGameObj.GetComponent<WireScript>();
-                    if (wireScript is null)
-                        throw new Exception("The WireScript component could not be found in the wire prefab.");
-                    wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
-                    wireScript.Init(this, Pole.PositionToPole(_lastNodePosition), Pole.PositionToPole(nodePosition));
-                    _wires.Add(wireScript);
-                    // Set the wire's position
-                    wireGameObj.transform.position = (_lastNodePosition + nodePosition) / 2;
-                    // Set the wire's rotation
-                    wireGameObj.transform.LookAt(nodePosition);
-                    wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-                    // Set the wire's scale (length of the wire)
-                    var scale = wireGameObj.transform.localScale;
-                    scale[1] /* y component */ = (nodePosition - _lastNodePosition).magnitude / 2f;
-                    wireGameObj.transform.localScale = scale;
+                    CreateWire(_lastNodePosition, nodePosition);
                 }
 
                 // Set the start to the current end
@@ -120,6 +127,29 @@ namespace Reconnect.Electronics
             Destroy(wire.gameObject);
         }
 
+        public void CreateWire(Vector3 from, Vector3 to)
+        {
+            // Instantiate a wire from the wire prefab
+            var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
+            if (wireGameObj is null)
+                throw new Exception("The wire prefab could not be found.");
+            var wireScript = wireGameObj.GetComponent<WireScript>();
+            if (wireScript is null)
+                throw new Exception("The WireScript component could not be found in the wire prefab.");
+            wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
+            // Debug.Log($"{_lastNodePosition} <=> {Pole.PoleToPosition(Pole.PositionToPole(_lastNodePosition), _zPositionDipoles)}");
+            wireScript.Init(this, Pole.PositionToPole(from), Pole.PositionToPole(to));
+            _wires.Add(wireScript);
+            // Set the wire's position
+            wireGameObj.transform.position = (from + to) / 2;
+            // Set the wire's rotation
+            wireGameObj.transform.LookAt(to);
+            wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            // Set the wire's scale (length of the wire)
+            var scale = wireGameObj.transform.localScale;
+            scale[1] /* y component */ = (to - from).magnitude / 2f;
+            wireGameObj.transform.localScale = scale;
+        }
 
         // // Traverses the circuit calculating U and I.
         // public void LaunchElectrons()
