@@ -1,4 +1,7 @@
+using System;
 using System.Linq;
+using Reconnect.Electronics.Graphs;
+using TestGraph.Components;
 using UnityEngine;
 
 namespace Reconnect.Electronics
@@ -31,6 +34,8 @@ namespace Reconnect.Electronics
 
         // The component responsible for the outlines
         private Outline _outline;
+        
+        public Vertice Inner { get; set; }
 
         private void Start()
         {
@@ -94,6 +99,9 @@ namespace Reconnect.Electronics
         {
             return GetPoles(transform.position);
         }
+
+        public Point GetOtherPole(Point other) => Point.PositionToPole(Array.Find(poles,
+            p => Point.PositionToPole(p) != other));
 
         public void SetRotation(bool rotated)
         {

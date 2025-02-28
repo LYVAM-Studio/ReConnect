@@ -13,7 +13,7 @@ namespace Reconnect.Electronics
     public class Breadboard : MonoBehaviour
     {
         // The list of the components in the breadboard
-        private List<Dipole> _components;
+        private List<Dipole> _dipoles;
 
         // The start of the wire ig _onWireCreation
         private Vector3 _lastNodePosition;
@@ -34,7 +34,7 @@ namespace Reconnect.Electronics
         private ElecComponent _target;
         private void Start()
         {
-            _components = new List<Dipole>();
+            _dipoles = new List<Dipole>();
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
@@ -205,32 +205,75 @@ namespace Reconnect.Electronics
 
         public Graph CreateGraph()
         {
-            var graph = new Graph("Main graph", new CircuitInput("input", 230, 16), new CircuitOutput("output"), _target);
-            int h = 0, w = 0;
-            // while ()
-            throw new NotImplementedException();
-        }
+            var input = new CircuitInput("input", 230, 16);
+            var output = new CircuitOutput("output");
+            var graph = new Graph("Main graph", input, output, _target);
+            var queue = new Queue<(Point lastPos, Point pos, Vertice lastComponent)>();
+            queue.Enqueue((new Point(-1, -1), new Point(0, 0), input));
+            while (queue.Count > 0)
+            {
+                var (lastPos, pos, component) = queue.Dequeue();
+                // The wires that goes from pos to point different from lastPos
+                var wires = _wires.FindAll(wire => wire.Pole1 == pos && wire.Pole2 != lastPos || wire.Pole2 == pos && wire.Pole1 != lastPos);
+                // The components that goes from pos to a point different from lastPos 
+                var dipoles = _dipoles.FindAll(dipole => dipole.GetPoles().Contains(pos) && !dipole.GetPoles().Contains(lastPos));
+                if (wires.Count + dipoles.Count == 0)
+                {
+                    // This is a dead end
+                    break;
+                }
+                else if (wires.Count + dipoles.Count == 1)
+                {
+                    // The branch is continuing
+                    if (wires.Count == 1)
+                    {
+                        // There is a wire
+                        queue.Enqueue((pos, wires[0].Pole1 == pos ? wires[0].Pole2 : wires[0].Pole1, component));
+                    }
+                    else
+                    {
+                        // There is a component
+                        var vertice = dipoles[0].Inner;
+                        component.AddAdjacent(vertice);
+                        vertice.AddAdjacent(component);
+                        queue.Enqueue((pos, dipoles[0].GetOtherPole(pos), vertice));
+                    }
+                }
+                else
+                {
+                    var node = new Node("?");
+                    node.AddAdjacent(component);
+                    component.AddAdjacent(node);
+                    foreach (var w in wires)
+                    {
+                        queue.Enqueue((pos, w.Pole1 == pos ? w.Pole2 : w.Pole1, node));
+                    }
 
-        public void CreateVertices(List<Vertice> vertices)
-        {
-            
+                    foreach (var d in dipoles)
+                    {
+                        var vertice = d.Inner;
+                        node.AddAdjacent(vertice);
+                        vertice.AddAdjacent(node);
+                        queue.Enqueue((pos, d.GetOtherPole(pos), vertice));
+                    }
+                }
+            }
+
+            return graph;
         }
         
-        
-        
-
         public void RegisterComponent(Dipole component)
         {
-            if (_components.Contains(component))
+            if (_dipoles.Contains(component))
                 return;
-            _components.Add(component);
+            _dipoles.Add(component);
         }
 
         public void UnRegisterComponent(Dipole component)
         {
-            if (!_components.Contains(component))
+            if (!_dipoles.Contains(component))
                 return;
-            _components.Remove(component);
+            _dipoles.Remove(component);
         }
 
         public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 defaultPos)
@@ -256,7 +299,7 @@ namespace Reconnect.Electronics
                 return null;
             }
 
-            if (_components.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
+            if (_dipoles.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
             {
                 // A component is already here
                 Debug.Log("A component is already here");
