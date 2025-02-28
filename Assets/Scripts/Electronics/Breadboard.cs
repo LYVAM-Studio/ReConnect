@@ -207,7 +207,8 @@ namespace Reconnect.Electronics
         {
             var graph = new Graph("Main graph", new CircuitInput("input", 230, 16), new CircuitOutput("output"), _target);
             int h = 0, w = 0;
-            while ()
+            // while ()
+            throw new NotImplementedException();
         }
 
         public void CreateVertices(List<Vertice> vertices)
