@@ -1,6 +1,6 @@
 using System;
 
-namespace Reconnect.Electronics.Graph
+namespace Reconnect.Electronics.Graphs
 {
     public class GraphException : Exception
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using TestGraph.Components;
 
-namespace Reconnect.Electronics.Graph
+namespace Reconnect.Electronics.Graphs
 {
     public class Vertice
     {

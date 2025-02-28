@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using TestGraph.Components;
 
-namespace Reconnect.Electronics.Graph
+namespace Reconnect.Electronics.Graphs
 {
     public class Branch
     {

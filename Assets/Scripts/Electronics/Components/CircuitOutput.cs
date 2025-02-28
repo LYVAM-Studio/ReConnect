@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Reconnect.Electronics.Graph;
+using Reconnect.Electronics.Graphs;
 
 namespace TestGraph.Components
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Reconnect.Electronics.Components;
-using Reconnect.Electronics.Graph;
+using Reconnect.Electronics.Graphs;
 /*
 Vertice In = new Vertice("In",new CircuitInput());
 Vertice Out = new Vertice("Out",new CircuitOutput());

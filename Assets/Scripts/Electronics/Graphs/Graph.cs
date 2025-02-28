@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using TestGraph.Components;
 
-namespace Reconnect.Electronics.Graph
+namespace Reconnect.Electronics.Graphs
 {
     public class Graph
     {
