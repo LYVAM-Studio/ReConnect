@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
+using Reconnect.Electronics.Graphs;
+using TestGraph.Components;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -28,6 +30,8 @@ namespace Reconnect.Electronics
         // The Z coordinate at which the dipoles are positioned on the breadboard
         // it is the Z position of the breadboard (8f) minus half its thickness (1f/2) to have it sunk into the board
         private float _zPositionDipoles = 7.5f;
+
+        private ElecComponent _target;
         private void Start()
         {
             _components = new List<Dipole>();
@@ -195,6 +199,24 @@ namespace Reconnect.Electronics
         //     
         //     return circuit;
         // }
+        
+        
+        
+
+        public Graph CreateGraph()
+        {
+            var graph = new Graph("Main graph", new CircuitInput("input", 230, 16), new CircuitOutput("output"), _target);
+            int h = 0, w = 0;
+            while ()
+        }
+
+        public void CreateVertices(List<Vertice> vertices)
+        {
+            
+        }
+        
+        
+        
 
         public void RegisterComponent(Dipole component)
         {
