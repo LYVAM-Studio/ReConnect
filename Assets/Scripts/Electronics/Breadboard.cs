@@ -53,8 +53,8 @@ namespace Reconnect.Electronics
                     case "wire" :
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4]));
-                        Vector3 fromPos = Pole.PoleToPosition(new Pole(from.h, from.w), _zPositionDipoles);
-                        Vector3 toPos = Pole.PoleToPosition(new Pole(to.h, to.w), _zPositionDipoles);
+                        Vector3 fromPos = Point.PoleToPosition(new Point(from.h, from.w), _zPositionDipoles);
+                        Vector3 toPos = Point.PoleToPosition(new Point(to.h, to.w), _zPositionDipoles);
                         CreateWire(fromPos, toPos);
                         break;
                     case "dipole" :
@@ -103,10 +103,10 @@ namespace Reconnect.Electronics
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wire = _wires.Find(w =>
-                    (w.Pole1 == Pole.PositionToPole(_lastNodePosition) &&
-                     w.Pole2 == Pole.PositionToPole(nodePosition)) ||
-                    (w.Pole2 == Pole.PositionToPole(_lastNodePosition) &&
-                     w.Pole1 == Pole.PositionToPole(nodePosition)));
+                    (w.Pole1 == Point.PositionToPole(_lastNodePosition) &&
+                     w.Pole2 == Point.PositionToPole(nodePosition)) ||
+                    (w.Pole2 == Point.PositionToPole(_lastNodePosition) &&
+                     w.Pole1 == Point.PositionToPole(nodePosition)));
                 if (wire is not null)
                 {
                     // A wire is already at this position
@@ -142,7 +142,7 @@ namespace Reconnect.Electronics
                 throw new Exception("The WireScript component could not be found in the wire prefab.");
             wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
             // Debug.Log($"{_lastNodePosition} <=> {Pole.PoleToPosition(Pole.PositionToPole(_lastNodePosition), _zPositionDipoles)}");
-            wireScript.Init(this, Pole.PositionToPole(from), Pole.PositionToPole(to));
+            wireScript.Init(this, Point.PositionToPole(from), Point.PositionToPole(to));
             _wires.Add(wireScript);
             // Set the wire's position
             wireGameObj.transform.position = (from + to) / 2;

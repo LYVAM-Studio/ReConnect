@@ -84,13 +84,13 @@ namespace Reconnect.Electronics
             }
         }
 
-        public Pole[] GetPoles(Vector2 position)
+        public Point[] GetPoles(Vector2 position)
         {
-            var poleList = from p in poles select Pole.PositionToPole(position + p + mainPoleAnchor);
+            var poleList = from p in poles select Point.PositionToPole(position + p + mainPoleAnchor);
             return poleList.ToArray();
         }
 
-        public Pole[] GetPoles()
+        public Point[] GetPoles()
         {
             return GetPoles(transform.position);
         }

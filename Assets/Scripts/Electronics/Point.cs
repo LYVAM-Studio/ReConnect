@@ -4,9 +4,9 @@ using UnityEngine;
 namespace Reconnect.Electronics
 {
     [Serializable]
-    public sealed class Pole
+    public sealed class Point
     {
-        public Pole(int h, int w)
+        public Point(int h, int w)
         {
             H = h;
             W = w;
@@ -15,22 +15,22 @@ namespace Reconnect.Electronics
         public int H { get; }
         public int W { get; }
 
-        public static bool operator ==(Pole left, Pole right)
+        public static bool operator ==(Point left, Point right)
         {
             return left is not null && left.Equals(right);
         }
 
-        public static bool operator !=(Pole left, Pole right)
+        public static bool operator !=(Point left, Point right)
         {
             return !(left == right);
         }
 
         public override bool Equals(object obj)
         {
-            return obj is Pole pole && Equals(pole);
+            return obj is Point pole && Equals(pole);
         }
 
-        private bool Equals(Pole other)
+        private bool Equals(Point other)
         {
             return H == other.H && W == other.W;
         }
@@ -45,14 +45,14 @@ namespace Reconnect.Electronics
             return $"(h:{H},w:{W})";
         }
 
-        public static Pole PositionToPole(Vector2 position)
+        public static Point PositionToPole(Vector2 position)
         {
-            return new Pole((int)(-position.y + 3.5f), (int)(position.x + 3.5f));
+            return new Point((int)(-position.y + 3.5f), (int)(position.x + 3.5f));
         }
         
-        public static Vector3 PoleToPosition(Pole pole, float zPosition)
+        public static Vector3 PoleToPosition(Point point, float zPosition)
         {
-            return new Vector3((pole.W - 3.5f),(-pole.H + 3.5f),zPosition);
+            return new Vector3((point.W - 3.5f),(-point.H + 3.5f),zPosition);
         }
     }
 }

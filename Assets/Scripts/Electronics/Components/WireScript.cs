@@ -7,15 +7,15 @@ namespace Reconnect.Electronics.Components
     {
         private bool _isInitialized;
         private Breadboard Breadboard { get; set; }
-        public Pole Pole1 { get; private set; }
-        public Pole Pole2 { get; private set; }
+        public Point Pole1 { get; private set; }
+        public Point Pole2 { get; private set; }
 
         private void OnMouseUpAsButton()
         {
             Breadboard.DeleteWire(this);
         }
 
-        public void Init(Breadboard breadboard, Pole pole1, Pole pole2)
+        public void Init(Breadboard breadboard, Point pole1, Point pole2)
         {
             if (_isInitialized) throw new Exception("This Wire has already been initialized.");
             Breadboard = breadboard;
