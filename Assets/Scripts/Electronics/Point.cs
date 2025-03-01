@@ -25,6 +25,12 @@ namespace Reconnect.Electronics
             return !(left == right);
         }
 
+        public static Point operator +(Point p1, Point p2) => new Point(p1.H + p2.H, p1.W + p2.W);
+        
+        public static Point operator -(Point p1, Point p2) => new Point(p1.H - p2.H, p1.W - p2.W);
+        
+        public static Point operator -(Point p) => new Point(-p.H, -p.W);
+
         public override bool Equals(object obj)
         {
             return obj is Point pole && Equals(pole);
@@ -54,5 +60,11 @@ namespace Reconnect.Electronics
         {
             return new Vector3((point.W - 3.5f),(-point.H + 3.5f),zPosition);
         }
+        
+        public static explicit operator Vector2(Point p)
+        {
+            return new Vector2(p.W, p.H);
+        }
+
     }
 }

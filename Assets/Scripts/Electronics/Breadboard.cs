@@ -29,7 +29,7 @@ namespace Reconnect.Electronics
 
         // The Z coordinate at which the dipoles are positioned on the breadboard
         // it is the Z position of the breadboard (8f) minus half its thickness (1f/2) to have it sunk into the board
-        private float _zPositionDipoles = 7.5f;
+        public float zPositionDipoles = 7.5f;
 
         private ElecComponent _target;
         private void Start()
@@ -54,8 +54,8 @@ namespace Reconnect.Electronics
                     {
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4]));
-                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), _zPositionDipoles);
-                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), _zPositionDipoles);
+                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), zPositionDipoles);
+                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), zPositionDipoles);
                         CreateWire(fromPos, toPos);
                     }
                     else if (content[0] == "resistor")
@@ -63,8 +63,8 @@ namespace Reconnect.Electronics
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
                         double r = double.Parse(content[5]);
-                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), _zPositionDipoles);
-                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), _zPositionDipoles);
+                        Point fromPos = new Point(from.h, from.w);
+                        Point toPos = new Point(to.h, to.w);
                         var resistorGameObj = Instantiate(Helper.GetPrefabByName("Components/ResistorPrefab"));
                         if (resistorGameObj is null)
                             throw new Exception("The resistor prefab could not be found.");
@@ -72,8 +72,7 @@ namespace Reconnect.Electronics
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
                         dipoleScript.Inner = new Resistor("R", r);
-                        // dipoleScript.SetPosition(fromPos, toPos);
-                        throw new NotImplementedException("The line above has to be implemented.");
+                        dipoleScript.SetPosition(fromPos, toPos);
                     }
                 }
             }
@@ -309,7 +308,7 @@ namespace Reconnect.Electronics
             var closest = new Vector3(
                 ClosestHalf(component.transform.position.x + component.mainPoleAnchor.x) - component.mainPoleAnchor.x,
                 ClosestHalf(component.transform.position.y + component.mainPoleAnchor.y) - component.mainPoleAnchor.y,
-                _zPositionDipoles);
+                zPositionDipoles);
 
             // The poles of the component if it was at the closest position
             var poles = component.GetPoles(closest);
