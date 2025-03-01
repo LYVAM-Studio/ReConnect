@@ -103,6 +103,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "InterractObject",
+                    "type": "Button",
+                    "id": "3183dbb6-a521-4660-82b1-21ab9865f035",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -444,6 +453,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "UnlockCursor",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "97def250-f0ac-461e-bc40-40c103c2819f",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InterractObject",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5629d911-59f2-4af9-9202-13fc3dcc3f04",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "InterractObject",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

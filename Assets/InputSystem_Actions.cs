@@ -125,6 +125,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""InterractObject"",
+                    ""type"": ""Button"",
+                    ""id"": ""3183dbb6-a521-4660-82b1-21ab9865f035"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -466,6 +475,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""UnlockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97def250-f0ac-461e-bc40-40c103c2819f"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InterractObject"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5629d911-59f2-4af9-9202-13fc3dcc3f04"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""InterractObject"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1064,6 +1095,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Dance = m_Player.FindAction("Dance", throwIfNotFound: true);
         m_Player_UnlockCursor = m_Player.FindAction("UnlockCursor", throwIfNotFound: true);
+        m_Player_InterractObject = m_Player.FindAction("InterractObject", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1154,6 +1186,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Dance;
     private readonly InputAction m_Player_UnlockCursor;
+    private readonly InputAction m_Player_InterractObject;
     public struct PlayerActions
     {
         private @InputSystem_Actions m_Wrapper;
@@ -1169,6 +1202,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Next => m_Wrapper.m_Player_Next;
         public InputAction @Dance => m_Wrapper.m_Player_Dance;
         public InputAction @UnlockCursor => m_Wrapper.m_Player_UnlockCursor;
+        public InputAction @InterractObject => m_Wrapper.m_Player_InterractObject;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1211,6 +1245,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @UnlockCursor.started += instance.OnUnlockCursor;
             @UnlockCursor.performed += instance.OnUnlockCursor;
             @UnlockCursor.canceled += instance.OnUnlockCursor;
+            @InterractObject.started += instance.OnInterractObject;
+            @InterractObject.performed += instance.OnInterractObject;
+            @InterractObject.canceled += instance.OnInterractObject;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1248,6 +1285,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @UnlockCursor.started -= instance.OnUnlockCursor;
             @UnlockCursor.performed -= instance.OnUnlockCursor;
             @UnlockCursor.canceled -= instance.OnUnlockCursor;
+            @InterractObject.started -= instance.OnInterractObject;
+            @InterractObject.performed -= instance.OnInterractObject;
+            @InterractObject.canceled -= instance.OnInterractObject;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1441,6 +1481,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnNext(InputAction.CallbackContext context);
         void OnDance(InputAction.CallbackContext context);
         void OnUnlockCursor(InputAction.CallbackContext context);
+        void OnInterractObject(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
