@@ -91,7 +91,7 @@ namespace Reconnect.Electronics
 
         public Point[] GetPoles(Vector2 position)
         {
-            var poleList = from p in poles select Point.PositionToPole(position + p + mainPoleAnchor);
+            var poleList = from p in poles select Point.VectorToPoint(position + p + mainPoleAnchor);
             return poleList.ToArray();
         }
 
@@ -100,8 +100,8 @@ namespace Reconnect.Electronics
             return GetPoles(transform.position);
         }
 
-        public Point GetOtherPole(Point other) => Point.PositionToPole(Array.Find(poles,
-            p => Point.PositionToPole(p) != other));
+        public Point GetOtherPole(Point other) => Point.VectorToPoint(Array.Find(poles,
+            p => Point.VectorToPoint(p) != other));
 
         public void SetRotation(bool rotated)
         {

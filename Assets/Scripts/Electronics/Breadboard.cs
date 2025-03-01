@@ -43,23 +43,43 @@ namespace Reconnect.Electronics
 
         public void LoadCircuit(string circuitName)
         {
-            string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
-            string[] lines = File.ReadAllLines(filePath);
-            foreach (string line in lines)
+            try
             {
-                string[] content = line.Split(',');
-                switch (content[0])
+                string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
+                string[] lines = File.ReadAllLines(filePath);
+                foreach (string line in lines)
                 {
-                    case "wire" :
+                    string[] content = line.Split(',');
+                    if (content[0] == "wire")
+                    {
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4]));
-                        Vector3 fromPos = Point.PoleToPosition(new Point(from.h, from.w), _zPositionDipoles);
-                        Vector3 toPos = Point.PoleToPosition(new Point(to.h, to.w), _zPositionDipoles);
+                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), _zPositionDipoles);
+                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), _zPositionDipoles);
                         CreateWire(fromPos, toPos);
-                        break;
-                    case "dipole" :
-                        break;
+                    }
+                    else if (content[0] == "resistor")
+                    {
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
+                        double r = double.Parse(content[5]);
+                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), _zPositionDipoles);
+                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), _zPositionDipoles);
+                        var resistorGameObj = Instantiate(Helper.GetPrefabByName("Components/ResistorPrefab"));
+                        if (resistorGameObj is null)
+                            throw new Exception("The resistor prefab could not be found.");
+                        var dipoleScript = resistorGameObj.GetComponent<Dipole>();
+                        if (dipoleScript is null)
+                            throw new Exception("The Dipole script component could not be found in the wire prefab.");
+                        dipoleScript.Inner = new Resistor("R", r);
+                        // dipoleScript.SetPosition(fromPos, toPos);
+                        throw new NotImplementedException("The line above has to be implemented.");
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"The file {circuitName} could not be loaded because an exception was thrown:\n{e.Message}", e);
             }
         }
         
@@ -103,10 +123,10 @@ namespace Reconnect.Electronics
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wire = _wires.Find(w =>
-                    (w.Pole1 == Point.PositionToPole(_lastNodePosition) &&
-                     w.Pole2 == Point.PositionToPole(nodePosition)) ||
-                    (w.Pole2 == Point.PositionToPole(_lastNodePosition) &&
-                     w.Pole1 == Point.PositionToPole(nodePosition)));
+                    (w.Pole1 == Point.VectorToPoint(_lastNodePosition) &&
+                     w.Pole2 == Point.VectorToPoint(nodePosition)) ||
+                    (w.Pole2 == Point.VectorToPoint(_lastNodePosition) &&
+                     w.Pole1 == Point.VectorToPoint(nodePosition)));
                 if (wire is not null)
                 {
                     // A wire is already at this position
@@ -133,6 +153,8 @@ namespace Reconnect.Electronics
 
         public void CreateWire(Vector3 from, Vector3 to)
         {
+            if ((from - to).magnitude > 1.5)
+                throw new Exception($"The wire from {from} to {to} cannot be created: the cire is too long");
             // Instantiate a wire from the wire prefab
             var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
             if (wireGameObj is null)
@@ -142,7 +164,7 @@ namespace Reconnect.Electronics
                 throw new Exception("The WireScript component could not be found in the wire prefab.");
             wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
             // Debug.Log($"{_lastNodePosition} <=> {Pole.PoleToPosition(Pole.PositionToPole(_lastNodePosition), _zPositionDipoles)}");
-            wireScript.Init(this, Point.PositionToPole(from), Point.PositionToPole(to));
+            wireScript.Init(this, Point.VectorToPoint(from), Point.VectorToPoint(to));
             _wires.Add(wireScript);
             // Set the wire's position
             wireGameObj.transform.position = (from + to) / 2;

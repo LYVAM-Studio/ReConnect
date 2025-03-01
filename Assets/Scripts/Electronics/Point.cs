@@ -42,15 +42,15 @@ namespace Reconnect.Electronics
 
         public override string ToString()
         {
-            return $"(h:{H},w:{W})";
+            return $"(h: {H},w: {W})";
         }
 
-        public static Point PositionToPole(Vector2 position)
+        public static Point VectorToPoint(Vector2 position)
         {
             return new Point((int)(-position.y + 3.5f), (int)(position.x + 3.5f));
         }
         
-        public static Vector3 PoleToPosition(Point point, float zPosition)
+        public static Vector3 PointToVector(Point point, float zPosition)
         {
             return new Vector3((point.W - 3.5f),(-point.H + 3.5f),zPosition);
         }
