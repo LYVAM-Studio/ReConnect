@@ -230,10 +230,13 @@ namespace Reconnect.Electronics
             var output = new CircuitOutput("output");
             var graph = new Graph("Main graph", input, output, _target);
             var queue = new Queue<(Point lastPos, Point pos, Vertice lastComponent)>();
+            var visited = new List<Vertice>();
             queue.Enqueue((new Point(-1, -1), new Point(0, 0), input));
             while (queue.Count > 0)
             {
                 var (lastPos, pos, component) = queue.Dequeue();
+                if (visited.Contains(component)) continue;
+                visited.Add(component);
                 // The wires that goes from pos to point different from lastPos
                 var wires = _wires.FindAll(wire => wire.Pole1 == pos && wire.Pole2 != lastPos || wire.Pole2 == pos && wire.Pole1 != lastPos);
                 // The components that goes from pos to a point different from lastPos 
