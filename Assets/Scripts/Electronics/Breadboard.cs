@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
@@ -80,7 +81,7 @@ namespace Reconnect.Electronics
                     {
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
-                        double r = double.Parse(content[5]);
+                        double r = double.Parse(content[5], CultureInfo.InvariantCulture);
                         Point fromPos = new Point(from.h, from.w);
                         Point toPos = new Point(to.h, to.w);
                         var resistorGameObj = Instantiate(Helper.GetPrefabByName("Components/ResistorPrefab"));
@@ -100,8 +101,9 @@ namespace Reconnect.Electronics
                     {
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
-                        double r = double.Parse(content[5]);
-                        double tension = double.Parse(content[6]);
+                        double r = double.Parse(content[5], CultureInfo.InvariantCulture);
+                        Debug.Log(content[6]);
+                        double tension = double.Parse(content[6], CultureInfo.InvariantCulture);
                         Point fromPos = new Point(from.h, from.w);
                         Point toPos = new Point(to.h, to.w);
                         var lampGameObj = Instantiate(Helper.GetPrefabByName("Components/LampPrefab"));
