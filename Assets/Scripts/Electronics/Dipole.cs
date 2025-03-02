@@ -96,8 +96,7 @@ namespace Reconnect.Electronics
             return GetPoles(transform.position);
         }
 
-        public Point GetOtherPole(Point other) => Point.VectorToPoint(Array.Find(poles,
-            p => Point.VectorToPoint(p) != other));
+        public Point GetOtherPole(Point other) => Array.Find(GetPoles(), p => p != other);
 
         public void SetRotation(bool horizontal)
         {

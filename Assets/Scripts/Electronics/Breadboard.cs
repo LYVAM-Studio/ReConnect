@@ -75,6 +75,7 @@ namespace Reconnect.Electronics
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
+                        _dipoles.Add(dipoleScript);
                         if (Target is null) Target = inner;
                     }
                     else if (content[0] == "lamp")
@@ -95,6 +96,7 @@ namespace Reconnect.Electronics
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
+                        _dipoles.Add(dipoleScript);
                         if (Target is null) Target = inner;
                     }
                     else
@@ -253,59 +255,104 @@ namespace Reconnect.Electronics
 
         public Graph CreateGraph()
         {
+            Debug.Log("WIRES:" + string.Join(", ",
+                                   from wire in _wires select "(" + wire.Pole1 + " " + wire.Pole2 + ")")
+                               + "\nDIPOLES:" + string.Join(", ",
+                                   from dipole in _dipoles
+                                   select "(" + dipole.GetPoles()[0] + " " + dipole.GetPoles()[1] + ")"));
             var input = new CircuitInput("input", 230, 16);
             var output = new CircuitOutput("output");
             var graph = new Graph("Main graph", input, output, Target);
-            var queue = new Queue<(Point lastPos, Point pos, Vertice lastComponent)>();
-            var visited = new List<Vertice>();
-            queue.Enqueue((new Point(-1, -1), new Point(0, 0), input));
+            var queue = new Queue<(Point lastPosition, Point position, Vertice lastComponent)>();
+            var visitedDipoles = new List<Vertice>();
+            var visitedNodes = new List<Node>();
+            queue.Enqueue((new Point(-1, -1), new Point(0, 3), input));
             while (queue.Count > 0)
             {
-                var (lastPos, pos, component) = queue.Dequeue();
-                if (visited.Contains(component)) continue;
-                visited.Add(component);
+                var (lastPos, pos, lastComponent) = queue.Dequeue();
+                Debug.Log($"### Dequeued {lastComponent} of type {lastComponent.GetType()}");
+
+                if (pos == new Point(7, 3))
+                {
+                    // Arrived to the exit point
+                    lastComponent.AddAdjacent(output);
+                    output.AddAdjacent(lastComponent);
+                    Debug.Log("Arrived to exit point");
+                    continue;
+                }
+                
                 // The wires that goes from pos to point different from lastPos
-                var wires = _wires.FindAll(wire => wire.Pole1 == pos && wire.Pole2 != lastPos || wire.Pole2 == pos && wire.Pole1 != lastPos);
+                var adjacentWires = _wires.FindAll(wire => wire.Pole1 == pos || wire.Pole2 == pos);
+                adjacentWires.RemoveAll(wire => wire.Pole1 == lastPos || wire.Pole2 == lastPos);
                 // The components that goes from pos to a point different from lastPos 
-                var dipoles = _dipoles.FindAll(dipole => dipole.GetPoles().Contains(pos) && !dipole.GetPoles().Contains(lastPos));
-                if (wires.Count + dipoles.Count == 0)
+                var adjacentDipoles= _dipoles.FindAll(dipole => dipole.GetPoles().Contains(pos));
+                adjacentDipoles.RemoveAll(dipole => dipole.GetPoles().Contains(lastPos));
+                Debug.Log($"Found {adjacentWires.Count} wires and {adjacentDipoles.Count} dipoles.");
+                
+                if (adjacentWires.Count + adjacentDipoles.Count == 0)
                 {
                     // This is a dead end
+                    Debug.Log("Dead end");
                     break;
                 }
-                else if (wires.Count + dipoles.Count == 1)
+                else if (adjacentWires.Count + adjacentDipoles.Count == 1)
                 {
                     // The branch is continuing
-                    if (wires.Count == 1)
+                    if (adjacentWires.Count == 1)
                     {
                         // There is a wire
-                        queue.Enqueue((pos, wires[0].Pole1 == pos ? wires[0].Pole2 : wires[0].Pole1, component));
+                        var wire = adjacentWires[0];
+                        var newPos = wire.Pole1 == pos
+                            ? wire.Pole2
+                            : wire.Pole1;
+                        queue.Enqueue((pos, newPos, lastComponent));
                     }
                     else
                     {
                         // There is a component
-                        var vertice = dipoles[0].Inner;
-                        component.AddAdjacent(vertice);
-                        vertice.AddAdjacent(component);
-                        queue.Enqueue((pos, dipoles[0].GetOtherPole(pos), vertice));
+                        var vertex = adjacentDipoles[0].Inner;
+                        // Manage the visited list
+                        if (visitedDipoles.Contains(vertex)) continue;
+                        visitedDipoles.Add(vertex);
+                        graph.AddVertice(vertex);
+                        // Add links
+                        lastComponent.AddAdjacent(vertex);
+                        vertex.AddAdjacent(lastComponent);
+                        Debug.Log($"current pole = {pos}\nnext pole = {adjacentDipoles[0].GetOtherPole(pos)}");
+                        queue.Enqueue((pos, adjacentDipoles[0].GetOtherPole(pos), vertex));
                     }
                 }
                 else
                 {
-                    var node = new Node("?");
-                    node.AddAdjacent(component);
-                    component.AddAdjacent(node);
-                    foreach (var w in wires)
+                    Debug.Log("Node found");
+                    // There is a node
+                    var node = new Node($"{pos}");
+                    // Manage the visited list
+                    if (visitedNodes.Exists(n => n.Name == node.Name)) continue;
+                    visitedNodes.Add(node);
+                    // Add links
+                    node.AddAdjacent(lastComponent);
+                    lastComponent.AddAdjacent(node);
+                    // Manage connected wires
+                    foreach (var w in adjacentWires)
                     {
-                        queue.Enqueue((pos, w.Pole1 == pos ? w.Pole2 : w.Pole1, node));
+                        var newPos = w.Pole1 == pos
+                            ? w.Pole2
+                            : w.Pole1;
+                        queue.Enqueue((pos, newPos, node));
                     }
-
-                    foreach (var d in dipoles)
+                    // Manage connected dipoles
+                    foreach (var d in adjacentDipoles)
                     {
-                        var vertice = d.Inner;
-                        node.AddAdjacent(vertice);
-                        vertice.AddAdjacent(node);
-                        queue.Enqueue((pos, d.GetOtherPole(pos), vertice));
+                        var vertex = d.Inner;
+                        // Manage visited
+                        if (visitedDipoles.Contains(vertex)) continue;
+                        visitedDipoles.Add(vertex);
+                        graph.AddVertice(vertex);
+                        // Add links
+                        node.AddAdjacent(vertex);
+                        vertex.AddAdjacent(node);
+                        queue.Enqueue((pos, d.GetOtherPole(pos), vertex));
                     }
                 }
             }
