@@ -39,9 +39,28 @@ namespace Reconnect.Electronics
             _onDeletionMode = false;
             //LoadCircuit("1_series_lvl_1");
         }
+        
+        /// <summary>
+        /// Cleanup the breadboard content, deletes the wires and dipoles
+        /// </summary>
+        public void Clean()
+        {
+            foreach (WireScript wireScript in _wires)
+            {
+                Destroy(wireScript.gameObject);
+            }
+            foreach (Dipole dipole in _dipoles)
+            {
+                Destroy(dipole.gameObject);
+            }
+
+            _wires = new List<WireScript>();
+            _dipoles = new List<Dipole>();
+        }
 
         public void LoadCircuit(string circuitName)
         {
+            Clean();
             try
             {
                 string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
