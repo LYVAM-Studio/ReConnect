@@ -57,6 +57,7 @@ namespace Reconnect.Electronics
 
             _wires = new List<WireScript>();
             _dipoles = new List<Dipole>();
+            Target = null;
         }
 
         public void LoadCircuit(string circuitName)

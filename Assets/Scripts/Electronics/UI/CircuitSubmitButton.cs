@@ -17,11 +17,16 @@ namespace Reconnect.Electronics.UI
         public void ExecuteCircuit()
         {
             Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
-            circuitGraph.DefineBranches();
-            Debug.Log('\n');
             foreach (var e in circuitGraph.Vertices)
             {
-                Debug.Log(e);
+                Debug.Log($"{e.Name}");
+            }
+            Debug.Log(circuitGraph.Vertices.Count);
+            Debug.Log("==============================================");
+            circuitGraph.DefineBranches();
+            foreach (var e in circuitGraph.Branches)
+            {
+                Debug.Log($"{e.Display()}");
             }
             double intensity = circuitGraph.GetGlobalIntensity();
             Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;

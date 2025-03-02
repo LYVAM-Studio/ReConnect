@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using Unity;
 using System.Linq;
 using System.Reflection;
 using TestGraph.Components;
+using UnityEngine;
 
 namespace Reconnect.Electronics.Graphs
 {
@@ -175,6 +176,16 @@ namespace Reconnect.Electronics.Graphs
         public void DefineBranches()
         {
             List<List<Vertice>> allPaths = DfsFindPaths(); // get all the paths
+            foreach (List<Vertice> path in allPaths)
+            {
+                string p = "";
+                foreach (Vertice vertex in path)
+                {
+                    p += $"{vertex} - ";
+                }
+
+                Debug.Log(p);
+            }
             List<Branch> branches = ExtractBranches(allPaths); // get all the branches fron these paths
             Branches = branches; // save it into the graph property
         }
