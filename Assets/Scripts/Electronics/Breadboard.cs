@@ -260,7 +260,7 @@ namespace Reconnect.Electronics
                                + "\nDIPOLES:" + string.Join(", ",
                                    from dipole in _dipoles
                                    select "(" + dipole.GetPoles()[0] + " " + dipole.GetPoles()[1] + ")"));
-            var input = new CircuitInput("input", 230, 16);
+            var input = new CircuitInput("input", 240, 16);
             var output = new CircuitOutput("output");
             var graph = new Graph("Main graph", input, output, Target);
             var queue = new Queue<(Point lastPosition, Point position, Vertice lastComponent)>();
