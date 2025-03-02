@@ -209,7 +209,8 @@ namespace Reconnect.Electronics.Graphs
         public double GetGlobalIntensity()
         {
             if (Branches.Count == 0)
-                throw new ArgumentException("No branches have been initialized in this circuit");
+                return 0d;
+                //throw new ArgumentException("No branches have been initialized in this circuit");
 
             // get the list of all branches parallel with each other
             List<List<Branch>> parallelBranchesGroups = GraphUtils.GetParallelBranchGroups(Branches); 
@@ -273,9 +274,11 @@ namespace Reconnect.Electronics.Graphs
 
     public class UnreachableException : Exception
     {
-        public UnreachableException(string thereShouldBeAtLeastBranchRemainingThisIsNotPossibleThatThereAreNoBranchLeft)
+        public UnreachableException() : base("An unreachable section of the code has been reached. This is an unexpected behavior")
         {
-            throw new NotImplementedException();
+        }
+        public UnreachableException(string message) : base(message)
+        {
         }
     }
 }

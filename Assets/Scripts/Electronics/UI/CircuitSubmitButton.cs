@@ -9,32 +9,25 @@ namespace Reconnect.Electronics.UI
     {
         public Breadboard Breadboard;
 
-        public void Awake()
+        public void Start()
         {
-            // Get the grandparent transform
-            Transform grandparent = transform.parent?.parent;
-
-            if (grandparent is null)
-                throw new ArgumentException(
-                    "Missing grand parent in scene architecture : could not get the breadboard component");
-            
-            // Get the component from the grandparent
-            Breadboard myComponent = grandparent.GetComponent<Breadboard>();
-
-            if (myComponent is null)
-                throw new ArgumentException(
-                    "Missing breadboard component in the scene architecture : could not get the breadboard component");
-
-            Breadboard = myComponent;
+            if (Breadboard is null)
+                throw new ArgumentException("No reference to the BreadBoard component");
         }
 
         public void ExecuteCircuit()
         {
             Graph circuitGraph = Breadboard.CreateGraph();
             circuitGraph.DefineBranches();
+            Debug.Log('\n');
+            foreach (var e in circuitGraph.Vertices)
+            {
+                Debug.Log(e);
+            }
             double intensity = circuitGraph.GetGlobalIntensity();
             Lamp targetLamp = (Lamp) Breadboard.Target;
             Debug.Log(targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success" : "The lamp is OFF ! You failed");
+            Debug.Log($"tension of the target : {targetLamp.GetVoltage(intensity)} Volts");
         }
     }
 }

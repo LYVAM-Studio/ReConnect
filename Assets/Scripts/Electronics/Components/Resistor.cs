@@ -17,8 +17,6 @@ namespace TestGraph.Components
     
         public override double GetVoltage(double intensity)
         {
-            if (intensity <= 0)
-                throw new ArgumentException("Intensity going through a component must be positive and non-zero");
             return Resistance * intensity;
         }
     }
