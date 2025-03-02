@@ -18,7 +18,7 @@ namespace Reconnect.Electronics
             "The poles coordinates. Note that the first pole is considered as the main one. The y axis is from bottom to top like in the Unity editor.")]
         private Vector2[] poles = { new(0, 0), new(0, -1) };
 
-        private Breadboard _breadboard;
+        public Breadboard Breadboard { get; set; }
 
         // The distance between the cursor and the center of this object
         private Vector3 _deltaCursor;
@@ -41,11 +41,7 @@ namespace Reconnect.Electronics
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
-            _breadboard =
-                FindObjectsByType<Breadboard>(FindObjectsSortMode.None)
-                    [0]; // TODO: create a better and more efficient link
         }
-
 
         private void OnMouseDown()
         {
@@ -76,7 +72,7 @@ namespace Reconnect.Electronics
 
         private void OnMouseUp()
         {
-            var pos = _breadboard.GetClosestValidPosition(this);
+            var pos = Breadboard.GetClosestValidPosition(this);
             if (pos is Vector3 validPos)
             {
                 transform.position = validPos;
@@ -141,7 +137,7 @@ namespace Reconnect.Electronics
                 SetRotation(false);
             }
 
-            transform.position = Point.PointToVector(pole1, _breadboard.zPositionDipoles) - (Vector3)mainPoleAnchor;
+            transform.position = Point.PointToVector(pole1, Breadboard.zPositionDipoles) - (Vector3)mainPoleAnchor;
         }
     }
 }

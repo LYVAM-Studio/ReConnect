@@ -72,6 +72,7 @@ namespace Reconnect.Electronics
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
                         dipoleScript.Inner = new Resistor("R", r);
+                        dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
                     }
                 }
