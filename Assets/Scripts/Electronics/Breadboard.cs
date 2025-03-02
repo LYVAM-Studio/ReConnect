@@ -71,9 +71,35 @@ namespace Reconnect.Electronics
                         var dipoleScript = resistorGameObj.GetComponent<Dipole>();
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
-                        dipoleScript.Inner = new Resistor("R", r);
+                        var inner = new Resistor("R", r);
+                        dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
+                        if (_target is null) _target = inner;
+                    }
+                    else if (content[0] == "lamp")
+                    {
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
+                        double r = double.Parse(content[5]);
+                        double tension = double.Parse(content[6]);
+                        Point fromPos = new Point(from.h, from.w);
+                        Point toPos = new Point(to.h, to.w);
+                        var lampGameObj = Instantiate(Helper.GetPrefabByName("Components/LampPrefab"));
+                        if (lampGameObj is null)
+                            throw new Exception("The lamp prefab could not be found.");
+                        var dipoleScript = lampGameObj.GetComponent<Dipole>();
+                        if (dipoleScript is null)
+                            throw new Exception("The Dipole script component could not be found in the wire prefab.");
+                        var inner = new Lamp("L", r, tension);
+                        dipoleScript.Inner = inner;
+                        dipoleScript.Breadboard = this;
+                        dipoleScript.SetPosition(fromPos, toPos);
+                        if (_target is null) _target = inner;
+                    }
+                    else
+                    {
+                        throw new Exception($"{content[0]} is not a valid dipole type.");
                     }
                 }
             }

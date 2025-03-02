@@ -1,4 +1,4 @@
-object,from_h,from_w,to_h,to_w
+lamp,1,1,1,2,60,100
 wire,0,4,1,4
 wire,1,4,2,4
 wire,2,4,3,4

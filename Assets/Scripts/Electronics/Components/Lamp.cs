@@ -7,13 +7,13 @@ namespace TestGraph.Components
 {
     public class Lamp : Resistor
     {
-        public int NominalTension;
-        public Lamp(string name, int resistance, int nominalTension) : base(name, resistance)
+        public double NominalTension;
+        public Lamp(string name, double resistance, double nominalTension) : base(name, resistance)
         {
             NominalTension = nominalTension;
         }
 
-        public Lamp(string name, List<Vertice> adjacentComponents, int resistance, int nominalTension) : base(name, adjacentComponents, resistance)
+        public Lamp(string name, List<Vertice> adjacentComponents, double resistance, double nominalTension) : base(name, adjacentComponents, resistance)
         {
             NominalTension = nominalTension;
         }
