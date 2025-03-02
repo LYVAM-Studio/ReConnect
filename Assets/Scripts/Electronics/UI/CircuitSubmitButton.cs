@@ -7,17 +7,16 @@ namespace Reconnect.Electronics.UI
 {
     public class CircuitSubmitButton : MonoBehaviour
     {
-        public Breadboard Breadboard;
+        public BreadboardUI BreadboardUI;
 
         public void Start()
         {
-            if (Breadboard is null)
-                throw new ArgumentException("No reference to the BreadBoard component");
+            BreadboardUI = GetComponentInParent<BreadboardUI>();
         }
 
         public void ExecuteCircuit()
         {
-            Graph circuitGraph = Breadboard.CreateGraph();
+            Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
             circuitGraph.DefineBranches();
             Debug.Log('\n');
             foreach (var e in circuitGraph.Vertices)
@@ -25,7 +24,7 @@ namespace Reconnect.Electronics.UI
                 Debug.Log(e);
             }
             double intensity = circuitGraph.GetGlobalIntensity();
-            Lamp targetLamp = (Lamp) Breadboard.Target;
+            Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;
             Debug.Log(targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success" : "The lamp is OFF ! You failed");
             Debug.Log($"tension of the target : {targetLamp.GetVoltage(intensity)} Volts");
         }

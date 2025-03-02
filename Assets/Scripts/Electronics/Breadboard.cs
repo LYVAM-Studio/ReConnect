@@ -38,7 +38,7 @@ namespace Reconnect.Electronics
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
-            LoadCircuit("1_series_lvl_1");
+            //LoadCircuit("1_series_lvl_1");
         }
 
         public void LoadCircuit(string circuitName)
