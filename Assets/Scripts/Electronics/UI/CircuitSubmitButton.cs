@@ -7,28 +7,26 @@ namespace Reconnect.Electronics.UI
 {
     public class CircuitSubmitButton : MonoBehaviour
     {
-        public Breadboard Breadboard;
+        public BreadboardUI BreadboardUI;
 
         public void Start()
         {
-            if (Breadboard is null)
-                throw new ArgumentException("No reference to the BreadBoard component");
+            BreadboardUI = GetComponentInParent<BreadboardUI>();
         }
 
         public void ExecuteCircuit()
         {
-            string acc = "";
-            Graph circuitGraph = Breadboard.CreateGraph();
+            Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
             circuitGraph.DefineBranches();
-            acc += $"Start vertices enumeration ({circuitGraph.Vertices.Count}):\n";
-            foreach (var e in circuitGraph.Vertices) acc += $"{e}\n";
-            acc += $"Start branches enumeration ({circuitGraph.Branches.Count}):\n";
-            foreach (var e in circuitGraph.Branches) acc += $"{e}\n";
+            Debug.Log('\n');
+            foreach (var e in circuitGraph.Vertices)
+            {
+                Debug.Log(e);
+            }
             double intensity = circuitGraph.GetGlobalIntensity();
-            Lamp targetLamp = (Lamp)Breadboard.Target;
-            acc += targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success\n" : "The lamp is OFF ! You failed\n";
-            acc += $"tension of the target : {targetLamp.GetVoltage(intensity)} Volts";
-            Debug.Log(acc);
+            Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;
+            Debug.Log(targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success" : "The lamp is OFF ! You failed");
+            Debug.Log($"tension of the target : {targetLamp.GetVoltage(intensity)} Volts");
         }
     }
 }
