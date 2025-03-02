@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 
 namespace TestGraph.Components
@@ -8,6 +8,8 @@ namespace TestGraph.Components
     public class Lamp : Resistor
     {
         public double NominalTension;
+        
+        public LightBulb LightBulb { get; set; }
         public Lamp(string name, double resistance, double nominalTension) : base(name, resistance)
         {
             NominalTension = nominalTension;
@@ -26,5 +28,7 @@ namespace TestGraph.Components
         /// <param name="intensity">The intensity applied to the lamp</param>
         /// <returns>true if the lamp turns on, false otherwise</returns>
         public bool isLampOn(double intensity) => Math.Abs(GetVoltage(intensity) - NominalTension) < 0.1;
+
+        public void Set(double intensity) => LightBulb.Set(isLampOn(intensity));
     }
 }

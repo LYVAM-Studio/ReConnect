@@ -6,7 +6,6 @@ using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 using TestGraph.Components;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics
 {
@@ -93,6 +92,7 @@ namespace Reconnect.Electronics
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
                         var inner = new Lamp("L", r, tension);
+                        inner.LightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);

@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 3907929592288492515}
   - component: {fileID: 2537455850777443190}
   - component: {fileID: 1336026197425683886}
+  - component: {fileID: 9054481644159476815}
   m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
@@ -156,7 +157,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2780778987e82a440880254c94a2aa6d, type: 2}
+  - {fileID: 2100000, guid: 7dc2bfcc35a4f1fb696abdfbea3b877b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -199,6 +200,20 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9054481644159476815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2669711315624475971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 440193d5a7ef32d31b21c5fbac27111b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lightOn: {fileID: 2100000, guid: 2780778987e82a440880254c94a2aa6d, type: 2}
+  lightOff: {fileID: 2100000, guid: 7dc2bfcc35a4f1fb696abdfbea3b877b, type: 2}
 --- !u!1 &6987814546994867092
 GameObject:
   m_ObjectHideFlags: 0
