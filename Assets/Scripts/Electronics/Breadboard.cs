@@ -31,7 +31,7 @@ namespace Reconnect.Electronics
         // it is the Z position of the breadboard (8f) minus half its thickness (1f/2) to have it sunk into the board
         public float zPositionDipoles = 7.5f;
 
-        private ElecComponent _target;
+        public ElecComponent Target { get; private set; }
         private void Start()
         {
             _dipoles = new List<Dipole>();
@@ -75,7 +75,7 @@ namespace Reconnect.Electronics
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
-                        if (_target is null) _target = inner;
+                        if (Target is null) Target = inner;
                     }
                     else if (content[0] == "lamp")
                     {
@@ -95,7 +95,7 @@ namespace Reconnect.Electronics
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
-                        if (_target is null) _target = inner;
+                        if (Target is null) Target = inner;
                     }
                     else
                     {
@@ -255,7 +255,7 @@ namespace Reconnect.Electronics
         {
             var input = new CircuitInput("input", 230, 16);
             var output = new CircuitOutput("output");
-            var graph = new Graph("Main graph", input, output, _target);
+            var graph = new Graph("Main graph", input, output, Target);
             var queue = new Queue<(Point lastPos, Point pos, Vertice lastComponent)>();
             var visited = new List<Vertice>();
             queue.Enqueue((new Point(-1, -1), new Point(0, 0), input));
