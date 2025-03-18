@@ -1,19 +1,29 @@
 # ReConnect
 
-## About the game
+## About the Game
 
-ReConnect is an Unity powered game project. It uses Miror for the multiplayer side.
+ReConnect is a 3D singleplayer and multiplayer educational video game project. It takes
+place on an extraterrestrial planet named Edenia. The player is sent to this planet for
+communication maintenance. His goal is to fix these communications and repair his ship
+so he can return to Earth.
 
-## Necessary condition
+To do so, the player will have to solve electrical and electronic puzzles to evolve in
+the game and progress. The further the player advances in the game, the more difficult
+the puzzles will be. At the end of the game, the player will have acquired electrical and
+electronic skills equivalent to those taught in high school.
 
-- Set up git lfs
-- Get unity hub
+## Coding Requirements
 
+The Git extensioni Git LFS is required to clone the repository of ReConnect.
 
-## About versioning
+Then, use Unity Hub to open the project with right version of the Unity Editor.
 
-Please avoid merge conflicts! Note that, for everything that is not code (e. g. 3D model, assets, ...), resolving conflicts is **no possible**. It is only possible on text files such as code.
+## Organisation of the studio
 
-## Task planning / Gantt Chart
+### Gantt Chart
 
-![image](https://github.com/user-attachments/assets/582c74a4-e272-4f5b-92b9-aca684b06d5a)
+![gantt-chart.png](doc/gantt-chart.png)
+
+### Task distribution
+
+![task-distribution.jpg](doc/task-distribution.jpg)
