@@ -9,7 +9,7 @@ namespace TestGraph.Components
         {
         }
 
-        public CircuitOutput(string name, List<Vertice> adjacentComponents) : base(name, adjacentComponents)
+        public CircuitOutput(string name, List<Vertex> adjacentComponents) : base(name, adjacentComponents)
         {
         }
     }

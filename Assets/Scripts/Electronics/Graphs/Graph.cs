@@ -11,7 +11,7 @@ namespace Reconnect.Electronics.Graphs
     public class Graph
     {
         public string Name;
-        public List<Vertice> Vertices;
+        public List<Vertex> Vertices;
         public List<Branch> Branches;
         public readonly CircuitInput EntryPoint;
         public readonly ElecComponent Target;
@@ -28,7 +28,7 @@ namespace Reconnect.Electronics.Graphs
         public Graph(string name, CircuitInput entryPoint, CircuitOutput exitPoint, ElecComponent target)
         {
             Name = name;
-            Vertices = new List<Vertice>() ;
+            Vertices = new List<Vertex>() ;
             Branches = new List<Branch>() ;
             EntryPoint = entryPoint;
             ExitPoint = exitPoint;
@@ -43,7 +43,7 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="exitPoint">The circuit exit</param>
         /// <param name="vertices">The list of vertices contained in the graph</param>
         /// <param name="target">The target of the circuit future computations</param>
-        public Graph(string name, CircuitInput entryPoint, CircuitOutput exitPoint, List<Vertice> vertices, ElecComponent target)
+        public Graph(string name, CircuitInput entryPoint, CircuitOutput exitPoint, List<Vertex> vertices, ElecComponent target)
         {
             Name = name;
             Vertices = vertices;
@@ -53,27 +53,27 @@ namespace Reconnect.Electronics.Graphs
             ExitPoint = exitPoint;
         }
         /// <summary>
-        /// Add a vertice to the graph
+        /// Add a vertex to the graph
         /// </summary>
-        /// <param name="vertice">The vertice to add</param>
-        public void AddVertice(Vertice vertice) => Vertices.Add(vertice);
+        /// <param name="vertex">The vertex to add</param>
+        public void AddVertex(Vertex vertex) => Vertices.Add(vertex);
         
         /// <summary>
         /// Add multiple vertices to the graph
         /// </summary>
         /// <param name="verticesList">The vertices to add</param>
-        public void AddVertice(List<Vertice> verticesList) => Vertices.AddRange(verticesList);
+        public void AddVertices(List<Vertex> verticesList) => Vertices.AddRange(verticesList);
         
         /// <summary>
         /// Build the list of all paths existing in the graph going from <c>EntryPoint</c> to <c>ExitPoint</c>
         /// </summary>
         /// <returns>The list of all paths</returns>
         /// <seealso cref="EntryPoint"/> <seealso cref="ExitPoint"/>
-        private List<List<Vertice>> DfsFindPaths()
+        private List<List<Vertex>> DfsFindPaths()
         {
-            List<List<Vertice>> paths = new List<List<Vertice>>(); // list of all the paths fron Entry to Exit points
-            HashSet<Vertice> visited = new HashSet<Vertice>(); // stores the already visited vertices to avoid traveling same vertice twice
-            DfsPathRecursive(EntryPoint, new List<Vertice>(), paths, visited);
+            List<List<Vertex>> paths = new List<List<Vertex>>(); // list of all the paths fron Entry to Exit points
+            HashSet<Vertex> visited = new HashSet<Vertex>(); // stores the already visited vertices to avoid traveling same vertex twice
+            DfsPathRecursive(EntryPoint, new List<Vertex>(), paths, visited);
             return paths;
         }
 
@@ -84,7 +84,7 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="path">Path accumulator, not intended to be anything else than an empty list</param>
         /// <param name="paths">The lish in which the paths will be added</param>
         /// <param name="visited">A hashset that will keep track of visited nodes during the traversal</param>
-        private void DfsPathRecursive(Vertice current, List<Vertice> path, List<List<Vertice>> paths, HashSet<Vertice> visited)
+        private void DfsPathRecursive(Vertex current, List<Vertex> path, List<List<Vertex>> paths, HashSet<Vertex> visited)
         {
             path.Add(current);
             visited.Add(current);
@@ -92,7 +92,7 @@ namespace Reconnect.Electronics.Graphs
             // any path stops at ExitPoint
             if (current == ExitPoint)
             {
-                paths.Add(new List<Vertice>(path)); // Store a copy of the path
+                paths.Add(new List<Vertex>(path)); // Store a copy of the path
             }
             else
             {
@@ -120,7 +120,7 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="paths">A list of paths from a node to another</param>
         /// <returns>The list of Branch contained into the paths given as params</returns>
         /// <seealso cref="DfsFindPaths"/>
-        public List<Branch> ExtractBranches(List<List<Vertice>> paths)
+        public List<Branch> ExtractBranches(List<List<Vertex>> paths)
         {
             List<Branch> branches = new List<Branch>();
 
@@ -129,8 +129,8 @@ namespace Reconnect.Electronics.Graphs
                 if (path.Count < 2)
                     throw new ArgumentException("Invalid path : a path has at least 2 vertices");
                 
-                List<Vertice> branchVertices = new List<Vertice>(); // stores the vertices of the branch
-                Vertice startNode = path[0]; // first node of the path is the start node of the branch
+                List<Vertex> branchVertices = new List<Vertex>(); // stores the vertices of the branch
+                Vertex startNode = path[0]; // first node of the path is the start node of the branch
                 
                 // iterate through all the others nodes
                 for (int i = 1; i < path.Count; i++)
@@ -141,7 +141,7 @@ namespace Reconnect.Electronics.Graphs
                         Branch newBranch = new Branch(
                             (Node)startNode, // Start node
                             (Node)path[i], // End node
-                            new List<Vertice>(branchVertices) // List of vertices on the branch
+                            new List<Vertex>(branchVertices) // List of vertices on the branch
                             );
                         // if this branch is not already inside the branches list we add it
                         // this can happen when multiple path go through the same branch at some point of their path
@@ -150,11 +150,11 @@ namespace Reconnect.Electronics.Graphs
 
                         // Reset for the next branch
                         startNode = path[i];
-                        branchVertices = new List<Vertice>(); // Start new branch
+                        branchVertices = new List<Vertex>(); // Start new branch
                     }
                     else
                     {
-                        branchVertices.Add(path[i]); // Add current vertice to the branch
+                        branchVertices.Add(path[i]); // Add current vertex to the branch
                     }
                 }
                 // if all vertices from paths have been converted into branches, this list should be empty
@@ -175,11 +175,11 @@ namespace Reconnect.Electronics.Graphs
         /// </summary>
         public void DefineBranches()
         {
-            List<List<Vertice>> allPaths = DfsFindPaths(); // get all the paths
-            foreach (List<Vertice> path in allPaths)
+            List<List<Vertex>> allPaths = DfsFindPaths(); // get all the paths
+            foreach (List<Vertex> path in allPaths)
             {
                 string p = "";
-                foreach (Vertice vertex in path)
+                foreach (Vertex vertex in path)
                 {
                     p += $"{vertex} - ";
                 }
@@ -203,7 +203,7 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="nodes">A node 2-tuple</param>
         private void RemoveAdjacentFromBranchComponents(Branch branch, (Node, Node) nodes)
         {
-            foreach (Vertice branchComponent in branch.Components)
+            foreach (Vertex branchComponent in branch.Components)
             {
                 // remove if exists the component from the nodes adjacents
                 nodes.Item1.AdjacentComponents.Remove(branchComponent); 
@@ -244,13 +244,13 @@ namespace Reconnect.Electronics.Graphs
                             resistance += 1 / (double) branch.Resistance; // apply equivalent resistance in parallel computation
                     }
 
-                    Vertice equivalentResistance = new Resistor(name, 1 / resistance); // resistor representing the equivalent resistance 
+                    Vertex equivalentResistance = new Resistor(name, 1 / resistance); // resistor representing the equivalent resistance 
                     node1.AddAdjacent(equivalentResistance);
                     node2.AddAdjacent(equivalentResistance);
                     
                     // new branch, result of the merge
                     Branch b = new Branch(node1, node2,
-                        new List<Vertice> { equivalentResistance });
+                        new List<Vertex> { equivalentResistance });
                     // merge it with any other branch in series with it, if there is any
                     GraphUtils.MergeBranchInSeries(b, Branches);
                     Branches.Add(b); // add the new branch to the Branches list

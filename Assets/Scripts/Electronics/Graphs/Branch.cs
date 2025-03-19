@@ -8,7 +8,7 @@ namespace Reconnect.Electronics.Graphs
 {
     public class Branch
     {
-        public List<Vertice> Components;
+        public List<Vertex> Components;
         public Node StartNode;
         public Node EndNode;
         public double Resistance;
@@ -23,7 +23,7 @@ namespace Reconnect.Electronics.Graphs
         {
             StartNode = startNode;
             EndNode = endNode;
-            Components = new List<Vertice>();
+            Components = new List<Vertex>();
             Resistance = 0;
         }
         /// <summary>
@@ -33,38 +33,38 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="startNode">The starting node of the branch</param>
         /// <param name="endNode">The ending node of the branch</param>
         /// <param name="components">The components the branch contains</param>
-        public Branch(Node startNode, Node endNode, IEnumerable<Vertice> components)
+        public Branch(Node startNode, Node endNode, IEnumerable<Vertex> components)
         {
             StartNode = startNode;
             EndNode = endNode;
-            Components = new List<Vertice>();
+            Components = new List<Vertex>();
             Resistance = 0;
-            AddVertice(components);
+            AddVertex(components);
         }
 
         /// <summary>
-        /// Add a vertice to the <see cref="Components"/> list
+        /// Add a vertex to the <see cref="Components"/> list
         /// </summary>
-        /// <param name="vertice">The vertice to add</param>
-        public void AddVertice(Vertice vertice)
+        /// <param name="vertex">The vertex to add</param>
+        public void AddVertex(Vertex vertex)
         {
             // skip if it is already in the list
-            if (Components.Contains(vertice))
+            if (Components.Contains(vertex))
                 return;
             
-            Components.Add(vertice);
-            if (vertice is ElecComponent component)
+            Components.Add(vertex);
+            if (vertex is ElecComponent component)
                 Resistance += component.Resistance;
         }
         /// <summary>
         /// Add multiple vertices to the <see cref="Components"/> list
         /// </summary>
         /// <param name="vertices">The vertices to add</param>
-        public void AddVertice(IEnumerable<Vertice> vertices)
+        public void AddVertex(IEnumerable<Vertex> vertices)
         {
-            foreach (Vertice vertice in vertices)
+            foreach (Vertex vertex in vertices)
             {
-                AddVertice(vertice);
+                AddVertex(vertex);
             }
         }
 

@@ -4,7 +4,7 @@ using Reconnect.Electronics.Graphs;
 
 namespace TestGraph.Components
 {
-    public abstract class ElecComponent : Vertice
+    public abstract class ElecComponent : Vertex
     {
         public double Resistance { get; set; }
     
@@ -14,7 +14,7 @@ namespace TestGraph.Components
                 throw new ArgumentException("Resistance of a component cannot be negative");
             Resistance = resistance;
         }
-        public ElecComponent(string name, List<Vertice> adjacentComponents, double resistance) : base(name, adjacentComponents)
+        public ElecComponent(string name, List<Vertex> adjacentComponents, double resistance) : base(name, adjacentComponents)
         {
             if (resistance < 0)
                 throw new ArgumentException("Resistance of a component cannot be negative");

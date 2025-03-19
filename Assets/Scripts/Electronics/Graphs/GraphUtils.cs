@@ -109,7 +109,7 @@ namespace Reconnect.Electronics.Graphs
             if (commonNode != FindCommonNode(branch, branchToMerge))
                 throw new ArgumentException("The common node is not common to the branches");
             branch.StartNode = commonNode;
-            branch.AddVertice(branchToMerge.Components);
+            branch.AddVertex(branchToMerge.Components);
             branches.Remove(branchToMerge);
         }
     }
