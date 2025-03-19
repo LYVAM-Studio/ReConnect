@@ -14,7 +14,7 @@ namespace TestGraph.Components
             MaxIntensity = inputIntensity;
         }
 
-        public CircuitInput(string name, List<Vertice> adjacentComponents, int inputTension, int inputIntensity) : base(name, adjacentComponents)
+        public CircuitInput(string name, List<Vertex> adjacentComponents, int inputTension, int inputIntensity) : base(name, adjacentComponents)
         {
             InputTension = inputTension;
             MaxIntensity = inputIntensity;

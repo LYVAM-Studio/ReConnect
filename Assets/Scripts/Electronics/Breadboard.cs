@@ -285,8 +285,8 @@ namespace Reconnect.Electronics
             var input = new CircuitInput("input", 240, 16);
             var output = new CircuitOutput("output");
             var graph = new Graph("Main graph", input, output, Target);
-            var queue = new Queue<(Point lastPosition, Point position, Vertice lastComponent)>();
-            var visitedDipoles = new List<Vertice>();
+            var queue = new Queue<(Point lastPosition, Point position, Vertex lastComponent)>();
+            var visitedDipoles = new List<Vertex>();
             var visitedNodes = new List<Node>();
             queue.Enqueue((new Point(-1, -1), new Point(0, 3), input));
             while (queue.Count > 0)
@@ -336,7 +336,7 @@ namespace Reconnect.Electronics
                         // Manage the visited list
                         if (visitedDipoles.Contains(vertex)) continue;
                         visitedDipoles.Add(vertex);
-                        graph.AddVertice(vertex);
+                        graph.AddVertex(vertex);
                         // Add links
                         lastComponent.AddAdjacent(vertex);
                         vertex.AddAdjacent(lastComponent);
@@ -370,7 +370,7 @@ namespace Reconnect.Electronics
                         // Manage visited
                         if (visitedDipoles.Contains(vertex)) continue;
                         visitedDipoles.Add(vertex);
-                        graph.AddVertice(vertex);
+                        graph.AddVertex(vertex);
                         // Add links
                         node.AddAdjacent(vertex);
                         vertex.AddAdjacent(node);

@@ -15,7 +15,7 @@ namespace TestGraph.Components
             NominalTension = nominalTension;
         }
 
-        public Lamp(string name, List<Vertice> adjacentComponents, double resistance, double nominalTension) : base(name, adjacentComponents, resistance)
+        public Lamp(string name, List<Vertex> adjacentComponents, double resistance, double nominalTension) : base(name, adjacentComponents, resistance)
         {
             NominalTension = nominalTension;
         }

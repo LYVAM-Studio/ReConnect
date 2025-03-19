@@ -11,7 +11,7 @@ namespace TestGraph.Components
         {
         }
 
-        public Resistor(string name, List<Vertice> adjacentComponents, double resistance) : base(name, adjacentComponents, resistance)
+        public Resistor(string name, List<Vertex> adjacentComponents, double resistance) : base(name, adjacentComponents, resistance)
         {
         }
     

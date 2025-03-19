@@ -35,7 +35,7 @@ namespace Reconnect.Electronics
         // The component responsible for the outlines
         private Outline _outline;
         
-        public Vertice Inner { get; set; }
+        public Vertex Inner { get; set; }
 
         private void Start()
         {
