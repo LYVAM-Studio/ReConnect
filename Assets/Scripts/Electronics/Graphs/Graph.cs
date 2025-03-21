@@ -184,7 +184,7 @@ namespace Reconnect.Electronics.Graphs
                     p += $"{vertex} - ";
                 }
 
-                Debug.Log(p);
+                // Debug.Log(p);
             }
             List<Branch> branches = ExtractBranches(allPaths); // get all the branches fron these paths
             Branches = branches; // save it into the graph property

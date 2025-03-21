@@ -21,6 +21,12 @@ namespace Reconnect.Electronics.Graphs
         }
 
         public void AddAdjacent(Vertex adjacent) => AdjacentComponents.Add(adjacent);
+
+        public static void ReciprocalAddAdjacent(Vertex v1, Vertex v2)
+        {
+            v1.AddAdjacent(v2);
+            v2.AddAdjacent(v1);
+        }
         public void AddAdjacent(IEnumerable<Vertex> adjacentsList) => AdjacentComponents.AddRange(adjacentsList);
         public virtual int AdjacentCount() => AdjacentComponents.Count;
         // public static bool operator==(Vertex? left, Vertex? right) => left is not null && right is not null && left.Equals(right);
@@ -36,7 +42,7 @@ namespace Reconnect.Electronics.Graphs
 
         public override string ToString()
         {
-            return $"({Name})";
+            return $"{Name}";
         }
     }
 }

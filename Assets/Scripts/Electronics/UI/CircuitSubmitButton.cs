@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Reconnect.Electronics.Graphs;
 using TestGraph.Components;
 using UnityEngine;
@@ -17,17 +18,9 @@ namespace Reconnect.Electronics.UI
         public void ExecuteCircuit()
         {
             Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
-            foreach (var e in circuitGraph.Vertices)
-            {
-                Debug.Log($"{e.Name}");
-            }
-            Debug.Log(circuitGraph.Vertices.Count);
-            Debug.Log("==============================================");
             circuitGraph.DefineBranches();
-            foreach (var e in circuitGraph.Branches)
-            {
-                Debug.Log($"{e.Display()}");
-            }
+            Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices/*from e in circuitGraph.Vertices select e.ToString()*/));
+            Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches/*from e in circuitGraph.Branches select e.Display()*/));
             double intensity = circuitGraph.GetGlobalIntensity();
             Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;
             targetLamp.Set(intensity);

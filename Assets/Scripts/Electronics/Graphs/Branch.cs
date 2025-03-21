@@ -77,7 +77,7 @@ namespace Reconnect.Electronics.Graphs
         public bool AreParallelBranches(Branch other) =>
             (other.StartNode, other.EndNode) == (EndNode, StartNode) || (other.StartNode, other.EndNode) == (StartNode, EndNode);
         
-        public override string ToString() => $"{StartNode} [{string.Join(", ", Components)}] {EndNode}";
+        public override string ToString() => $"from {{{StartNode}}} through {{{string.Join(", ", Components)}}} to {{{EndNode}}}";
         /// <summary>
         /// Displays information about the branch
         /// </summary>

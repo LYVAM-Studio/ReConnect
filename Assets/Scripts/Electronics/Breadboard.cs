@@ -67,8 +67,9 @@ namespace Reconnect.Electronics
             {
                 string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
                 string[] lines = File.ReadAllLines(filePath);
-                foreach (string line in lines)
+                for (int i = 0; i < lines.Length; i++)
                 {
+                    string line = lines[i];
                     string[] content = line.Split(',');
                     if (content[0] == "wire")
                     {
@@ -91,19 +92,18 @@ namespace Reconnect.Electronics
                         var dipoleScript = resistorGameObj.GetComponent<Dipole>();
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
-                        var inner = new Resistor("R", r);
+                        var inner = new Resistor($"R{i}", r);
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
                         dipoleScript.SetPosition(fromPos, toPos);
                         _dipoles.Add(dipoleScript);
-                        if (Target is null) Target = inner;
+                        // if (Target is null) Target = inner;
                     }
                     else if (content[0] == "lamp")
                     {
                         (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
                         (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
                         double r = double.Parse(content[5], CultureInfo.InvariantCulture);
-                        Debug.Log(content[6]);
                         double tension = double.Parse(content[6], CultureInfo.InvariantCulture);
                         Point fromPos = new Point(from.h, from.w);
                         Point toPos = new Point(to.h, to.w);
@@ -113,7 +113,7 @@ namespace Reconnect.Electronics
                         var dipoleScript = lampGameObj.GetComponent<Dipole>();
                         if (dipoleScript is null)
                             throw new Exception("The Dipole script component could not be found in the wire prefab.");
-                        var inner = new Lamp("L", r, tension);
+                        var inner = new Lamp($"L{i}", r, tension);
                         inner.LightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
                         dipoleScript.Inner = inner;
                         dipoleScript.Breadboard = this;
@@ -227,79 +227,28 @@ namespace Reconnect.Electronics
             wireGameObj.transform.localScale = scale;
         }
 
-        // // Traverses the circuit calculating U and I.
-        // public void LaunchElectrons()
-        // {
-        //     var circuit = InitCircuit();
-        //     var explored = new List<(int h, int w)>();
-        //     LaunchElectronsRec(circuit, explored, 0, 0);
-        // }
-        //
-        // public void LaunchElectronsRec(List<ElecComponent>[,] circuit, List<(int h, int w)> explored, int h, int w)
-        // {
-        //     // Forward while there is a wire
-        //     while (circuit[h, w].Count == 1 && circuit[h, w][0].type == ComponentType.WireScript)
-        //         (h, w) = circuit[h, w][0].GetNormalizedPos();
-        //     foreach (var component in circuit[h, w])
-        //     {
-        //         
-        //     }
-        // }
-        //
-        // // Returns the current circuit as a 2-dimensional array. Each element of this array represents the list of every component (given by ref, no copy) that has a pole there (i.e. is plugged in the corresponding breadboard hole).  
-        // private List<ElecComponent>[,] InitCircuit()
-        // {
-        //     // Init the 2-dimensional array with empty lists
-        //     var circuit = new List<ElecComponent>[8, 8];
-        //     for (int h = 0; h < 8; h++)
-        //     for (int w = 0; w < 8; w++)
-        //         circuit[h, w] = new List<ElecComponent>();
-        //
-        //     // Add the components in the empty 2-dimensional array
-        //     foreach (var component in _components)
-        //     {
-        //         // The position of the currently processed component according to the breadboard
-        //         var origin = component.GetNormalizedPos();
-        //         foreach (var pole in component.poles)
-        //         {
-        //             if (origin.h + pole.GetH() is < 0 or >= 8 || origin.w + pole.GetW() is < 0 or >= 8)
-        //                 throw new IndexOutOfRangeException(
-        //                     $"The pole (x:{pole.x}, y:{pole.y}) or also (h:{pole.GetH()}, w:{pole.GetW()}) goes outside the breadboard.");
-        //             circuit[origin.h + pole.GetH(), origin.w + pole.GetW()].Add(component);
-        //         }
-        //     }
-        //     
-        //     return circuit;
-        // }
-        
-        
-        
 
         public Graph CreateGraph()
         {
-            Debug.Log("WIRES:" + string.Join(", ",
-                                   from wire in _wires select "(" + wire.Pole1 + " " + wire.Pole2 + ")")
-                               + "\nDIPOLES:" + string.Join(", ",
-                                   from dipole in _dipoles
-                                   select "(" + dipole.GetPoles()[0] + " " + dipole.GetPoles()[1] + ")"));
+            // Debug.Log("WIRES:" + string.Join(", ",
+            //                        from wire in _wires select "(" + wire.Pole1 + " " + wire.Pole2 + ")")
+            //                    + "\nDIPOLES:" + string.Join(", ",
+            //                        from dipole in _dipoles
+            //                        select "(" + dipole.GetPoles()[0] + " " + dipole.GetPoles()[1] + ")"));
             var input = new CircuitInput("input", 240, 16);
             var output = new CircuitOutput("output");
             var graph = new Graph("Main graph", input, output, Target);
-            var queue = new Queue<(Point lastPosition, Point position, Vertex lastComponent)>();
-            var visitedDipoles = new List<Vertex>();
-            var visitedNodes = new List<Node>();
-            queue.Enqueue((new Point(-1, -1), new Point(0, 3), input));
+            var queue = new Queue<(Point lastPosition, Point position, Vertex lastComponent, Vector2 lastCmpntPos)>();
+            var createdLiasons = new List<Liason>();
+            queue.Enqueue((new Point(-1, -1), new Point(0, 3), input, new Vector2(0, 3)));
             while (queue.Count > 0)
             {
-                var (lastPos, pos, lastComponent) = queue.Dequeue();
-                Debug.Log($"### Dequeued {lastComponent} of type {lastComponent.GetType()}");
+                var (lastPos, pos, lastComponent, lastCmpntPos) = queue.Dequeue();
 
                 if (pos == new Point(7, 3))
                 {
                     // Arrived to the exit point
-                    lastComponent.AddAdjacent(output);
-                    output.AddAdjacent(lastComponent);
-                    Debug.Log("Arrived to exit point");
+                    Vertex.ReciprocalAddAdjacent(lastComponent, output);
                     continue;
                 }
                 
@@ -309,79 +258,56 @@ namespace Reconnect.Electronics
                 // The components that goes from pos to a point different from lastPos 
                 var adjacentDipoles= _dipoles.FindAll(dipole => dipole.GetPoles().Contains(pos));
                 adjacentDipoles.RemoveAll(dipole => dipole.GetPoles().Contains(lastPos));
-                Debug.Log($"Found {adjacentWires.Count} wires and {adjacentDipoles.Count} dipoles.");
                 
-                if (adjacentWires.Count + adjacentDipoles.Count == 0)
+                if (adjacentWires.Count + adjacentDipoles.Count == 1) // The branch is continuing
                 {
-                    // This is a dead end
-                    Debug.Log("Dead end");
-                    break;
-                }
-                else if (adjacentWires.Count + adjacentDipoles.Count == 1)
-                {
-                    // The branch is continuing
-                    if (adjacentWires.Count == 1)
+                    if (adjacentWires.Count == 1) // There is a wire
                     {
-                        // There is a wire
                         var wire = adjacentWires[0];
-                        var newPos = wire.Pole1 == pos
-                            ? wire.Pole2
-                            : wire.Pole1;
-                        queue.Enqueue((pos, newPos, lastComponent));
+                        var newPos = wire.Pole1 == pos ? wire.Pole2 : wire.Pole1;
+                        queue.Enqueue((pos, newPos, lastComponent, lastCmpntPos));
                     }
-                    else
+                    else // There is a component
                     {
-                        // There is a component
-                        var vertex = adjacentDipoles[0].Inner;
-                        // Manage the visited list
-                        if (visitedDipoles.Contains(vertex)) continue;
-                        visitedDipoles.Add(vertex);
+                        var dipole = adjacentDipoles[0];
+                        var liaison = new Liason(lastCmpntPos, (Vector2)dipole.GetPoles().Aggregate((p1, p2) => p1 + p2)/2);
+                        if (createdLiasons.Contains(liaison)) continue;
+                        createdLiasons.Add(liaison);
+                        var vertex = dipole.Inner;
                         graph.AddVertex(vertex);
-                        // Add links
-                        lastComponent.AddAdjacent(vertex);
-                        vertex.AddAdjacent(lastComponent);
-                        Debug.Log($"current pole = {pos}\nnext pole = {adjacentDipoles[0].GetOtherPole(pos)}");
-                        queue.Enqueue((pos, adjacentDipoles[0].GetOtherPole(pos), vertex));
+                        Vertex.ReciprocalAddAdjacent(lastComponent, vertex);
+                        queue.Enqueue((pos, dipole.GetOtherPole(pos), vertex, (Vector2)pos));
                     }
                 }
-                else
+                else if (adjacentWires.Count + adjacentDipoles.Count > 1) // There is a node 
                 {
-                    Debug.Log("Node found");
-                    // There is a node
                     var node = new Node($"{pos}");
-                    // Manage the visited list
-                    if (visitedNodes.Exists(n => n.Name == node.Name)) continue;
-                    visitedNodes.Add(node);
-                    // Add links
-                    node.AddAdjacent(lastComponent);
-                    lastComponent.AddAdjacent(node);
+                    Vertex.ReciprocalAddAdjacent(lastComponent, node);
                     // Manage connected wires
                     foreach (var w in adjacentWires)
                     {
                         var newPos = w.Pole1 == pos
                             ? w.Pole2
                             : w.Pole1;
-                        queue.Enqueue((pos, newPos, node));
+                        queue.Enqueue((pos, newPos, node, (Vector2)pos));
                     }
                     // Manage connected dipoles
-                    foreach (var d in adjacentDipoles)
+                    foreach (var dipole in adjacentDipoles)
                     {
-                        var vertex = d.Inner;
-                        // Manage visited
-                        if (visitedDipoles.Contains(vertex)) continue;
-                        visitedDipoles.Add(vertex);
+                        var liaison = new Liason(lastCmpntPos, (Vector2)(dipole.GetPoles().Aggregate((p1, p2) => p1 + p2))/2);
+                        if (createdLiasons.Contains(liaison)) continue;
+                        createdLiasons.Add(liaison);
+                        var vertex = dipole.Inner;
                         graph.AddVertex(vertex);
-                        // Add links
-                        node.AddAdjacent(vertex);
-                        vertex.AddAdjacent(node);
-                        queue.Enqueue((pos, d.GetOtherPole(pos), vertex));
+                        Vertex.ReciprocalAddAdjacent(vertex, node);
+                        queue.Enqueue((pos, dipole.GetOtherPole(pos), vertex, (Vector2)dipole.GetOtherPole(pos)));
                     }
                 }
             }
 
             return graph;
         }
-        
+
         public void RegisterComponent(Dipole component)
         {
             if (_dipoles.Contains(component))
@@ -415,14 +341,14 @@ namespace Reconnect.Electronics
             if (poles.Any(pole => pole.H is < 0 or >= 8 || pole.W is < 0 or >= 8))
             {
                 // A pole is outside the breadboard
-                Debug.Log("A pole is outside the breadboard");
+                // Debug.Log("A pole is outside the breadboard");
                 return null;
             }
 
             if (_dipoles.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
             {
                 // A component is already here
-                Debug.Log("A component is already here");
+                // Debug.Log("A component is already here");
                 return null;
             }
 

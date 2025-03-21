@@ -8,7 +8,7 @@ namespace Reconnect.Electronics.Components
         public Material lightOff;
         public void Set(bool on)
         {
-            Debug.Log($"Activated to {on}");
+            // Debug.Log($"Activated to {on}");
             GetComponent<Renderer>().material = on ? lightOn : lightOff;
         }
     }
