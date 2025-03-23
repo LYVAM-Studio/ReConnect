@@ -18,9 +18,10 @@ namespace Reconnect.Electronics.UI
         public void ExecuteCircuit()
         {
             Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
+            Debug.Log($"STATE :::\n"+string.Join('\n', from v in circuitGraph.Vertices select $"{v.GetType().Name[..3]} {v.Name}: [{string.Join(", ", v.AdjacentComponents)}]"));
             circuitGraph.DefineBranches();
-            Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices/*from e in circuitGraph.Vertices select e.ToString()*/));
-            Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches/*from e in circuitGraph.Branches select e.Display()*/));
+            Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices));
+            Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
             double intensity = circuitGraph.GetGlobalIntensity();
             Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;
             targetLamp.Set(intensity);

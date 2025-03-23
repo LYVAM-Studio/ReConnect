@@ -12,9 +12,5 @@ namespace TestGraph.Components
         public Node(string name, List<Vertex> adjacentComponents) : base(name, adjacentComponents)
         {
         }
-    
-        public Node(Node other) : base(other.Name, new List<Vertex>(other.AdjacentComponents))
-        {
-        }
     }
 }

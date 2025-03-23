@@ -1,6 +1,7 @@
+// using System;
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using TestGraph.Components;
 
@@ -84,7 +85,7 @@ namespace Reconnect.Electronics.Graphs
         /// <returns>A <see cref="string"/> containing the nodes, components and the resistance of the branch</returns>
         public string Display() => $"{this} - Resistance : {Resistance} Ohms";
 
-        public static bool operator ==(Branch? left, Branch? right)
+        public static bool operator ==(Branch left, Branch right)
         {
             if (ReferenceEquals(left, right)) return true;
             if (left is null || right is null) return false;
@@ -97,7 +98,7 @@ namespace Reconnect.Electronics.Graphs
 
         public static bool operator !=(Branch left, Branch right) => !(left == right);
 
-        public override bool Equals(object? obj) => obj is Branch other && this == other;
+        public override bool Equals(object obj) => obj is Branch other && this == other;
     
         public override int GetHashCode()
         {

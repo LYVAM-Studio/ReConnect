@@ -228,86 +228,70 @@ namespace Reconnect.Electronics
         }
 
 
+        
+        
         public Graph CreateGraph()
         {
-            // Debug.Log("WIRES:" + string.Join(", ",
-            //                        from wire in _wires select "(" + wire.Pole1 + " " + wire.Pole2 + ")")
-            //                    + "\nDIPOLES:" + string.Join(", ",
-            //                        from dipole in _dipoles
-            //                        select "(" + dipole.GetPoles()[0] + " " + dipole.GetPoles()[1] + ")"));
+            // inner vertices can be null!
+            Vertex[,] grid = new Vertex[8, 8];
+            PlaceWires(grid);
+            PlaceDipoles(grid);
             var input = new CircuitInput("input", 240, 16);
+            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
             var output = new CircuitOutput("output");
+            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
             var graph = new Graph("Main graph", input, output, Target);
-            var queue = new Queue<(Point lastPosition, Point position, Vertex lastComponent, Vector2 lastCmpntPos)>();
-            var createdLiasons = new List<Liason>();
-            queue.Enqueue((new Point(-1, -1), new Point(0, 3), input, new Vector2(0, 3)));
-            while (queue.Count > 0)
+            foreach (Vertex v in grid)
             {
-                var (lastPos, pos, lastComponent, lastCmpntPos) = queue.Dequeue();
+                if (v is not null)
+                {
+                    if (v.AdjacentComponents.Count > 2)
+                        graph.AddVertex(v.ToNode());
+                    else
+                        graph.AddVertex(v);
+                }
+            }
 
-                if (pos == new Point(7, 3))
-                {
-                    // Arrived to the exit point
-                    Vertex.ReciprocalAddAdjacent(lastComponent, output);
-                    continue;
-                }
-                
-                // The wires that goes from pos to point different from lastPos
-                var adjacentWires = _wires.FindAll(wire => wire.Pole1 == pos || wire.Pole2 == pos);
-                adjacentWires.RemoveAll(wire => wire.Pole1 == lastPos || wire.Pole2 == lastPos);
-                // The components that goes from pos to a point different from lastPos 
-                var adjacentDipoles= _dipoles.FindAll(dipole => dipole.GetPoles().Contains(pos));
-                adjacentDipoles.RemoveAll(dipole => dipole.GetPoles().Contains(lastPos));
-                
-                if (adjacentWires.Count + adjacentDipoles.Count == 1) // The branch is continuing
-                {
-                    if (adjacentWires.Count == 1) // There is a wire
-                    {
-                        var wire = adjacentWires[0];
-                        var newPos = wire.Pole1 == pos ? wire.Pole2 : wire.Pole1;
-                        queue.Enqueue((pos, newPos, lastComponent, lastCmpntPos));
-                    }
-                    else // There is a component
-                    {
-                        var dipole = adjacentDipoles[0];
-                        var liaison = new Liason(lastCmpntPos, (Vector2)dipole.GetPoles().Aggregate((p1, p2) => p1 + p2)/2);
-                        if (createdLiasons.Contains(liaison)) continue;
-                        createdLiasons.Add(liaison);
-                        var vertex = dipole.Inner;
-                        graph.AddVertex(vertex);
-                        Vertex.ReciprocalAddAdjacent(lastComponent, vertex);
-                        queue.Enqueue((pos, dipole.GetOtherPole(pos), vertex, (Vector2)pos));
-                    }
-                }
-                else if (adjacentWires.Count + adjacentDipoles.Count > 1) // There is a node 
-                {
-                    var node = new Node($"{pos}");
-                    Vertex.ReciprocalAddAdjacent(lastComponent, node);
-                    // Manage connected wires
-                    foreach (var w in adjacentWires)
-                    {
-                        var newPos = w.Pole1 == pos
-                            ? w.Pole2
-                            : w.Pole1;
-                        queue.Enqueue((pos, newPos, node, (Vector2)pos));
-                    }
-                    // Manage connected dipoles
-                    foreach (var dipole in adjacentDipoles)
-                    {
-                        var liaison = new Liason(lastCmpntPos, (Vector2)(dipole.GetPoles().Aggregate((p1, p2) => p1 + p2))/2);
-                        if (createdLiasons.Contains(liaison)) continue;
-                        createdLiasons.Add(liaison);
-                        var vertex = dipole.Inner;
-                        graph.AddVertex(vertex);
-                        Vertex.ReciprocalAddAdjacent(vertex, node);
-                        queue.Enqueue((pos, dipole.GetOtherPole(pos), vertex, (Vector2)dipole.GetOtherPole(pos)));
-                    }
-                }
+            foreach (var d in _dipoles)
+            {
+                graph.AddVertex(d.Inner);
             }
 
             return graph;
         }
 
+        private Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
+        {
+            if (grid[h, w] is null)
+            {
+                grid[h, w] = new Vertex($"({h}, {w})");
+            }
+
+            return grid[h, w];
+        }
+
+        private void PlaceWires(Vertex[,] grid)
+        {
+            foreach (var w in _wires)
+            {
+                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.H, w.Pole1.W);
+                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.H, w.Pole2.W);
+                Vertex.ReciprocalAddAdjacent(v1, v2);
+            }
+        }
+        
+        private void PlaceDipoles(Vertex[,] grid)
+        {
+            foreach (var d in _dipoles)
+            {
+                Vertex v1 = GetVertexOrNewAt(grid, d.GetPoles()[0].H, d.GetPoles()[0].W);
+                Vertex v2 = GetVertexOrNewAt(grid, d.GetPoles()[1].H, d.GetPoles()[1].W);
+                Vertex.ReciprocalAddAdjacent(v1, d.Inner);
+                Vertex.ReciprocalAddAdjacent(d.Inner, v2);
+            }
+        }
+        
+        
         public void RegisterComponent(Dipole component)
         {
             if (_dipoles.Contains(component))

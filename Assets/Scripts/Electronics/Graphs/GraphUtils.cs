@@ -74,7 +74,7 @@ namespace Reconnect.Electronics.Graphs
                     continue;
                 }
 
-                Node? commonNode = FindCommonNode(branch, graphBranch);
+                Node commonNode = FindCommonNode(branch, graphBranch);
                 if (commonNode is not null && commonNode.AdjacentComponents.Count == 2)
                     ApplyMergeBranchesInSeries(graphBranch, branch, commonNode, branches);
                 i++;
@@ -87,7 +87,7 @@ namespace Reconnect.Electronics.Graphs
         /// <param name="branch">The first branch</param>
         /// <param name="other">The second branch</param>
         /// <returns>null if the branches have no node in common, else the common Node</returns>
-        private static Node? FindCommonNode(Branch branch, Branch other)
+        private static Node FindCommonNode(Branch branch, Branch other)
         {
             if (branch.StartNode == other.StartNode || branch.StartNode == other.EndNode)
                 return branch.StartNode;
