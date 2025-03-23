@@ -16,10 +16,10 @@ public class PlayerGravityTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("AirLock"))
         {
-            Debug.Log("Player collided with the AirLock layer!");
             if (!other.gameObject.TryGetComponent(out IAirlockCollider airlockCollider))
                 throw new ArgumentException("No Airlock collider found on this AirLock tagged object");
             airlockCollider.CollisionHandle(_physicsScript);
+            Debug.Log(-_physicsScript.Gravity);
         }
     }
 }
