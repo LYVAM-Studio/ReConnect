@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerModel
   - freeLookCamera
+  - AirLock
   layers:
   - Default
   - TransparentFX

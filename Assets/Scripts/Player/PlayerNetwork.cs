@@ -10,6 +10,8 @@ namespace Player
 {
     public class PlayerNetwork : NetworkBehaviour
     {
+        protected PhysicsScript Physics;
+
         public bool isLocked;
 
         [SyncVar(hook = nameof(OnNameChanged))]
@@ -50,6 +52,9 @@ namespace Player
             if (!isLocalPlayer) PlayerInput.actions["UnlockCursor"].started += OnEscape;
 
             CharacterController = GetComponent<CharacterController>();
+
+            if (!TryGetComponent(out Physics))
+                throw new ArgumentException("No Physics Script found on the player !");
         }
 
         public virtual void OnDestroy()
