@@ -232,6 +232,9 @@ namespace Reconnect.Electronics
         
         public Graph CreateGraph()
         {
+            // clear the adjacent relation of the dipoles (avoid branch duplication)
+            foreach (var d in _dipoles)
+                d.Inner.ClearAdjacent();
             // inner vertices can be null!
             Vertex[,] grid = new Vertex[8, 8];
             PlaceWires(grid);

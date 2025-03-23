@@ -43,6 +43,11 @@ namespace Reconnect.Electronics.Graphs
             return node;
         }
         
+        public void ClearAdjacent()
+        {
+            AdjacentComponents.RemoveAll(v => true);
+        }
+        
         // NOTE: the comparison of vertices by pointer is needed by the Vertex.ToNode method used in Breadboard.CreateGraph method.
         // Please do not implement any other equality comparison on the Vertex class or any of its inherited classes.
         
