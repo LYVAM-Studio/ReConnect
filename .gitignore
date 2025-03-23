@@ -1,6 +1,3 @@
-ParrelSync
-ParrelSync.meta
-
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
@@ -70,6 +67,24 @@ crashlytics-build.properties
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
+# Temporary auto-generated Android Assets
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# --------------------------------------------------------------------------------------
+# The following lines are not initially present in the default .gitignore file for Unity
+# --------------------------------------------------------------------------------------
+
+# Rider trash files
+.idea/
+
+# VSCode trash files
+.vscode
+
+# Multiplayer local testing
+ParrelSync
+ParrelSync.meta
+
 # MacOS gitignore https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
 # General
 .DS_Store
@@ -97,12 +112,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-# Temporary auto-generated Android Assets
-/[Aa]ssets/[Ss]treamingAssets/aa.meta
-/[Aa]ssets/[Ss]treamingAssets/aa/*
-
-# --------------------------------------------------------------------------------------
-# The following lines are not initially present in the default .gitignore file for Unity
-# --------------------------------------------------------------------------------------
-.idea/
