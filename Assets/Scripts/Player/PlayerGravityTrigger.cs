@@ -1,20 +1,25 @@
 using System;
-using Player;
 using Reconnect.Physics;
 using UnityEngine;
 
 public class PlayerGravityTrigger : MonoBehaviour
 {
+    private PhysicsScript _physicsScript;
+    private void Start()
+    {
+        _physicsScript = GetComponentInParent<PhysicsScript>();
+        if (_physicsScript is null)
+            throw new ArgumentException("The PhysicsScript has not been found in this player.");
+    }
+
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("AirLock"))
         {
             Debug.Log("Player collided with the AirLock layer!");
-            if (!TryGetComponent(out PhysicsScript physicsScript))
-                throw new ArgumentException("No PhysicsScript found on this Player");
             if (!other.gameObject.TryGetComponent(out IAirlockCollider airlockCollider))
                 throw new ArgumentException("No Airlock collider found on this AirLock tagged object");
-            airlockCollider.CollisionHandle(physicsScript);
+            airlockCollider.CollisionHandle(_physicsScript);
         }
     }
 }
