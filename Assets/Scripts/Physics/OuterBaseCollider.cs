@@ -6,7 +6,7 @@ namespace Reconnect.Physics
     {
         public void CollisionHandle(PhysicsScript physics)
         {
-            physics.SetInBase(true);
+            physics.SetInBase(false);
         }
     }
 }

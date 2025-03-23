@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3764311718482648137}
   - component: {fileID: 926176364745715140}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: AirLockDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -103,7 +103,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
