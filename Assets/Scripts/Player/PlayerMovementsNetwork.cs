@@ -7,10 +7,6 @@ namespace Reconnect.Player
 {
     public class PlayerMovementsNetwork : PlayerNetwork
     {
-        // parameters that can be edited in Editor
-        [Header("Gravity force constant")]
-        public float gravity = -9.81f; // gravity strength (default: -9.81, earth gravity)
-
         public float jumpHeight = 0.7f; // the height the player should jump
 
         [Header("Speed settings")] public float defaultSpeed = 6.0f; // the walking speed of the player
@@ -283,11 +279,11 @@ namespace Reconnect.Player
         private void HandleGravityAndJump()
         {
             if (CharacterController.isGrounded && _isJumpingPressed) // jumping vertical velocity
-                _velocityY = Mathf.Sqrt(jumpHeight * -2f * gravity);
+                _velocityY = Mathf.Sqrt(jumpHeight * -2f * Physics.Gravity);
             else if (CharacterController.isGrounded) // on ground vertical velocity
-                _velocityY = gravity * Time.deltaTime;
+                _velocityY = Physics.Gravity * Time.deltaTime;
             else
-                _velocityY += gravity * Time.deltaTime;
+                _velocityY += Physics.Gravity * Time.deltaTime;
         }
 
         private void HandleLockedPlayer()
