@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
+using Reconnect.Electronics.Graphs;
+using TestGraph.Components;
 using UnityEngine;
 
 namespace Reconnect.Electronics
@@ -9,7 +13,7 @@ namespace Reconnect.Electronics
     public class Breadboard : MonoBehaviour
     {
         // The list of the components in the breadboard
-        private List<Dipole> _components;
+        private List<Dipole> _dipoles;
 
         // The start of the wire ig _onWireCreation
         private Vector3 _lastNodePosition;
@@ -25,15 +29,110 @@ namespace Reconnect.Electronics
 
         // The Z coordinate at which the dipoles are positioned on the breadboard
         // it is the Z position of the breadboard (8f) minus half its thickness (1f/2) to have it sunk into the board
-        private float _zPositionDipoles = 7.5f;
+        public float zPositionDipoles = 7.5f;
+
+        public ElecComponent Target { get; private set; }
         private void Start()
         {
-            _components = new List<Dipole>();
+            _dipoles = new List<Dipole>();
             _wires = new List<WireScript>();
             _onWireCreation = false;
             _onDeletionMode = false;
+            //LoadCircuit("1_series_lvl_1");
+        }
+        
+        /// <summary>
+        /// Cleanup the breadboard content, deletes the wires and dipoles
+        /// </summary>
+        public void Clean()
+        {
+            foreach (WireScript wireScript in _wires)
+            {
+                Destroy(wireScript.gameObject);
+            }
+            foreach (Dipole dipole in _dipoles)
+            {
+                Destroy(dipole.gameObject);
+            }
+
+            _wires = new List<WireScript>();
+            _dipoles = new List<Dipole>();
+            Target = null;
         }
 
+        public void LoadCircuit(string circuitName)
+        {
+            Clean();
+            try
+            {
+                string filePath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.csv");
+                string[] lines = File.ReadAllLines(filePath);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string line = lines[i];
+                    string[] content = line.Split(',');
+                    if (content[0] == "wire")
+                    {
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4]));
+                        Vector3 fromPos = Point.PointToVector(new Point(from.h, from.w), zPositionDipoles);
+                        Vector3 toPos = Point.PointToVector(new Point(to.h, to.w), zPositionDipoles);
+                        CreateWire(fromPos, toPos);
+                    }
+                    else if (content[0] == "resistor")
+                    {
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
+                        double r = double.Parse(content[5], CultureInfo.InvariantCulture);
+                        Point fromPos = new Point(from.h, from.w);
+                        Point toPos = new Point(to.h, to.w);
+                        var resistorGameObj = Instantiate(Helper.GetPrefabByName("Components/ResistorPrefab"));
+                        if (resistorGameObj is null)
+                            throw new Exception("The resistor prefab could not be found.");
+                        var dipoleScript = resistorGameObj.GetComponent<Dipole>();
+                        if (dipoleScript is null)
+                            throw new Exception("The Dipole script component could not be found in the wire prefab.");
+                        var inner = new Resistor($"R{i}", r);
+                        dipoleScript.Inner = inner;
+                        dipoleScript.Breadboard = this;
+                        dipoleScript.SetPosition(fromPos, toPos);
+                        _dipoles.Add(dipoleScript);
+                        // if (Target is null) Target = inner;
+                    }
+                    else if (content[0] == "lamp")
+                    {
+                        (int h, int w) from = (int.Parse(content[1]), int.Parse(content[2]));
+                        (int h, int w) to = (int.Parse(content[3]), int.Parse(content[4])); 
+                        double r = double.Parse(content[5], CultureInfo.InvariantCulture);
+                        double tension = double.Parse(content[6], CultureInfo.InvariantCulture);
+                        Point fromPos = new Point(from.h, from.w);
+                        Point toPos = new Point(to.h, to.w);
+                        var lampGameObj = Instantiate(Helper.GetPrefabByName("Components/LampPrefab"));
+                        if (lampGameObj is null)
+                            throw new Exception("The lamp prefab could not be found.");
+                        var dipoleScript = lampGameObj.GetComponent<Dipole>();
+                        if (dipoleScript is null)
+                            throw new Exception("The Dipole script component could not be found in the wire prefab.");
+                        var inner = new Lamp($"L{i}", r, tension);
+                        inner.LightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
+                        dipoleScript.Inner = inner;
+                        dipoleScript.Breadboard = this;
+                        dipoleScript.SetPosition(fromPos, toPos);
+                        _dipoles.Add(dipoleScript);
+                        if (Target is null) Target = inner;
+                    }
+                    else
+                    {
+                        throw new Exception($"{content[0]} is not a valid dipole type.");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"The file {circuitName} could not be loaded because an exception was thrown:\n{e.Message}", e);
+            }
+        }
+        
         // #########################
         // #    WIRE MANAGEMENT    #
         // #########################
@@ -74,10 +173,10 @@ namespace Reconnect.Electronics
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wire = _wires.Find(w =>
-                    (w.Pole1 == Pole.PositionToPole(_lastNodePosition) &&
-                     w.Pole2 == Pole.PositionToPole(nodePosition)) ||
-                    (w.Pole2 == Pole.PositionToPole(_lastNodePosition) &&
-                     w.Pole1 == Pole.PositionToPole(nodePosition)));
+                    (w.Pole1 == Point.VectorToPoint(_lastNodePosition) &&
+                     w.Pole2 == Point.VectorToPoint(nodePosition)) ||
+                    (w.Pole2 == Point.VectorToPoint(_lastNodePosition) &&
+                     w.Pole1 == Point.VectorToPoint(nodePosition)));
                 if (wire is not null)
                 {
                     // A wire is already at this position
@@ -88,25 +187,7 @@ namespace Reconnect.Electronics
                 }
                 else if (!_onDeletionMode)
                 {
-                    // Instantiate a wire from the wire prefab
-                    var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
-                    if (wireGameObj is null)
-                        throw new Exception("The wire prefab could not be found.");
-                    var wireScript = wireGameObj.GetComponent<WireScript>();
-                    if (wireScript is null)
-                        throw new Exception("The WireScript component could not be found in the wire prefab.");
-                    wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
-                    wireScript.Init(this, Pole.PositionToPole(_lastNodePosition), Pole.PositionToPole(nodePosition));
-                    _wires.Add(wireScript);
-                    // Set the wire's position
-                    wireGameObj.transform.position = (_lastNodePosition + nodePosition) / 2;
-                    // Set the wire's rotation
-                    wireGameObj.transform.LookAt(nodePosition);
-                    wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-                    // Set the wire's scale (length of the wire)
-                    var scale = wireGameObj.transform.localScale;
-                    scale[1] /* y component */ = (nodePosition - _lastNodePosition).magnitude / 2f;
-                    wireGameObj.transform.localScale = scale;
+                    CreateWire(_lastNodePosition, nodePosition);
                 }
 
                 // Set the start to the current end
@@ -120,64 +201,112 @@ namespace Reconnect.Electronics
             Destroy(wire.gameObject);
         }
 
+        public void CreateWire(Vector3 from, Vector3 to)
+        {
+            if ((from - to).magnitude > 1.5)
+                throw new Exception($"The wire from {from} to {to} cannot be created: the cire is too long");
+            // Instantiate a wire from the wire prefab
+            var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
+            if (wireGameObj is null)
+                throw new Exception("The wire prefab could not be found.");
+            var wireScript = wireGameObj.GetComponent<WireScript>();
+            if (wireScript is null)
+                throw new Exception("The WireScript component could not be found in the wire prefab.");
+            wireGameObj.name = $"WirePrefab (Clone {(uint)wireScript.GetHashCode()})";
+            // Debug.Log($"{_lastNodePosition} <=> {Pole.PoleToPosition(Pole.PositionToPole(_lastNodePosition), _zPositionDipoles)}");
+            wireScript.Init(this, Point.VectorToPoint(from), Point.VectorToPoint(to));
+            _wires.Add(wireScript);
+            // Set the wire's position
+            wireGameObj.transform.position = (from + to) / 2;
+            // Set the wire's rotation
+            wireGameObj.transform.LookAt(to);
+            wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            // Set the wire's scale (length of the wire)
+            var scale = wireGameObj.transform.localScale;
+            scale[1] /* y component */ = (to - from).magnitude / 2f;
+            wireGameObj.transform.localScale = scale;
+        }
 
-        // // Traverses the circuit calculating U and I.
-        // public void LaunchElectrons()
-        // {
-        //     var circuit = InitCircuit();
-        //     var explored = new List<(int h, int w)>();
-        //     LaunchElectronsRec(circuit, explored, 0, 0);
-        // }
-        //
-        // public void LaunchElectronsRec(List<ElecComponent>[,] circuit, List<(int h, int w)> explored, int h, int w)
-        // {
-        //     // Forward while there is a wire
-        //     while (circuit[h, w].Count == 1 && circuit[h, w][0].type == ComponentType.WireScript)
-        //         (h, w) = circuit[h, w][0].GetNormalizedPos();
-        //     foreach (var component in circuit[h, w])
-        //     {
-        //         
-        //     }
-        // }
-        //
-        // // Returns the current circuit as a 2-dimensional array. Each element of this array represents the list of every component (given by ref, no copy) that has a pole there (i.e. is plugged in the corresponding breadboard hole).  
-        // private List<ElecComponent>[,] InitCircuit()
-        // {
-        //     // Init the 2-dimensional array with empty lists
-        //     var circuit = new List<ElecComponent>[8, 8];
-        //     for (int h = 0; h < 8; h++)
-        //     for (int w = 0; w < 8; w++)
-        //         circuit[h, w] = new List<ElecComponent>();
-        //
-        //     // Add the components in the empty 2-dimensional array
-        //     foreach (var component in _components)
-        //     {
-        //         // The position of the currently processed component according to the breadboard
-        //         var origin = component.GetNormalizedPos();
-        //         foreach (var pole in component.poles)
-        //         {
-        //             if (origin.h + pole.GetH() is < 0 or >= 8 || origin.w + pole.GetW() is < 0 or >= 8)
-        //                 throw new IndexOutOfRangeException(
-        //                     $"The pole (x:{pole.x}, y:{pole.y}) or also (h:{pole.GetH()}, w:{pole.GetW()}) goes outside the breadboard.");
-        //             circuit[origin.h + pole.GetH(), origin.w + pole.GetW()].Add(component);
-        //         }
-        //     }
-        //     
-        //     return circuit;
-        // }
 
+        
+        
+        public Graph CreateGraph()
+        {
+            // clear the adjacent relation of the dipoles (avoid branch duplication)
+            foreach (var d in _dipoles)
+                d.Inner.ClearAdjacent();
+            // inner vertices can be null!
+            Vertex[,] grid = new Vertex[8, 8];
+            PlaceWires(grid);
+            PlaceDipoles(grid);
+            var input = new CircuitInput("input", 240, 16);
+            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
+            var output = new CircuitOutput("output");
+            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
+            var graph = new Graph("Main graph", input, output, Target);
+            foreach (Vertex v in grid)
+            {
+                if (v is not null)
+                {
+                    if (v.AdjacentComponents.Count > 2)
+                        graph.AddVertex(v.ToNode());
+                    else
+                        graph.AddVertex(v);
+                }
+            }
+
+            foreach (var d in _dipoles)
+            {
+                graph.AddVertex(d.Inner);
+            }
+
+            return graph;
+        }
+
+        private Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
+        {
+            if (grid[h, w] is null)
+            {
+                grid[h, w] = new Vertex($"({h}, {w})");
+            }
+
+            return grid[h, w];
+        }
+
+        private void PlaceWires(Vertex[,] grid)
+        {
+            foreach (var w in _wires)
+            {
+                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.H, w.Pole1.W);
+                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.H, w.Pole2.W);
+                Vertex.ReciprocalAddAdjacent(v1, v2);
+            }
+        }
+        
+        private void PlaceDipoles(Vertex[,] grid)
+        {
+            foreach (var d in _dipoles)
+            {
+                Vertex v1 = GetVertexOrNewAt(grid, d.GetPoles()[0].H, d.GetPoles()[0].W);
+                Vertex v2 = GetVertexOrNewAt(grid, d.GetPoles()[1].H, d.GetPoles()[1].W);
+                Vertex.ReciprocalAddAdjacent(v1, d.Inner);
+                Vertex.ReciprocalAddAdjacent(d.Inner, v2);
+            }
+        }
+        
+        
         public void RegisterComponent(Dipole component)
         {
-            if (_components.Contains(component))
+            if (_dipoles.Contains(component))
                 return;
-            _components.Add(component);
+            _dipoles.Add(component);
         }
 
         public void UnRegisterComponent(Dipole component)
         {
-            if (!_components.Contains(component))
+            if (!_dipoles.Contains(component))
                 return;
-            _components.Remove(component);
+            _dipoles.Remove(component);
         }
 
         public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 defaultPos)
@@ -191,7 +320,7 @@ namespace Reconnect.Electronics
             var closest = new Vector3(
                 ClosestHalf(component.transform.position.x + component.mainPoleAnchor.x) - component.mainPoleAnchor.x,
                 ClosestHalf(component.transform.position.y + component.mainPoleAnchor.y) - component.mainPoleAnchor.y,
-                _zPositionDipoles);
+                zPositionDipoles);
 
             // The poles of the component if it was at the closest position
             var poles = component.GetPoles(closest);
@@ -199,14 +328,14 @@ namespace Reconnect.Electronics
             if (poles.Any(pole => pole.H is < 0 or >= 8 || pole.W is < 0 or >= 8))
             {
                 // A pole is outside the breadboard
-                Debug.Log("A pole is outside the breadboard");
+                // Debug.Log("A pole is outside the breadboard");
                 return null;
             }
 
-            if (_components.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
+            if (_dipoles.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
             {
                 // A component is already here
-                Debug.Log("A component is already here");
+                // Debug.Log("A component is already here");
                 return null;
             }
 

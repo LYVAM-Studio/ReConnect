@@ -1,4 +1,7 @@
+using System;
 using System.Linq;
+using Reconnect.Electronics.Graphs;
+using TestGraph.Components;
 using UnityEngine;
 
 namespace Reconnect.Electronics
@@ -15,13 +18,13 @@ namespace Reconnect.Electronics
             "The poles coordinates. Note that the first pole is considered as the main one. The y axis is from bottom to top like in the Unity editor.")]
         private Vector2[] poles = { new(0, 0), new(0, -1) };
 
-        private Breadboard _breadboard;
+        public Breadboard Breadboard { get; set; }
 
         // The distance between the cursor and the center of this object
         private Vector3 _deltaCursor;
 
         // Whether this object is rotated or not
-        private bool _isRotated;
+        private bool _isHorizontal;
 
         // The last position occupied by this component
         private Vector3 _lastPosition;
@@ -31,21 +34,19 @@ namespace Reconnect.Electronics
 
         // The component responsible for the outlines
         private Outline _outline;
+        
+        public Vertex Inner { get; set; }
 
         private void Start()
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
-            _breadboard =
-                FindObjectsByType<Breadboard>(FindObjectsSortMode.None)
-                    [0]; // TODO: create a better and more efficient link
         }
-
 
         private void OnMouseDown()
         {
             _lastPosition = transform.position;
-            _lastRotation = _isRotated;
+            _lastRotation = _isHorizontal;
             _deltaCursor = transform.position - ElecHelper.GetFlattedCursorPos();
         }
 
@@ -55,7 +56,7 @@ namespace Reconnect.Electronics
             if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
             {
                 // Toggles the rotation
-                SetRotation(!_isRotated);
+                SetRotation(!_isHorizontal);
             }
         }
 
@@ -71,7 +72,7 @@ namespace Reconnect.Electronics
 
         private void OnMouseUp()
         {
-            var pos = _breadboard.GetClosestValidPosition(this);
+            var pos = Breadboard.GetClosestValidPosition(this);
             if (pos is Vector3 validPos)
             {
                 transform.position = validPos;
@@ -84,35 +85,58 @@ namespace Reconnect.Electronics
             }
         }
 
-        public Pole[] GetPoles(Vector2 position)
+        public Point[] GetPoles(Vector2 position)
         {
-            var poleList = from p in poles select Pole.PositionToPole(position + p + mainPoleAnchor);
+            var poleList = from p in poles select Point.VectorToPoint(position + p + mainPoleAnchor);
             return poleList.ToArray();
         }
 
-        public Pole[] GetPoles()
+        public Point[] GetPoles()
         {
             return GetPoles(transform.position);
         }
 
-        public void SetRotation(bool rotated)
-        {
-            if (rotated == _isRotated) return;
+        public Point GetOtherPole(Point other) => Array.Find(GetPoles(), p => p != other);
 
-            if (rotated)
+        public void SetRotation(bool horizontal)
+        {
+            if (horizontal == _isHorizontal) return;
+
+            if (horizontal)
             {
-                _isRotated = true;
+                _isHorizontal = true;
                 poles[1] = new Vector2(1, 0);
                 transform.eulerAngles = new Vector3(0, 0, 90);
                 mainPoleAnchor = new Vector2(-0.5f, 0);
             }
             else
             {
-                _isRotated = false;
+                _isHorizontal = false;
                 poles[1] = new Vector2(0, -1);
                 transform.eulerAngles = Vector3.zero;
                 mainPoleAnchor = new Vector2(0, 0.5f);
             }
+        }
+
+        public void SetPosition(Point pole1, Point pole2)
+        {
+            if (!Mathf.Approximately(((Vector2)pole1 - (Vector2)pole2).magnitude, 1))
+                throw new Exception(
+                    $"This dipole cannot be set between nodes {pole1} and {pole2} because the distance between them is not 1.");
+            if (pole1.H == pole2.H)
+            {
+                // Horizontal
+                if (pole1.W > pole2.W) pole1 = pole2; // Make the pole1 the leftmost point
+                SetRotation(true);
+            }
+            else
+            {
+                // Vertical
+                if (pole1.H > pole2.H) pole1 = pole2; // Make the pole1 the upmost point
+                SetRotation(false);
+            }
+
+            transform.position = Point.PointToVector(pole1, Breadboard.zPositionDipoles) - (Vector3)mainPoleAnchor;
         }
     }
 }
