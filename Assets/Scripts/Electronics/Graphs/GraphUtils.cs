@@ -76,8 +76,8 @@ namespace Reconnect.Electronics.Graphs
 
                 Node commonNode = FindCommonNode(branch, graphBranch);
                 if (commonNode is not null && commonNode.AdjacentComponents.Count == 2)
-                    ApplyMergeBranchesInSeries(graphBranch, branch, commonNode, branches);
-                i++;
+                    ApplyMergeBranchesInSeries(branch, graphBranch, commonNode, branches);
+                else i++;
             }
         }
     
@@ -108,7 +108,19 @@ namespace Reconnect.Electronics.Graphs
         {
             if (commonNode != FindCommonNode(branch, branchToMerge))
                 throw new ArgumentException("The common node is not common to the branches");
-            branch.StartNode = commonNode;
+
+            if (branch.EndNode == commonNode)
+            {
+                branch.EndNode = branchToMerge.StartNode == commonNode
+                    ? branchToMerge.EndNode
+                    : branchToMerge.StartNode;
+            }
+            else
+            {
+                branch.StartNode = branchToMerge.EndNode == commonNode
+                    ? branchToMerge.StartNode
+                    : branchToMerge.EndNode;
+            }
             branch.AddVertex(branchToMerge.Components);
             branches.Remove(branchToMerge);
         }
