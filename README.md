@@ -1,4 +1,8 @@
 # ReConnect
+<p align="center" width="100%">
+    <img src="doc/logo-reconnect-round.png" alt="reconnect-logo" height="300"/>
+</p>
+
 
 ## About the Game
 
