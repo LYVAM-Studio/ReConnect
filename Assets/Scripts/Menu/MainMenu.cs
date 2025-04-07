@@ -1,24 +1,27 @@
 using UnityEngine;
 
-public class MenuController : MonoBehaviour
+namespace Reconnect.Menu
 {
-    public GameObject mainMenuCanvas;
-    public GameObject multiplayerMenuCanvas;
-
-    public void ShowMultiplayerMenu()
+    public class MenuController : MonoBehaviour
     {
-        mainMenuCanvas.SetActive(false);
-        multiplayerMenuCanvas.SetActive(true);
-    }
+        public GameObject mainMenuCanvas;
+        public GameObject multiplayerMenuCanvas;
 
-    public void ShowMainMenu()
-    {
-        multiplayerMenuCanvas.SetActive(false);
-        mainMenuCanvas.SetActive(true);
-    }
+        public void ShowMultiplayerMenu()
+        {
+            mainMenuCanvas.SetActive(false);
+            multiplayerMenuCanvas.SetActive(true);
+        }
 
-    public void QuitGame()
-    {
-        Application.Quit();
+        public void ShowMainMenu()
+        {
+            multiplayerMenuCanvas.SetActive(false);
+            mainMenuCanvas.SetActive(true);
+        }
+
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
     }
 }
