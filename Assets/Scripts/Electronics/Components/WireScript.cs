@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using Reconnect.Electronics.Breadboards;
+
 
 namespace Reconnect.Electronics.Components
 {
