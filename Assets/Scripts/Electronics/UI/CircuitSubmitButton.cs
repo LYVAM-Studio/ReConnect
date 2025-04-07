@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Reconnect.Electronics.Graphs;
-using TestGraph.Components;
+using Reconnect.Electronics.Components;
 using UnityEngine;
 
 namespace Reconnect.Electronics.UI

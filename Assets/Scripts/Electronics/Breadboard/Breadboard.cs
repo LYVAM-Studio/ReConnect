@@ -5,10 +5,9 @@ using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
-using TestGraph.Components;
 using UnityEngine;
 
-namespace Reconnect.Electronics
+namespace Reconnect.Electronics.Breadboards
 {
     public class Breadboard : MonoBehaviour
     {
