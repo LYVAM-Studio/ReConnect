@@ -1,56 +1,60 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-public class PauseMenu : MonoBehaviour
+
+namespace Reconnect.Menu
 {
-    public GameObject pauseMenuUI;
-    public static bool IsPaused = false;
-
-    private PlayerInput playerInput;
-
-    void Start()
+    public class PauseMenu : MonoBehaviour
     {
-        pauseMenuUI.SetActive(false);
-        playerInput = FindFirstObjectByType<PlayerInput>();
-    }
+        public GameObject pauseMenuUI;
+        public static bool IsPaused = false;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        private PlayerInput playerInput;
+
+        void Start()
         {
-            if (IsPaused)
+            pauseMenuUI.SetActive(false);
+            playerInput = FindFirstObjectByType<PlayerInput>();
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Resume();
+                if (IsPaused)
+                {
+                    Resume();
+                }
+                else
+                {
+                    Pause();
+                }
             }
-            else
+        }
+
+        public void Resume()
+        {
+            pauseMenuUI.SetActive(false);
+            IsPaused = false;
+            if (playerInput != null)
             {
-                Pause();
+                playerInput.actions["Move"].Enable();
             }
         }
-    }
 
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        IsPaused = false;
-        if (playerInput != null)
+        void Pause()
         {
-            playerInput.actions["Move"].Enable();
+            pauseMenuUI.SetActive(true);
+            IsPaused = true;
+            if (playerInput != null)
+            {
+                playerInput.actions["Move"].Disable();
+            }
         }
-    }
 
-    void Pause()
-    {
-        pauseMenuUI.SetActive(true);
-        IsPaused = true;
-        if (playerInput != null)
+        public void QuitGame()
         {
-            playerInput.actions["Move"].Disable();
+            Application.Quit();
         }
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
     }
 }

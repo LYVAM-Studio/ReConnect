@@ -2,23 +2,26 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MultiplayerMenu : MonoBehaviour
+namespace Reconnect.Menu
 {
-    public InputField ipInputField;
-    public NetworkManager networkManager;
-    public string gameSceneName = "GameScene";
-
-    public void JoinGame()
+    public class MultiplayerMenu : MonoBehaviour
     {
-        networkManager.networkAddress = 
-            string.IsNullOrEmpty(ipInputField.text) ? "localhost" : ipInputField.text;
-        networkManager.StartClient();
-    }
+        public InputField ipInputField;
+        public NetworkManager networkManager;
+        public string gameSceneName = "GameScene";
 
-    public void HostGame()
-    {
-        networkManager.onlineScene = gameSceneName;
+        public void JoinGame()
+        {
+            networkManager.networkAddress =
+                string.IsNullOrEmpty(ipInputField.text) ? "localhost" : ipInputField.text;
+            networkManager.StartClient();
+        }
 
-        networkManager.StartHost();
+        public void HostGame()
+        {
+            networkManager.onlineScene = gameSceneName;
+
+            networkManager.StartHost();
+        }
     }
 }
