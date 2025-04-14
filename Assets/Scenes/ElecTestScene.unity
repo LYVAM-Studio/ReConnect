@@ -1620,10 +1620,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 353718754826716628, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: m_PlaneDistance
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 535804720258257089, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 296569151}
+    - target: {fileID: 932384127064880003, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1567642407511763755, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
