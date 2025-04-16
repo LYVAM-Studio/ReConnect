@@ -1,5 +1,3 @@
-using System;
-using Reconnect.Electronics.UI;
 using UnityEngine;
 
 namespace Reconnect.Electronics.UI
@@ -21,5 +19,5 @@ namespace Reconnect.Electronics.UI
             _breadboardUI.Breadboard.LoadCircuit(CircuitName);
         }
     }
-
 }
+

@@ -85,7 +85,7 @@ namespace Reconnect.Electronics.Breadboards
                         double r = double.Parse(content[5], CultureInfo.InvariantCulture);
                         Point fromPos = new Point(from.h, from.w);
                         Point toPos = new Point(to.h, to.w);
-                        var resistorGameObj = Instantiate(Helper.GetPrefabByName("Components/ResistorPrefab"));
+                        var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"));
                         if (resistorGameObj is null)
                             throw new Exception("The resistor prefab could not be found.");
                         var dipoleScript = resistorGameObj.GetComponent<Dipole>();
@@ -106,7 +106,7 @@ namespace Reconnect.Electronics.Breadboards
                         double tension = double.Parse(content[6], CultureInfo.InvariantCulture);
                         Point fromPos = new Point(from.h, from.w);
                         Point toPos = new Point(to.h, to.w);
-                        var lampGameObj = Instantiate(Helper.GetPrefabByName("Components/LampPrefab"));
+                        var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"));
                         if (lampGameObj is null)
                             throw new Exception("The lamp prefab could not be found.");
                         var dipoleScript = lampGameObj.GetComponent<Dipole>();
@@ -205,7 +205,7 @@ namespace Reconnect.Electronics.Breadboards
             if ((from - to).magnitude > 1.5)
                 throw new Exception($"The wire from {from} to {to} cannot be created: the cire is too long");
             // Instantiate a wire from the wire prefab
-            var wireGameObj = Instantiate(Helper.GetPrefabByName("Components/WirePrefab"));
+            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"));
             if (wireGameObj is null)
                 throw new Exception("The wire prefab could not be found.");
             var wireScript = wireGameObj.GetComponent<WireScript>();
