@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
 using Reconnect.Electronics.Graphs;
-using TestGraph.Components;
 using UnityEngine;
 
-namespace Reconnect.Electronics
+namespace Reconnect.Electronics.Breadboards
 {
     public class Dipole : MonoBehaviour
     {

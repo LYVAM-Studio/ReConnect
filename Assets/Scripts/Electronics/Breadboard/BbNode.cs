@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Reconnect.Electronics
+namespace Reconnect.Electronics.Breadboards
 {
     public class BbNode : MonoBehaviour
     {

@@ -1,9 +1,9 @@
 using Mirror;
-using Player;
+using Reconnect.Player;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Scene
+namespace Reconnect.Scene
 {
     public class SceneScript : NetworkBehaviour
     {

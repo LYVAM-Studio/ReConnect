@@ -1,4 +1,4 @@
-using Player;
+using Reconnect.Player;
 using Unity.Cinemachine;
 using UnityEngine;
 
