@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Reconnect.Electronics.Graphs;
 
-namespace TestGraph.Components
+namespace Reconnect.Electronics.Components
 {
     public class CircuitInput : Node
     {

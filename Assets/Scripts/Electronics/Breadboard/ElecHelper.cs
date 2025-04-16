@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Reconnect.Electronics
+namespace Reconnect.Electronics.Breadboards
 {
     public static class ElecHelper
     {

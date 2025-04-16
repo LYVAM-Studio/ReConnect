@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity;
 using System.Linq;
 using System.Reflection;
-using TestGraph.Components;
+using Reconnect.Electronics.Components;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Graphs

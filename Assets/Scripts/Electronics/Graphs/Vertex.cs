@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using TestGraph.Components;
+using Reconnect.Electronics.Components;
 
 namespace Reconnect.Electronics.Graphs
 {
