@@ -7,6 +7,7 @@ namespace Reconnect.Player
     public class PlayerGravityTrigger : MonoBehaviour
     {
         private PhysicsScript _physicsScript;
+
         private void Start()
         {
             _physicsScript = GetComponentInParent<PhysicsScript>();
@@ -25,5 +26,4 @@ namespace Reconnect.Player
             }
         }
     }
-
 }

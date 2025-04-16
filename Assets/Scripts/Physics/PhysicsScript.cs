@@ -7,8 +7,10 @@ namespace Reconnect.Physics
         // parameters that can be edited in Editor
         [Header("In Base gravity force constant")]
         public readonly float InBaseGravity = -9.81f; // gravity strength (default: -9.81, earth gravity)
+
         [Header("Outer Base gravity force constant")]
-        public readonly float OuterBaseGravity = -5f; // gravity strength outside the base (lower to have the moon effect)
+        public readonly float
+            OuterBaseGravity = -5f; // gravity strength outside the base (lower to have the moon effect)
 
         private bool _isInBase = false;
         public float Gravity => _isInBase ? InBaseGravity : OuterBaseGravity;

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -26,17 +28,43 @@ namespace Reconnect.Electronics.Breadboards
 
         private void OnMouseDown()
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                // The click is over a UI element with Raycast Target = true
+                return;
+            }
             Breadboard.StartWire(transform.position);
         }
 
         private void OnMouseEnter()
         {
-            Breadboard.OnMouseNodeCollision(transform.position);
+            if (IsPointerOverUI())
+            {
+                Breadboard.EndWire();
+            }
+            else
+            {
+
+                Breadboard.OnMouseNodeCollision(transform.position);
+            }
         }
 
         private void OnMouseUp()
         {
             Breadboard.EndWire();
+        }
+        
+        private bool IsPointerOverUI()
+        {
+            PointerEventData pointerData = new PointerEventData(EventSystem.current)
+            {
+                position = Input.mousePosition
+            };
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerData, results);
+
+            return results.Count > 0;
         }
     }
 }
