@@ -1,12 +1,13 @@
 using System;
 using Mirror;
-using Scene;
+using Reconnect.Physics;
+using Reconnect.Scene;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
-namespace Player
+namespace Reconnect.Player
 {
     public class PlayerNetwork : NetworkBehaviour
     {
