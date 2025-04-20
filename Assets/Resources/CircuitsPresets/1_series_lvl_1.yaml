@@ -1,0 +1,39 @@
+title: lvl1
+input-tension: 240
+input-intensity: 16
+target-tension: 120 
+components:
+  - lamp:
+    name: L1
+    h-pos: 5
+    w-pos: 3
+    direction: s
+    resistance: 250
+    nominal-tension: 120
+    target: true
+  - resistor:
+    name: R1
+    h-pos: 3
+    w-pos: 5
+    direction: s
+    resistance: 250
+  - wire:
+    h-pos: 0
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 1
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 2
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 4
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 6
+    w-pos: 3
+    direction: s
