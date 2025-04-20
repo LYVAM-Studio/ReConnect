@@ -51,6 +51,26 @@ namespace Reconnect.Electronics.Breadboards
         /// The target of the currently loaded circuit.
         /// </summary>
         public ElecComponent Target { get; private set; }
+
+        /// <summary>
+        /// The title of the circuit that has been loaded on this breadboard.
+        /// </summary>
+        [NonSerialized] public string CircuitTitle;
+        
+        /// <summary>
+        /// The input tension of the current circuit.
+        /// </summary>
+        [NonSerialized] public float CircuitInputTension;
+        
+        /// <summary>
+        /// The input intensity of the current circuit.
+        /// </summary>
+        [NonSerialized] public float CircuitInputIntensity;
+        
+        /// <summary>
+        /// The tension required by the target for the level to be completed.
+        /// </summary>
+        [NonSerialized] public float CircuitTargetTension;
         
         private void Start()
         {
@@ -102,7 +122,7 @@ namespace Reconnect.Electronics.Breadboards
         private static string YamlGetScalarValue(IOrderedDictionary<YamlNode, YamlNode> children, string key)
         {
             if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode nameNode))
-                throw new Exception("Yaml error");
+                throw new InvalidDataException($"Sought key {key} not found in yaml document.");
             return ((YamlScalarNode)nameNode).Value!;
         }
         
@@ -126,7 +146,7 @@ namespace Reconnect.Electronics.Breadboards
                 "se" when allowDiagonal => sourcePoint.Shift(+1, +1),
                 "sw" when allowDiagonal => sourcePoint.Shift(+1, -1),
                 "nw" when allowDiagonal => sourcePoint.Shift(-1, -1),
-                { } dir => throw new Exception(allowDiagonal
+                { } dir => throw new InvalidDataException(allowDiagonal
                     ? $"Invalid direction. Expected 'n', 'e', 's', 'w', 'ne', 'se', 'sw' or 'nw' but got {dir}."
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
             };
@@ -148,10 +168,10 @@ namespace Reconnect.Electronics.Breadboards
 
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
             
-            string title = YamlGetScalarValue(root.Children, "title");
-            float inputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"));
-            float inputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"));
-            float targetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"));
+            CircuitTitle = YamlGetScalarValue(root.Children, "title");
+            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"));
+            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"));
+            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"));
             
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
 
@@ -189,7 +209,7 @@ namespace Reconnect.Electronics.Breadboards
                 {
                     CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint);
                     if (isTarget)
-                        throw new Exception("Invalid target: a wire cannot be a circuit target.");
+                        throw new InvalidDataException("Invalid target: a wire cannot be a circuit target.");
                 }
                 else if (type == "resistor")
                 {
@@ -198,7 +218,7 @@ namespace Reconnect.Electronics.Breadboards
                     Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance);
                     if (isTarget) 
                     {
-                        if (Target != null) throw new Exception("Multiple targets found. A circuit should have only one target.");
+                        if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
                         Target = resistor;
                     }
                 }
@@ -210,13 +230,13 @@ namespace Reconnect.Electronics.Breadboards
                     Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension);
                     if (isTarget) 
                     {
-                        if (Target != null) throw new Exception("Multiple targets found. A circuit should have only one target.");
+                        if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
                         Target = lamp;
                     }
                 }
                 else
                 {
-                    throw new Exception($"Invalid component type. Expected wire, resistor or lamp but got {type}.");
+                    throw new ArgumentException($"Invalid component type. Expected wire, resistor or lamp but got {type}.");
                 }
 
                 componentId++;
