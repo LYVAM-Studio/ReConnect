@@ -1,0 +1,66 @@
+title: lvl2
+input-tension: 240
+input-intensity: 16
+target-tension: 182.4
+components:
+  - lamp:
+    h-pos: 5
+    w-pos: 3
+    direction: s
+    resistance: 76
+    nominal-tension: 182.4
+    target: true
+  - wire:
+    h-pos: 0
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 1
+    w-pos: 3
+    direction: w
+  - wire:
+    h-pos: 1
+    w-pos: 3
+    direction: e
+  - wire:
+    h-pos: 1
+    w-pos: 2
+    direction: s
+  - wire:
+    h-pos: 1
+    w-pos: 4
+    direction: s
+  - wire:
+    h-pos: 3
+    w-pos: 2
+    direction: s
+  - wire:
+    h-pos: 3
+    w-pos: 4
+    direction: s
+  - wire:
+    h-pos: 4
+    w-pos: 2
+    direction: e
+  - wire:
+    h-pos: 4
+    w-pos: 4
+    direction: w
+  - wire:
+    h-pos: 4
+    w-pos: 3
+    direction: s
+  - wire:
+    h-pos: 6
+    w-pos: 3
+    direction: s
+  - resistor:
+    h-pos: 3
+    w-pos: 0
+    direction: s
+    resistance: 40
+  - resistor:
+    h-pos: 3
+    w-pos: 1
+    direction: s
+    resistance: 60
