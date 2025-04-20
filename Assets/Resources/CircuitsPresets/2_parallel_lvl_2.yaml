@@ -4,63 +4,63 @@ input-intensity: 16
 target-tension: 182.4
 components:
   - lamp:
-    height: 5
-    width: 3
+    h-pos: 5
+    w-pos: 3
     direction: s
     resistance: 76
     nominal-tension: 182.4
-    target:
+    target: true
   - wire:
-    height: 0
-    width: 3
+    h-pos: 0
+    w-pos: 3
     direction: s
   - wire:
-    height: 1
-    width: 3
+    h-pos: 1
+    w-pos: 3
     direction: w
   - wire:
-    height: 1
-    width: 3
+    h-pos: 1
+    w-pos: 3
     direction: e
   - wire:
-    height: 1
-    width: 2
+    h-pos: 1
+    w-pos: 2
     direction: s
   - wire:
-    height: 1
-    width: 4
+    h-pos: 1
+    w-pos: 4
     direction: s
   - wire:
-    height: 3
-    width: 2
+    h-pos: 3
+    w-pos: 2
     direction: s
   - wire:
-    height: 3
-    width: 4
+    h-pos: 3
+    w-pos: 4
     direction: s
   - wire:
-    height: 4
-    width: 2
+    h-pos: 4
+    w-pos: 2
     direction: e
   - wire:
-    height: 4
-    width: 4
+    h-pos: 4
+    w-pos: 4
     direction: w
   - wire:
-    height: 4
-    width: 3
+    h-pos: 4
+    w-pos: 3
     direction: s
   - wire:
-    height: 6
-    width: 3
+    h-pos: 6
+    w-pos: 3
     direction: s
   - resistor:
-    height: 3
-    width: 0
+    h-pos: 3
+    w-pos: 0
     direction: s
     resistance: 40
   - resistor:
-    height: 3
-    width: 1
+    h-pos: 3
+    w-pos: 1
     direction: s
     resistance: 60
