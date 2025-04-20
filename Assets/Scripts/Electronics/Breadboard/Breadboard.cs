@@ -140,9 +140,9 @@ namespace Reconnect.Electronics.Breadboards
         {
             Clean();
             
-            string circuitPath = Path.Combine(Application.streamingAssetsPath, $"CircuitsPresets/{circuitName}.yaml");
+            TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
 
-            using StreamReader reader = new StreamReader(circuitPath);
+            using StringReader reader = new StringReader(yamlAsset.text);
             YamlStream yaml = new YamlStream();
             yaml.Load(reader);
 
@@ -165,17 +165,20 @@ namespace Reconnect.Electronics.Breadboards
                 // Fields in common (for any type of component) 
 
                 string name = $"{componentId}: ";
-                if (component.Children.TryGetValue(new YamlScalarNode("name"), out YamlNode nameNode))
-                    name += ((YamlScalarNode)nameNode).Value;
-                else
-                    name += $"nameless {type}";
-                int height = int.Parse(YamlGetScalarValue(component.Children, "height"));
-                int width = int.Parse(YamlGetScalarValue(component.Children, "width"));
+                int hPos = int.Parse(YamlGetScalarValue(component.Children, "h-pos"));
+                int wPos = int.Parse(YamlGetScalarValue(component.Children, "w-pos"));
                 string direction = YamlGetScalarValue(component.Children, "direction");
-                bool isTarget = component.Children.ContainsKey(new YamlScalarNode("target"));
+                bool isTarget = component.Children.TryGetValue(new YamlScalarNode("target"), out var targetNode) 
+                                && bool.TryParse(((YamlScalarNode)targetNode).Value, out bool res)
+                                && res;
                 
-                Point sourcePoint = new Point(height, width);
+                Point sourcePoint = new Point(hPos, wPos);
                 Point destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
+                
+                if (component.Children.TryGetValue(new YamlScalarNode("name"), out YamlNode nameNode))
+                    name += $"{((YamlScalarNode)nameNode).Value} {sourcePoint} <-> {destinationPoint}";
+                else
+                    name += $"{sourcePoint} <-> {destinationPoint}";
 
                 Vector3 sourcePos = Point.PointToVector(sourcePoint, zPositionDipoles);
                 Vector3 destinationPos = Point.PointToVector(destinationPoint, zPositionDipoles);
@@ -185,14 +188,19 @@ namespace Reconnect.Electronics.Breadboards
                 if (type == "wire")
                 {
                     CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint);
-                    // isTarget is ignored because a wire cannot be a target
+                    if (isTarget)
+                        throw new Exception("Invalid target: a wire cannot be a circuit target.");
                 }
                 else if (type == "resistor")
                 {
                     float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"));
                     
                     Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance);
-                    if (Target == null && isTarget) Target = resistor;
+                    if (isTarget) 
+                    {
+                        if (Target != null) throw new Exception("Multiple targets found. A circuit should have only one target.");
+                        Target = resistor;
+                    }
                 }
                 else if (type == "lamp")
                 {
@@ -200,7 +208,15 @@ namespace Reconnect.Electronics.Breadboards
                     float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"));
                     
                     Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension);
-                    if (Target == null && isTarget) Target = lamp;
+                    if (isTarget) 
+                    {
+                        if (Target != null) throw new Exception("Multiple targets found. A circuit should have only one target.");
+                        Target = lamp;
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Invalid component type. Expected wire, resistor or lamp but got {type}.");
                 }
 
                 componentId++;
@@ -309,7 +325,7 @@ namespace Reconnect.Electronics.Breadboards
                 }
                 else if (!_onDeletionMode)
                 {
-                    CreateWire(_lastNodePosition, nodePosition, "user created",_lastNodePoint, nodePoint);
+                    CreateWire(_lastNodePosition, nodePosition, $"_: {_lastNodePoint} <-> {nodePoint}",_lastNodePoint, nodePoint);
                 }
 
                 // Set the start to the current end
