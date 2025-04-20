@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
     public class BbNode : MonoBehaviour
     {
+        private Point _point;
         private Breadboard _breadboard;
 
         // Returns the parent breadboard
@@ -18,22 +20,24 @@ namespace Reconnect.Electronics.Breadboards
                 {
                     _breadboard = GetComponentInParent<Breadboard>();
                     if (_breadboard is null)
-                        throw new Exception(
-                            $"Breadboard not found by BreadboardNode at position ({transform.position.x}, {transform.position.y}, {transform.position.z}).");
+                        throw new Exception($"Breadboard not found by BreadboardNode at position ({transform.position.x}, {transform.position.y}, {transform.position.z}).");
                 }
 
                 return _breadboard;
             }
         }
 
+        private void Start()
+        {
+            _point = Point.VectorToPoint(transform.position);
+        }
+
         private void OnMouseDown()
         {
+            // The click is over a UI element with Raycast Target = true
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            {
-                // The click is over a UI element with Raycast Target = true
                 return;
-            }
-            Breadboard.StartWire(transform.position);
+            Breadboard.StartWire(transform.position, _point);
         }
 
         private void OnMouseEnter()
@@ -45,7 +49,7 @@ namespace Reconnect.Electronics.Breadboards
             else
             {
 
-                Breadboard.OnMouseNodeCollision(transform.position);
+                Breadboard.OnMouseNodeCollision(transform.position, _point);
             }
         }
 

@@ -15,6 +15,10 @@ namespace Reconnect.Electronics.Breadboards
         public int H { get; }
         public int W { get; }
 
+        public Point Shift(int deltaH, int deltaW) => new Point(H + deltaH, W + deltaW);
+        public Point ShiftH(int deltaH) => Shift(deltaH, 0);
+        public Point ShiftW(int deltaW) => Shift(0, deltaW);
+
         public static bool operator ==(Point left, Point right)
         {
             return left is not null && left.Equals(right);

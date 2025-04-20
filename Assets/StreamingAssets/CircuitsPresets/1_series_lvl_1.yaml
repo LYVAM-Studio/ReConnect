@@ -1,0 +1,39 @@
+title: lvl1
+input-tension: 240
+input-intensity: 16
+target-tension: 120 
+components:
+  - lamp:
+    name: L1
+    height: 5
+    width: 3
+    direction: s
+    resistance: 250
+    nominal-tension: 120
+    target:
+  - resistor:
+    name: R1
+    height: 3
+    width: 5
+    direction: s
+    resistance: 250
+  - wire:
+    height: 0
+    width: 3
+    direction: s
+  - wire:
+    height: 1
+    width: 3
+    direction: s
+  - wire:
+    height: 2
+    width: 3
+    direction: s
+  - wire:
+    height: 4
+    width: 3
+    direction: s
+  - wire:
+    height: 6
+    width: 3
+    direction: s

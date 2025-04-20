@@ -1,0 +1,66 @@
+title: lvl2
+input-tension: 240
+input-intensity: 16
+target-tension: 182.4
+components:
+  - lamp:
+    height: 5
+    width: 3
+    direction: s
+    resistance: 76
+    nominal-tension: 182.4
+    target:
+  - wire:
+    height: 0
+    width: 3
+    direction: s
+  - wire:
+    height: 1
+    width: 3
+    direction: w
+  - wire:
+    height: 1
+    width: 3
+    direction: e
+  - wire:
+    height: 1
+    width: 2
+    direction: s
+  - wire:
+    height: 1
+    width: 4
+    direction: s
+  - wire:
+    height: 3
+    width: 2
+    direction: s
+  - wire:
+    height: 3
+    width: 4
+    direction: s
+  - wire:
+    height: 4
+    width: 2
+    direction: e
+  - wire:
+    height: 4
+    width: 4
+    direction: w
+  - wire:
+    height: 4
+    width: 3
+    direction: s
+  - wire:
+    height: 6
+    width: 3
+    direction: s
+  - resistor:
+    height: 3
+    width: 0
+    direction: s
+    resistance: 40
+  - resistor:
+    height: 3
+    width: 1
+    direction: s
+    resistance: 60
