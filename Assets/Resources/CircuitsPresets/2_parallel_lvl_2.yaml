@@ -10,50 +10,62 @@ components:
     resistance: 76
     nominal-tension: 182.4
     target: true
+    locked: true
   - wire:
     h-pos: 0
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 1
     w-pos: 3
     direction: w
+    locked: true
   - wire:
     h-pos: 1
     w-pos: 3
     direction: e
+    locked: true
   - wire:
     h-pos: 1
     w-pos: 2
     direction: s
+    locked: true
   - wire:
     h-pos: 1
     w-pos: 4
     direction: s
+    locked: true
   - wire:
     h-pos: 3
     w-pos: 2
     direction: s
+    locked: true
   - wire:
     h-pos: 3
     w-pos: 4
     direction: s
+    locked: true
   - wire:
     h-pos: 4
     w-pos: 2
     direction: e
+    locked: true
   - wire:
     h-pos: 4
     w-pos: 4
     direction: w
+    locked: true
   - wire:
     h-pos: 4
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 6
     w-pos: 3
     direction: s
+    locked: true
   - resistor:
     h-pos: 3
     w-pos: 0
