@@ -12,18 +12,48 @@ namespace Reconnect.Electronics.Components
         public Point Pole1 { get; private set; }
         public Point Pole2 { get; private set; }
 
-        private void OnMouseUpAsButton()
+        private Outline _outline;
+
+        private bool _isLocked = false;
+        public bool IsLocked
         {
-            Breadboard.DeleteWire(this);
+            get => _isLocked;
+            set 
+            {
+                _isLocked = value;
+                if (_isLocked) _outline.enabled = false;
+            }
         }
 
-        public void Init(Breadboard breadboard, Point pole1, Point pole2)
+        private void Awake()
+        {
+            _outline = GetComponent<Outline>();
+            _outline.enabled = false;
+        }
+
+        private void OnMouseEnter()
+        {
+            if (!_isLocked) _outline.enabled = true;
+        }
+
+        private void OnMouseExit()
+        {
+            _outline.enabled = false;
+        }
+
+        private void OnMouseUpAsButton()
+        {
+            if (!_isLocked) Breadboard.DeleteWire(this);
+        }
+
+        public void Init(Breadboard breadboard, Point pole1, Point pole2, bool isLocked = false)
         {
             if (_isInitialized) throw new Exception("This Wire has already been initialized.");
             Breadboard = breadboard;
             Pole1 = pole1;
             Pole2 = pole2;
             _isInitialized = true;
+            IsLocked = isLocked;
         }
 
         // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);

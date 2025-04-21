@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
@@ -121,9 +122,18 @@ namespace Reconnect.Electronics.Breadboards
         /// <exception cref="Exception">Throws an exception if the sought key is not found.</exception>
         private static string YamlGetScalarValue(IOrderedDictionary<YamlNode, YamlNode> children, string key)
         {
-            if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode nameNode))
+            if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode node))
                 throw new InvalidDataException($"Sought key {key} not found in yaml document.");
-            return ((YamlScalarNode)nameNode).Value!;
+            return ((YamlScalarNode)node).Value!;
+        }
+        
+        private static bool YamlTryGetScalarValue(IOrderedDictionary<YamlNode, YamlNode> children, string key, out string value)
+        {
+            value = null;
+            if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode node))
+                return false;
+            value = ((YamlScalarNode)node).Value;
+            return true;
         }
         
         /// <summary>
@@ -169,9 +179,9 @@ namespace Reconnect.Electronics.Breadboards
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
             
             CircuitTitle = YamlGetScalarValue(root.Children, "title");
-            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"));
-            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"));
-            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"));
+            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture);
+            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture);
+            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture);
             
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
 
@@ -188,9 +198,14 @@ namespace Reconnect.Electronics.Breadboards
                 int hPos = int.Parse(YamlGetScalarValue(component.Children, "h-pos"));
                 int wPos = int.Parse(YamlGetScalarValue(component.Children, "w-pos"));
                 string direction = YamlGetScalarValue(component.Children, "direction");
-                bool isTarget = component.Children.TryGetValue(new YamlScalarNode("target"), out var targetNode) 
-                                && bool.TryParse(((YamlScalarNode)targetNode).Value, out bool res)
-                                && res;
+                bool isTarget = false;
+                if (YamlTryGetScalarValue(component.Children, "target", out string targetValue)
+                    && !bool.TryParse(targetValue, out isTarget))
+                    throw new InvalidDataException($"Yaml key 'target' expect a boolean value but got {targetValue}.");
+                bool isLocked = false;
+                if (YamlTryGetScalarValue(component.Children, "locked", out string lockedValue)
+                    && !bool.TryParse(lockedValue, out isLocked))
+                    throw new InvalidDataException($"Yaml key 'locked' expect a boolean value but got {targetValue}.");
                 
                 Point sourcePoint = new Point(hPos, wPos);
                 Point destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
@@ -207,15 +222,15 @@ namespace Reconnect.Electronics.Breadboards
                 
                 if (type == "wire")
                 {
-                    CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint);
+                    CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint, isLocked);
                     if (isTarget)
                         throw new InvalidDataException("Invalid target: a wire cannot be a circuit target.");
                 }
                 else if (type == "resistor")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"));
+                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
-                    Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance);
+                    Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance, isLocked);
                     if (isTarget) 
                     {
                         if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
@@ -224,10 +239,10 @@ namespace Reconnect.Electronics.Breadboards
                 }
                 else if (type == "lamp")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"));
-                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"));
+                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
+                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"), CultureInfo.InvariantCulture);
                     
-                    Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension);
+                    Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension, isLocked);
                     if (isTarget) 
                     {
                         if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
@@ -246,12 +261,12 @@ namespace Reconnect.Electronics.Breadboards
                 throw new FormatException("The loaded circuit does not contain any target.");
         }
 
-        public void CreateWire(Vector3 sourcePos, Vector3 destinationPos, string name, Point sourcePoint, Point destinationPoint)
+        public void CreateWire(Vector3 sourcePos, Vector3 destinationPos, string name, Point sourcePoint, Point destinationPoint, bool isLocked = false)
         {
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"));
             var wireScript = wireGameObj.GetComponent<WireScript>();
             wireGameObj.name = $"WirePrefab ({name})";
-            wireScript.Init(this, sourcePoint, destinationPoint);
+            wireScript.Init(this, sourcePoint, destinationPoint, isLocked);
             _wires.Add(wireScript);
             wireGameObj.transform.position = (sourcePos + destinationPos) / 2;
             wireGameObj.transform.LookAt(destinationPos);
@@ -261,7 +276,7 @@ namespace Reconnect.Electronics.Breadboards
             wireGameObj.transform.localScale = scale;
         }
         
-        private Resistor CreateResistor(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance)
+        private Resistor CreateResistor(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, bool isLocked = false)
         {
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"));
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
@@ -269,6 +284,7 @@ namespace Reconnect.Electronics.Breadboards
             var inner = new Resistor(name, resistance);
             dipoleScript.Inner = inner;
             dipoleScript.Breadboard = this;
+            dipoleScript.IsLocked = isLocked;
             resistorGameObj.transform.position = (sourcePos + destinationPos) / 2;
             resistorGameObj.transform.LookAt(destinationPos);
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
@@ -276,7 +292,7 @@ namespace Reconnect.Electronics.Breadboards
             return inner;
         }
         
-        private Lamp CreateLamp(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, float nominalTension)
+        private Lamp CreateLamp(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, float nominalTension, bool isLocked = false)
         {
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"));
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
@@ -284,6 +300,7 @@ namespace Reconnect.Electronics.Breadboards
             var inner = new Lamp(name, resistance, nominalTension);
             dipoleScript.Inner = inner;
             dipoleScript.Breadboard = this;
+            dipoleScript.IsLocked = isLocked;
             lampGameObj.transform.position = (sourcePos + destinationPos) / 2;
             lampGameObj.transform.LookAt(destinationPos);
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
@@ -342,7 +359,7 @@ namespace Reconnect.Electronics.Breadboards
                 {
                     // A wire is already at this position
                     // Delete the wire at this position
-                    DeleteWire(wire);
+                    if (!wire.IsLocked) DeleteWire(wire);
                     // Enter the deletion mode
                     _onDeletionMode = true;
                 }
