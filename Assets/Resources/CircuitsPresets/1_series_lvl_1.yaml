@@ -11,6 +11,7 @@ components:
     resistance: 250
     nominal-tension: 120
     target: true
+    locked: true
   - resistor:
     name: R1
     h-pos: 3
@@ -21,19 +22,24 @@ components:
     h-pos: 0
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 1
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 2
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 4
     w-pos: 3
     direction: s
+    locked: true
   - wire:
     h-pos: 6
     w-pos: 3
     direction: s
+    locked: true
