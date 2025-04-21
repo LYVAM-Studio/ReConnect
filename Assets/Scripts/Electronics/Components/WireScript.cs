@@ -18,10 +18,10 @@ namespace Reconnect.Electronics.Components
         public bool IsLocked
         {
             get => _isLocked;
-            set
+            set 
             {
                 _isLocked = value;
-                _outline.OutlineColor = _isLocked ? Color.red : Color.white;
+                if (_isLocked) _outline.enabled = false;
             }
         }
 
@@ -29,13 +29,11 @@ namespace Reconnect.Electronics.Components
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
-            _outline.OutlineColor = Color.white;
         }
 
         private void OnMouseEnter()
         {
-            _outline.OutlineColor = _isLocked ? Color.red : Color.white;
-            _outline.enabled = true;
+            if (!_isLocked) _outline.enabled = true;
         }
 
         private void OnMouseExit()
