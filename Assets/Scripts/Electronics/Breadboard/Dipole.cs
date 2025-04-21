@@ -34,19 +34,29 @@ namespace Reconnect.Electronics.Breadboards
         // The component responsible for the outlines
         private Outline _outline;
 
-        [NonSerialized] public bool IsLocked;
+        private bool _isLocked = false;
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set
+            {
+                _isLocked = value;
+                _outline.OutlineColor = _isLocked ? Color.red : Color.white;
+            }
+        }
         
         public Vertex Inner { get; set; }
-
-        private void Start()
+        
+        private void Awake()
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
+            _outline.OutlineColor = Color.white;
         }
 
         private void OnMouseDown()
         {
-            if (IsLocked) return;
+            if (_isLocked) return;
             _lastPosition = transform.position;
             _lastRotation = _isHorizontal;
             _deltaCursor = transform.position - ElecHelper.GetFlattedCursorPos();
@@ -54,7 +64,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private void OnMouseDrag()
         {
-            if (IsLocked) return;
+            if (_isLocked) return;
             transform.position = ElecHelper.GetFlattedCursorPos() + _deltaCursor;
             if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
             {
@@ -75,7 +85,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private void OnMouseUp()
         {
-            if (IsLocked) return;
+            if (_isLocked) return;
             var pos = Breadboard.GetClosestValidPosition(this);
             if (pos is Vector3 validPos)
             {
