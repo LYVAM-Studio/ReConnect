@@ -12,18 +12,21 @@ namespace Reconnect.Electronics.Components
         public Point Pole1 { get; private set; }
         public Point Pole2 { get; private set; }
 
+        [NonSerialized] public bool IsLocked;
+
         private void OnMouseUpAsButton()
         {
-            Breadboard.DeleteWire(this);
+            if (!IsLocked) Breadboard.DeleteWire(this);
         }
 
-        public void Init(Breadboard breadboard, Point pole1, Point pole2)
+        public void Init(Breadboard breadboard, Point pole1, Point pole2, bool isLocked = false)
         {
             if (_isInitialized) throw new Exception("This Wire has already been initialized.");
             Breadboard = breadboard;
             Pole1 = pole1;
             Pole2 = pole2;
             _isInitialized = true;
+            IsLocked = isLocked;
         }
 
         // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);
