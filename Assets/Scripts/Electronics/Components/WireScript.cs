@@ -12,11 +12,40 @@ namespace Reconnect.Electronics.Components
         public Point Pole1 { get; private set; }
         public Point Pole2 { get; private set; }
 
-        [NonSerialized] public bool IsLocked;
+        private Outline _outline;
+
+        private bool _isLocked = false;
+        public bool IsLocked
+        {
+            get => _isLocked;
+            set
+            {
+                _isLocked = value;
+                _outline.OutlineColor = _isLocked ? Color.red : Color.white;
+            }
+        }
+
+        private void Awake()
+        {
+            _outline = GetComponent<Outline>();
+            _outline.enabled = false;
+            _outline.OutlineColor = Color.white;
+        }
+
+        private void OnMouseEnter()
+        {
+            _outline.OutlineColor = _isLocked ? Color.red : Color.white;
+            _outline.enabled = true;
+        }
+
+        private void OnMouseExit()
+        {
+            _outline.enabled = false;
+        }
 
         private void OnMouseUpAsButton()
         {
-            if (!IsLocked) Breadboard.DeleteWire(this);
+            if (!_isLocked) Breadboard.DeleteWire(this);
         }
 
         public void Init(Breadboard breadboard, Point pole1, Point pole2, bool isLocked = false)
