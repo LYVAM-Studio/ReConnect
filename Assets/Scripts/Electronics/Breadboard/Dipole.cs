@@ -38,10 +38,10 @@ namespace Reconnect.Electronics.Breadboards
         public bool IsLocked
         {
             get => _isLocked;
-            set
+            set 
             {
                 _isLocked = value;
-                _outline.OutlineColor = _isLocked ? Color.red : Color.white;
+                if (_isLocked) _outline.enabled = false;
             }
         }
         
@@ -51,7 +51,6 @@ namespace Reconnect.Electronics.Breadboards
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
-            _outline.OutlineColor = Color.white;
         }
 
         private void OnMouseDown()
@@ -75,7 +74,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private void OnMouseEnter()
         {
-            _outline.enabled = true;
+            if (!_isLocked) _outline.enabled = true;
         }
 
         private void OnMouseExit()

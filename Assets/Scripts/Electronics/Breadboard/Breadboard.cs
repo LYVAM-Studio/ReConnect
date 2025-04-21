@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Reconnect.Electronics.Components;
@@ -178,9 +179,9 @@ namespace Reconnect.Electronics.Breadboards
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
             
             CircuitTitle = YamlGetScalarValue(root.Children, "title");
-            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"));
-            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"));
-            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"));
+            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture);
+            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture);
+            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture);
             
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
 
@@ -227,7 +228,7 @@ namespace Reconnect.Electronics.Breadboards
                 }
                 else if (type == "resistor")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"));
+                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
                     Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance, isLocked);
                     if (isTarget) 
@@ -238,8 +239,8 @@ namespace Reconnect.Electronics.Breadboards
                 }
                 else if (type == "lamp")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"));
-                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"));
+                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
+                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"), CultureInfo.InvariantCulture);
                     
                     Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension, isLocked);
                     if (isTarget) 
