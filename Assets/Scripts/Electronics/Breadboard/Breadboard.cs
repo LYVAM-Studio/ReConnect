@@ -256,6 +256,9 @@ namespace Reconnect.Electronics.Breadboards
 
                 componentId++;
             }
+
+            if (Target is null)
+                throw new FormatException("The loaded circuit does not contain any target.");
         }
 
         public void CreateWire(Vector3 sourcePos, Vector3 destinationPos, string name, Point sourcePoint, Point destinationPoint, bool isLocked = false)
