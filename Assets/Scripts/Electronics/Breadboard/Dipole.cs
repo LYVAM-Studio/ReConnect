@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using Reconnect.Electronics.Graphs;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
