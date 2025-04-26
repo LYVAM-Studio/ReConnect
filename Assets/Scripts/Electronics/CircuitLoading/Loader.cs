@@ -51,18 +51,18 @@ namespace Reconnect.Electronics.CircuitLoading
         /// <param name="allowDiagonal">Whether the direction can be composed of two cardinal points ("ne", "sw"...) or only one ("n", "e"). By default, the diagonals are not allowed.</param>
         /// <returns>Returns a new point shifted by 1 in the given direction from the given point.</returns>
         /// <exception cref="Exception">Throws an exception if the direction is not valid.</exception>
-        private static Point ShiftToDirection(Point sourcePoint, string direction, bool allowDiagonal = false)
+        private static Vector2Int ShiftToDirection(Vector2Int sourcePoint, string direction, bool allowDiagonal = false)
         {
             return direction.ToLower().Trim() switch
             {
-                "n"  => sourcePoint.Shift(-1,  0),
-                "e"  => sourcePoint.Shift( 0, +1),
-                "s"  => sourcePoint.Shift(+1,  0),
-                "w"  => sourcePoint.Shift( 0, -1),
-                "ne" when allowDiagonal => sourcePoint.Shift(-1, +1),
-                "se" when allowDiagonal => sourcePoint.Shift(+1, +1),
-                "sw" when allowDiagonal => sourcePoint.Shift(+1, -1),
-                "nw" when allowDiagonal => sourcePoint.Shift(-1, -1),
+                "n"  => sourcePoint + new Vector2Int( 0, -1),
+                "e"  => sourcePoint + new Vector2Int(+1,  0),
+                "s"  => sourcePoint + new Vector2Int( 0, +1),
+                "w"  => sourcePoint + new Vector2Int(-1,  0),
+                "ne" when allowDiagonal => sourcePoint + new Vector2Int(+1, -1),
+                "se" when allowDiagonal => sourcePoint + new Vector2Int(+1, +1),
+                "sw" when allowDiagonal => sourcePoint + new Vector2Int(-1, +1),
+                "nw" when allowDiagonal => sourcePoint + new Vector2Int(-1, -1),
                 { } dir => throw new InvalidDataException(allowDiagonal
                     ? $"Invalid direction. Expected 'n', 'e', 's', 'w', 'ne', 'se', 'sw' or 'nw' but got {dir}."
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
@@ -105,8 +105,8 @@ namespace Reconnect.Electronics.CircuitLoading
                 // Fields in common (for any type of component) 
 
                 string name = $"{componentId}: ";
-                int hPos = int.Parse(YamlGetScalarValue(component.Children, "h-pos"));
-                int wPos = int.Parse(YamlGetScalarValue(component.Children, "w-pos"));
+                int xPos = int.Parse(YamlGetScalarValue(component.Children, "x-pos"));
+                int yPos = int.Parse(YamlGetScalarValue(component.Children, "y-pos"));
                 string direction = YamlGetScalarValue(component.Children, "direction");
                 bool isTarget = false;
                 if (YamlTryGetScalarValue(component.Children, "target", out string targetValue)
@@ -117,22 +117,19 @@ namespace Reconnect.Electronics.CircuitLoading
                     && !bool.TryParse(lockedValue, out isLocked))
                     throw new InvalidDataException($"Yaml key 'locked' expect a boolean value but got {targetValue}.");
                 
-                Point sourcePoint = new Point(hPos, wPos);
-                Point destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
+                Vector2Int sourcePoint = new Vector2Int(xPos, yPos);
+                Vector2Int destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
                 
                 if (component.Children.TryGetValue(new YamlScalarNode("name"), out YamlNode nameNode))
                     name += $"{((YamlScalarNode)nameNode).Value} {sourcePoint} <-> {destinationPoint}";
                 else
                     name += $"{sourcePoint} <-> {destinationPoint}";
 
-                Vector3 sourcePos = Point.PointToVector(sourcePoint, 0);
-                Vector3 destinationPos = Point.PointToVector(destinationPoint, 0);
-                
                 // Component-specific fields
                 
                 if (type == "wire")
                 {
-                    breadboard.CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint, isLocked);
+                    breadboard.CreateWire(sourcePoint, destinationPoint, name, isLocked);
                     if (isTarget)
                         throw new InvalidDataException("Invalid target: a wire cannot be a circuit target.");
                 }
@@ -140,7 +137,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 {
                     float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
-                    Resistor resistor = breadboard.CreateResistor(sourcePos, destinationPos, name, resistance, isLocked);
+                    Resistor resistor = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, isLocked);
                     if (isTarget) 
                     {
                         if (breadboard.Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
@@ -152,7 +149,7 @@ namespace Reconnect.Electronics.CircuitLoading
                     float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"), CultureInfo.InvariantCulture);
                     
-                    Lamp lamp = breadboard.CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension, isLocked);
+                    Lamp lamp = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, nominalTension, isLocked);
                     if (isTarget) 
                     {
                         if (breadboard.Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");

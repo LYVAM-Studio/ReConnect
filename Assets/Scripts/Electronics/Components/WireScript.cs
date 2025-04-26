@@ -5,12 +5,12 @@ using Reconnect.Electronics.Breadboards;
 
 namespace Reconnect.Electronics.Components
 {
-    public class WireScript : MonoBehaviour
+    public class WireScript : MonoBehaviour, IDipole
     {
-        private bool _isInitialized;
-        private Breadboard Breadboard { get; set; }
-        public Point Pole1 { get; private set; }
-        public Point Pole2 { get; private set; }
+        public Breadboard Breadboard { get; set; }
+
+        public Vector2Int Pole1 { get; set; }
+        public Vector2Int Pole2 { get; set; }
 
         private Outline _outline;
 
@@ -44,16 +44,6 @@ namespace Reconnect.Electronics.Components
         private void OnMouseUpAsButton()
         {
             if (!_isLocked) Breadboard.DeleteWire(this);
-        }
-
-        public void Init(Breadboard breadboard, Point pole1, Point pole2, bool isLocked = false)
-        {
-            if (_isInitialized) throw new Exception("This Wire has already been initialized.");
-            Breadboard = breadboard;
-            Pole1 = pole1;
-            Pole2 = pole2;
-            _isInitialized = true;
-            IsLocked = isLocked;
         }
 
         // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);
