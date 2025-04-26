@@ -61,7 +61,7 @@ namespace Reconnect.Electronics.Breadboards
         public Vector2Int PosToPoint(Vector3 pos)
             => new Vector2Int(
                 (int)(pos.x + 3.5f),
-                (int)(- pos.y + 3.5f));
+                (int)(-pos.y + 3.5f));
         
         private void Start()
         {
@@ -112,9 +112,8 @@ namespace Reconnect.Electronics.Breadboards
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            // resistorGameObj.transform.localEulerAngles = Vector3.zero;
             resistorGameObj.transform.LookAt(PointToPos(destinationPoint));
-            // resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            resistorGameObj.transform.rotation *= Quaternion.Inverse(transform.rotation);
             var inner = new Resistor(name, resistance);
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
@@ -132,9 +131,8 @@ namespace Reconnect.Electronics.Breadboards
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            lampGameObj.transform.localEulerAngles = Vector3.zero;
+            lampGameObj.transform.rotation = transform.rotation;
             lampGameObj.transform.LookAt(PointToPos(destinationPoint));
-            lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Lamp(name, resistance, nominalTension);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
@@ -237,7 +235,7 @@ namespace Reconnect.Electronics.Breadboards
             if (newPoles.Any(pole => pole.x is < 0 or >= 8 || pole.y is < 0 or >= 8))
                 return false; // A pole is outside the breadboard
 
-            if (Dipoles.Concat<IDipole>(Wires).Any(d => newPoles.Contains(d.Pole1) && newPoles.Contains(d.Pole2)))
+            if (Dipoles.Concat<IDipole>(Wires).Any(d => d.GetPoles().Intersect(newPoles).Count() >= 2))
                 return false; // A component is already here
 
             return true;
