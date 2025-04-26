@@ -89,7 +89,7 @@ namespace Reconnect.Electronics.Breadboards
             if (_isLocked) return;
             if (Breadboard.TryGetClosestValidPos(this, out var validPos, out var newPole1, out var newPole2))
             {
-                transform.position = validPos;
+                transform.position = Breadboard.transform.rotation * validPos;
                 Pole1 = newPole1;
                 Pole2 = newPole2;
             }
