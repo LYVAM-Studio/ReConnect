@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
+using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
-using Reconnect.Electronics.Graphs;
 using UnityEngine;
-using YamlDotNet.Helpers;
-using YamlDotNet.RepresentationModel;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -16,12 +12,12 @@ namespace Reconnect.Electronics.Breadboards
         /// <summary>
         /// The list of the components currently on the breadboard.
         /// </summary>
-        private readonly List<Dipole> _dipoles = new List<Dipole>();
+        public readonly List<Dipole> Dipoles = new List<Dipole>();
         
         /// <summary>
         /// The list of the wires currently on the breadboard.
         /// </summary>
-        private readonly List<WireScript> _wires = new List<WireScript>();
+        public readonly List<WireScript> Wires = new List<WireScript>();
 
         /// <summary>
         /// The start position of the wire being created. Equivalent to _lastNodePoint.
@@ -51,223 +47,46 @@ namespace Reconnect.Electronics.Breadboards
         /// <summary>
         /// The target of the currently loaded circuit.
         /// </summary>
-        public ElecComponent Target { get; private set; }
+        public ElecComponent Target { get; set; }
 
         /// <summary>
         /// The title of the circuit that has been loaded on this breadboard.
         /// </summary>
-        [NonSerialized] public string CircuitTitle;
-        
-        /// <summary>
-        /// The input tension of the current circuit.
-        /// </summary>
-        [NonSerialized] public float CircuitInputTension;
-        
-        /// <summary>
-        /// The input intensity of the current circuit.
-        /// </summary>
-        [NonSerialized] public float CircuitInputIntensity;
-        
-        /// <summary>
-        /// The tension required by the target for the level to be completed.
-        /// </summary>
-        [NonSerialized] public float CircuitTargetTension;
+        [NonSerialized] public CircuitInfo CircuitInfo;
         
         private void Start()
         {
             _onWireCreation = false;
             _onDeletionMode = false;
-            LoadCircuit("2_parallel_lvl_2");
+            Loader.LoadCircuit(this, "2_parallel_lvl_2");
         }
-        
-        
-        // #####################################
-        // #          CIRCUIT LOADING          #
-        // #####################################
-        
         
         /// <summary>
         /// Cleans the breadboard i.e. deletes the registered wires and dipoles. It both destroys the game objects and removes their pointers in _wires and _dipoles.
         /// </summary>
-        private void Clean()
+        public void Clean()
         {
-            foreach (WireScript wireScript in _wires)
+            foreach (WireScript wireScript in Wires)
             {
                 Destroy(wireScript.gameObject);
             }
-            foreach (Dipole dipole in _dipoles)
+            foreach (Dipole dipole in Dipoles)
             {
                 Destroy(dipole.gameObject);
             }
 
-            _wires.Clear();
-            _dipoles.Clear();
+            Wires.Clear();
+            Dipoles.Clear();
             Target = null;
         }
         
-        /// <summary>
-        /// Returns the value associated with the yaml node in the given children that has the argument `key` as key.
-        /// </summary>
-        /// <param name="children">The children of a node in which the element in searched.</param>
-        /// <param name="key">The key of the sought yaml node.</param>
-        /// <returns>The value of the node.</returns>
-        /// <example>
-        /// <code>
-        /// node:
-        ///     child1: value1
-        ///     child2: value2
-        /// </code>
-        /// For instance, `value2` can be got calling this function with `node.Children` and `child2`.
-        /// </example>
-        /// <exception cref="Exception">Throws an exception if the sought key is not found.</exception>
-        private static string YamlGetScalarValue(IOrderedDictionary<YamlNode, YamlNode> children, string key)
-        {
-            if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode node))
-                throw new InvalidDataException($"Sought key {key} not found in yaml document.");
-            return ((YamlScalarNode)node).Value!;
-        }
-        
-        private static bool YamlTryGetScalarValue(IOrderedDictionary<YamlNode, YamlNode> children, string key, out string value)
-        {
-            value = null;
-            if (!children.TryGetValue(new YamlScalarNode(key), out YamlNode node))
-                return false;
-            value = ((YamlScalarNode)node).Value;
-            return true;
-        }
-        
-        /// <summary>
-        /// Shifts the given point to the given direction by 1.
-        /// </summary>
-        /// <param name="sourcePoint"> The initial point.</param>
-        /// <param name="direction">The direction of the shift. It is represented by cardinal points in a string (for instance "n", "se"...).</param>
-        /// <param name="allowDiagonal">Whether the direction can be composed of two cardinal points ("ne", "sw"...) or only one ("n", "e"). By default, the diagonals are not allowed.</param>
-        /// <returns>Returns a new point shifted by 1 in the given direction from the given point.</returns>
-        /// <exception cref="Exception">Throws an exception if the direction is not valid.</exception>
-        private static Point ShiftToDirection(Point sourcePoint, string direction, bool allowDiagonal = false)
-        {
-            return direction.ToLower().Trim() switch
-            {
-                "n"  => sourcePoint.Shift(-1,  0),
-                "e"  => sourcePoint.Shift( 0, +1),
-                "s"  => sourcePoint.Shift(+1,  0),
-                "w"  => sourcePoint.Shift( 0, -1),
-                "ne" when allowDiagonal => sourcePoint.Shift(-1, +1),
-                "se" when allowDiagonal => sourcePoint.Shift(+1, +1),
-                "sw" when allowDiagonal => sourcePoint.Shift(+1, -1),
-                "nw" when allowDiagonal => sourcePoint.Shift(-1, -1),
-                { } dir => throw new InvalidDataException(allowDiagonal
-                    ? $"Invalid direction. Expected 'n', 'e', 's', 'w', 'ne', 'se', 'sw' or 'nw' but got {dir}."
-                    : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
-            };
-        }
-        
-        /// <summary>
-        /// Loads the given circuit. Cleans the breadboard and load all the components required for the circuit.
-        /// </summary>
-        /// <param name="circuitName">The name of the circuit to be loaded. It must contain neither the extension (.yaml) nor the path (CircuitsPresets/).</param>
-        public void LoadCircuit(string circuitName)
-        {
-            Clean();
-            
-            TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
-
-            using StringReader reader = new StringReader(yamlAsset.text);
-            YamlStream yaml = new YamlStream();
-            yaml.Load(reader);
-
-            YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
-            
-            CircuitTitle = YamlGetScalarValue(root.Children, "title");
-            CircuitInputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture);
-            CircuitInputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture);
-            CircuitTargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture);
-            
-            YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
-
-            int componentId = 0;
-            
-            foreach (YamlNode item in componentsNode)
-            {
-                YamlMappingNode component = (YamlMappingNode)item;
-                string type = ((YamlScalarNode)component.Children.First().Key).Value;
-                    
-                // Fields in common (for any type of component) 
-
-                string name = $"{componentId}: ";
-                int hPos = int.Parse(YamlGetScalarValue(component.Children, "h-pos"));
-                int wPos = int.Parse(YamlGetScalarValue(component.Children, "w-pos"));
-                string direction = YamlGetScalarValue(component.Children, "direction");
-                bool isTarget = false;
-                if (YamlTryGetScalarValue(component.Children, "target", out string targetValue)
-                    && !bool.TryParse(targetValue, out isTarget))
-                    throw new InvalidDataException($"Yaml key 'target' expect a boolean value but got {targetValue}.");
-                bool isLocked = false;
-                if (YamlTryGetScalarValue(component.Children, "locked", out string lockedValue)
-                    && !bool.TryParse(lockedValue, out isLocked))
-                    throw new InvalidDataException($"Yaml key 'locked' expect a boolean value but got {targetValue}.");
-                
-                Point sourcePoint = new Point(hPos, wPos);
-                Point destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
-                
-                if (component.Children.TryGetValue(new YamlScalarNode("name"), out YamlNode nameNode))
-                    name += $"{((YamlScalarNode)nameNode).Value} {sourcePoint} <-> {destinationPoint}";
-                else
-                    name += $"{sourcePoint} <-> {destinationPoint}";
-
-                Vector3 sourcePos = Point.PointToVector(sourcePoint, zPositionDipoles);
-                Vector3 destinationPos = Point.PointToVector(destinationPoint, zPositionDipoles);
-                
-                // Component-specific fields
-                
-                if (type == "wire")
-                {
-                    CreateWire(sourcePos, destinationPos, name, sourcePoint, destinationPoint, isLocked);
-                    if (isTarget)
-                        throw new InvalidDataException("Invalid target: a wire cannot be a circuit target.");
-                }
-                else if (type == "resistor")
-                {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
-                    
-                    Resistor resistor = CreateResistor(sourcePos, destinationPos, name, resistance, isLocked);
-                    if (isTarget) 
-                    {
-                        if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        Target = resistor;
-                    }
-                }
-                else if (type == "lamp")
-                {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
-                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"), CultureInfo.InvariantCulture);
-                    
-                    Lamp lamp = CreateLamp(sourcePos, destinationPos, name, resistance, nominalTension, isLocked);
-                    if (isTarget) 
-                    {
-                        if (Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        Target = lamp;
-                    }
-                }
-                else
-                {
-                    throw new ArgumentException($"Invalid component type. Expected wire, resistor or lamp but got {type}.");
-                }
-
-                componentId++;
-            }
-
-            if (Target is null)
-                throw new FormatException("The loaded circuit does not contain any target.");
-        }
-
         public void CreateWire(Vector3 sourcePos, Vector3 destinationPos, string name, Point sourcePoint, Point destinationPoint, bool isLocked = false)
         {
-            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"));
+            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             var wireScript = wireGameObj.GetComponent<WireScript>();
             wireGameObj.name = $"WirePrefab ({name})";
             wireScript.Init(this, sourcePoint, destinationPoint, isLocked);
-            _wires.Add(wireScript);
+            Wires.Add(wireScript);
             wireGameObj.transform.position = (sourcePos + destinationPos) / 2;
             wireGameObj.transform.LookAt(destinationPos);
             wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
@@ -276,9 +95,9 @@ namespace Reconnect.Electronics.Breadboards
             wireGameObj.transform.localScale = scale;
         }
         
-        private Resistor CreateResistor(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, bool isLocked = false)
+        public Resistor CreateResistor(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, bool isLocked = false)
         {
-            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"));
+            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
             resistorGameObj.name = $"ResistorPrefab ({name})";
             var inner = new Resistor(name, resistance);
@@ -288,13 +107,13 @@ namespace Reconnect.Electronics.Breadboards
             resistorGameObj.transform.position = (sourcePos + destinationPos) / 2;
             resistorGameObj.transform.LookAt(destinationPos);
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-            _dipoles.Add(dipoleScript);
+            Dipoles.Add(dipoleScript);
             return inner;
         }
         
-        private Lamp CreateLamp(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, float nominalTension, bool isLocked = false)
+        public Lamp CreateLamp(Vector3 sourcePos, Vector3 destinationPos, string name, float resistance, float nominalTension, bool isLocked = false)
         {
-            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"));
+            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
             lampGameObj.name = $"LampPrefab ({name})";
             var inner = new Lamp(name, resistance, nominalTension);
@@ -304,15 +123,9 @@ namespace Reconnect.Electronics.Breadboards
             lampGameObj.transform.position = (sourcePos + destinationPos) / 2;
             lampGameObj.transform.LookAt(destinationPos);
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-            _dipoles.Add(dipoleScript);
+            Dipoles.Add(dipoleScript);
             return inner;
         }
-        
-        
-        // #####################################
-        // #          WIRE MANAGEMENT          #
-        // #####################################
-        
         
         public void StartWire(Vector3 nodePosition, Point nodePoint)
         {
@@ -325,6 +138,12 @@ namespace Reconnect.Electronics.Breadboards
         public void EndWire()
         {
             _onWireCreation = false;
+        }
+        
+        public void DeleteWire(WireScript wire)
+        {
+            Wires.Remove(wire);
+            Destroy(wire.gameObject);
         }
 
         // This function is called by a breadboard node when the mouse collides it
@@ -350,7 +169,7 @@ namespace Reconnect.Electronics.Breadboards
             else if (delta != Vector2.zero)
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
-                var wire = _wires.Find(w =>
+                var wire = Wires.Find(w =>
                     (w.Pole1 == Point.VectorToPoint(_lastNodePosition) &&
                      w.Pole2 == Point.VectorToPoint(nodePosition)) ||
                     (w.Pole2 == Point.VectorToPoint(_lastNodePosition) &&
@@ -373,95 +192,19 @@ namespace Reconnect.Electronics.Breadboards
                 _lastNodePoint = nodePoint;
             }
         }
-
-        public void DeleteWire(WireScript wire)
-        {
-            _wires.Remove(wire);
-            Destroy(wire.gameObject);
-        }
-        
-
-        // #####################################
-        // #         GRAPH MANAGEMENT          #
-        // #####################################
-        
-        public Graph CreateGraph()
-        {
-            // clear the adjacent relation of the dipoles (avoid branch duplication)
-            foreach (var d in _dipoles)
-                d.Inner.ClearAdjacent();
-            // inner vertices can be null!
-            Vertex[,] grid = new Vertex[8, 8];
-            PlaceWires(grid);
-            PlaceDipoles(grid);
-            var input = new CircuitInput("input", 240, 16);
-            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
-            var output = new CircuitOutput("output");
-            Vertex.ReciprocalAddAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
-            var graph = new Graph("Main graph", input, output, Target);
-            foreach (Vertex v in grid)
-            {
-                if (v is not null)
-                {
-                    if (v.AdjacentComponents.Count > 2)
-                        graph.AddVertex(v.ToNode());
-                    else
-                        graph.AddVertex(v);
-                }
-            }
-
-            foreach (var d in _dipoles)
-            {
-                graph.AddVertex(d.Inner);
-            }
-
-            return graph;
-        }
-
-        private Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
-        {
-            if (grid[h, w] is null)
-            {
-                grid[h, w] = new Vertex($"({h}, {w})");
-            }
-
-            return grid[h, w];
-        }
-
-        private void PlaceWires(Vertex[,] grid)
-        {
-            foreach (var w in _wires)
-            {
-                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.H, w.Pole1.W);
-                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.H, w.Pole2.W);
-                Vertex.ReciprocalAddAdjacent(v1, v2);
-            }
-        }
-        
-        private void PlaceDipoles(Vertex[,] grid)
-        {
-            foreach (var d in _dipoles)
-            {
-                Vertex v1 = GetVertexOrNewAt(grid, d.GetPoles()[0].H, d.GetPoles()[0].W);
-                Vertex v2 = GetVertexOrNewAt(grid, d.GetPoles()[1].H, d.GetPoles()[1].W);
-                Vertex.ReciprocalAddAdjacent(v1, d.Inner);
-                Vertex.ReciprocalAddAdjacent(d.Inner, v2);
-            }
-        }
-        
         
         public void RegisterComponent(Dipole component)
         {
-            if (_dipoles.Contains(component))
+            if (Dipoles.Contains(component))
                 return;
-            _dipoles.Add(component);
+            Dipoles.Add(component);
         }
 
         public void UnRegisterComponent(Dipole component)
         {
-            if (!_dipoles.Contains(component))
+            if (!Dipoles.Contains(component))
                 return;
-            _dipoles.Remove(component);
+            Dipoles.Remove(component);
         }
 
         public Vector3 GetClosestValidPosition(Dipole dipole, Vector3 defaultPos)
@@ -487,7 +230,7 @@ namespace Reconnect.Electronics.Breadboards
                 return null;
             }
 
-            if (_dipoles.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
+            if (Dipoles.Exists(c => c.GetPoles().Intersect(poles).Count() >= 2))
             {
                 // A component is already here
                 // Debug.Log("A component is already here");
