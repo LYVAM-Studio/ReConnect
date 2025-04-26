@@ -59,8 +59,8 @@ namespace Reconnect.Electronics.Breadboards
         {
             foreach (var w in wires)
             {
-                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.H, w.Pole1.W);
-                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.H, w.Pole2.W);
+                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.y, w.Pole1.x);
+                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.y, w.Pole2.x);
                 Vertex.AddReciprocalAdjacent(v1, v2);
             }
         }
@@ -69,8 +69,8 @@ namespace Reconnect.Electronics.Breadboards
         {
             foreach (var d in dipoles)
             {
-                Vertex v1 = GetVertexOrNewAt(grid, d.GetPoles()[0].H, d.GetPoles()[0].W);
-                Vertex v2 = GetVertexOrNewAt(grid, d.GetPoles()[1].H, d.GetPoles()[1].W);
+                Vertex v1 = GetVertexOrNewAt(grid, d.Pole1.y, d.Pole1.x);
+                Vertex v2 = GetVertexOrNewAt(grid, d.Pole2.y, d.Pole2.x);
                 Vertex.AddReciprocalAdjacent(v1, d.Inner);
                 Vertex.AddReciprocalAdjacent(d.Inner, v2);
             }

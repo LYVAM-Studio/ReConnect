@@ -1,60 +1,41 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
     public class BbNode : MonoBehaviour
     {
-        private Point _point;
-        private Breadboard _breadboard;
+        [SerializeField]
+        private Vector2Int point;
 
         // Returns the parent breadboard
-        public Breadboard Breadboard
-        {
-            get
-            {
-                if (_breadboard is null)
-                {
-                    _breadboard = GetComponentInParent<Breadboard>();
-                    if (_breadboard is null)
-                        throw new Exception($"Breadboard not found by BreadboardNode at position ({transform.position.x}, {transform.position.y}, {transform.position.z}).");
-                }
-
-                return _breadboard;
-            }
-        }
-
-        private void Start()
-        {
-            _point = Point.VectorToPoint(transform.position);
-        }
+        [SerializeField]
+        private Breadboard breadboard;
 
         private void OnMouseDown()
         {
             // The click is over a UI element with Raycast Target = true
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
                 return;
-            Breadboard.StartWire(transform.position, _point);
+            breadboard.StartWire(point);
         }
 
         private void OnMouseEnter()
         {
             if (IsPointerOverUI())
             {
-                Breadboard.EndWire();
+                breadboard.EndWire();
             }
             else
             {
-                Breadboard.OnMouseNodeCollision(transform.position, _point);
+                breadboard.OnMouseNodeCollision(point);
             }
         }
 
         private void OnMouseUp()
         {
-            Breadboard.EndWire();
+            breadboard.EndWire();
         }
         
         private bool IsPointerOverUI()
