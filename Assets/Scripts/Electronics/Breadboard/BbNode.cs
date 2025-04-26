@@ -48,7 +48,6 @@ namespace Reconnect.Electronics.Breadboards
             }
             else
             {
-
                 Breadboard.OnMouseNodeCollision(transform.position, _point);
             }
         }

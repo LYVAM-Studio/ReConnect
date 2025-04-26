@@ -5404,6 +5404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5008100586115424281}
   - component: {fileID: 8230984411912758977}
+  - component: {fileID: 7243753900728018911}
   m_Layer: 0
   m_Name: BreadboardHolder
   m_TagString: Untagged
@@ -5420,7 +5421,7 @@ Transform:
   m_GameObject: {fileID: 5028337126911305549}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 923.17267, y: 593.8549, z: 160.96729}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5462,6 +5463,20 @@ MonoBehaviour:
   footerMesh: {fileID: 1642542591953265734}
   leftPanel: {fileID: 2898458357505282573}
   rightPanel: {fileID: 5192858264894180498}
+--- !u!114 &7243753900728018911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5028337126911305549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6785928c3a0482da497573d1afe9b02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  breadboard: {fileID: 5224413377975774177}
+  cam: {fileID: 6613498818838718260}
 --- !u!1 &5048366689215026803
 GameObject:
   m_ObjectHideFlags: 0
@@ -7471,7 +7486,7 @@ Transform:
   m_GameObject: {fileID: 6690083734980507075}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -923.17267, y: -593.8549, z: -162.46729}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9010,7 +9025,7 @@ Transform:
   m_GameObject: {fileID: 8536058861899735875}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -923.17267, y: -593.8549, z: -152.96729}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

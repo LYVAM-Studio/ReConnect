@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Graphs;
 using Reconnect.Electronics.Components;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace Reconnect.Electronics.UI
         
         public void ExecuteCircuit()
         {
-            Graph circuitGraph = BreadboardUI.Breadboard.CreateGraph();
+            Graph circuitGraph = GraphConverter.CreateGraph(BreadboardUI.Breadboard);
             //Debug.Log($"STATE :::\n"+string.Join('\n', from v in circuitGraph.Vertices select $"{v.GetType().Name[..3]} {v.Name}: [{string.Join(", ", v.AdjacentComponents)}]"));
             circuitGraph.DefineBranches();
             //Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices));
