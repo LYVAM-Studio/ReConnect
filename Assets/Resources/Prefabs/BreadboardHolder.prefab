@@ -5474,7 +5474,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5008100586115424281}
   - component: {fileID: 8230984411912758977}
-  - component: {fileID: 7243753900728018911}
+  - component: {fileID: 1377389696476252726}
   m_Layer: 0
   m_Name: BreadboardHolder
   m_TagString: Untagged
@@ -5533,7 +5533,7 @@ MonoBehaviour:
   footerMesh: {fileID: 1642542591953265734}
   leftPanel: {fileID: 2898458357505282573}
   rightPanel: {fileID: 5192858264894180498}
---- !u!114 &7243753900728018911
+--- !u!114 &1377389696476252726
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9161,8 +9161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1747695b3909d7106b481f09ae5ab5b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  breadboardHolder: {fileID: 7243753900728018911}
-  zPositionDipoles: 7.5
+  breadboardHolder: {fileID: 1377389696476252726}
 --- !u!1 &8636401580092664516
 GameObject:
   m_ObjectHideFlags: 0

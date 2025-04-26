@@ -94,7 +94,7 @@ namespace Reconnect.Electronics.Breadboards
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             wireGameObj.name = $"WirePrefab ({name})";
             wireGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            wireGameObj.transform.LookAt(PointToPos(destinationPoint));
+            wireGameObj.transform.LookAt(transform.rotation * PointToPos(destinationPoint));
             wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var scale = wireGameObj.transform.localScale;
             scale[1] /* y component */ = (PointToPos(sourcePoint) - PointToPos(destinationPoint)).magnitude / 2f;
@@ -112,8 +112,9 @@ namespace Reconnect.Electronics.Breadboards
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            // resistorGameObj.transform.LookAt(PointToPos(destinationPoint));
-            resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            // resistorGameObj.transform.localEulerAngles = Vector3.zero;
+            resistorGameObj.transform.LookAt(PointToPos(destinationPoint));
+            // resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Resistor(name, resistance);
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
@@ -131,7 +132,8 @@ namespace Reconnect.Electronics.Breadboards
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            // lampGameObj.transform.LookAt(PointToPos(destinationPoint));
+            lampGameObj.transform.localEulerAngles = Vector3.zero;
+            lampGameObj.transform.LookAt(PointToPos(destinationPoint));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Lamp(name, resistance, nominalTension);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
@@ -232,21 +234,12 @@ namespace Reconnect.Electronics.Breadboards
             newPole2 = PosToPoint(closest - component.MainPoleAnchor);
             var newPoles = new[] { newPole1, newPole2 };
 
-            Debug.Log($"closest={closest} => newPole1={newPole1} & newPole2={newPole2}");
-            
             if (newPoles.Any(pole => pole.x is < 0 or >= 8 || pole.y is < 0 or >= 8))
-            {
-                Debug.Log("Code 1");
                 return false; // A pole is outside the breadboard
-            }
 
             if (Dipoles.Concat<IDipole>(Wires).Any(d => newPoles.Contains(d.Pole1) && newPoles.Contains(d.Pole2)))
-            {
-                Debug.Log("Code 2");
                 return false; // A component is already here
-            }
 
-            Debug.Log("Code 3");
             return true;
         }
         

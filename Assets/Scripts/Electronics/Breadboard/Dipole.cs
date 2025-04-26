@@ -63,13 +63,13 @@ namespace Reconnect.Electronics.Breadboards
             if (_isLocked) return;
             _lastPosition = transform.position;
             _wasHorizontal = _isHorizontal;
-            _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattedCursorPos();
+            _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
 
         private void OnMouseDrag()
         {
             if (_isLocked) return;
-            transform.position = Breadboard.breadboardHolder.GetFlattedCursorPos() + _deltaCursor;
+            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor;
             if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
             {
                 // Toggles the rotation
