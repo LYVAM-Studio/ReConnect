@@ -112,8 +112,8 @@ namespace Reconnect.Electronics.Breadboards
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            resistorGameObj.transform.LookAt(PointToPos(destinationPoint));
-            resistorGameObj.transform.rotation *= Quaternion.Inverse(transform.rotation);
+            resistorGameObj.transform.LookAt(transform.rotation * PointToPos(destinationPoint));
+            resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Resistor(name, resistance);
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
@@ -131,8 +131,8 @@ namespace Reconnect.Electronics.Breadboards
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            lampGameObj.transform.rotation = transform.rotation;
-            lampGameObj.transform.LookAt(PointToPos(destinationPoint));
+            lampGameObj.transform.LookAt(transform.rotation * PointToPos(destinationPoint));
+            lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Lamp(name, resistance, nominalTension);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
