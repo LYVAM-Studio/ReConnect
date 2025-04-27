@@ -109,7 +109,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, bool isLocked = false)
         {
-            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
+            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorColored"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(transform.rotation * PointToPos(destinationPoint));
