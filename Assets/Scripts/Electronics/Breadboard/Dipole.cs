@@ -28,7 +28,7 @@ namespace Reconnect.Electronics.Breadboards
         private Vector3 _deltaCursor;
         
         // The last position occupied by this component
-        private Vector3 _lastPosition;
+        private Vector3 _lastLocalPosition;
         
         // Whether this was rotated or not on its last position
         private bool _wasHorizontal;
@@ -58,7 +58,7 @@ namespace Reconnect.Electronics.Breadboards
         private void OnMouseDown()
         {
             if (_isLocked) return;
-            _lastPosition = transform.position;
+            _lastLocalPosition = transform.localPosition;
             _wasHorizontal = _isHorizontal;
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
@@ -87,16 +87,16 @@ namespace Reconnect.Electronics.Breadboards
         private void OnMouseUp()
         {
             if (_isLocked) return;
-            if (Breadboard.TryGetClosestValidPos(this, out var validPos, out var newPole1, out var newPole2))
+            if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
-                transform.position = Breadboard.transform.rotation * validPos;
+                transform.localPosition = closest;
                 Pole1 = newPole1;
                 Pole2 = newPole2;
             }
             else
             {
                 // Restore the last valid position and rotation
-                transform.position = _lastPosition;
+                transform.localPosition = _lastLocalPosition;
                 IsHorizontal = _wasHorizontal;
             }
         }

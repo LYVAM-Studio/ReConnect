@@ -12,7 +12,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            Plane plane = new Plane(transform.rotation * Vector3.forward, transform.position);
+            Plane plane = new Plane(transform.rotation * Vector3.forward, transform.position); // todo: +/- 0.5? offset?
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
             if (plane.Raycast(ray, out var dist))
