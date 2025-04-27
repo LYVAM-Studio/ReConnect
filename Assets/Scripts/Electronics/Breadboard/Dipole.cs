@@ -19,7 +19,7 @@ namespace Reconnect.Electronics.Breadboards
             get => _isHorizontal;
             set
             {
-                transform.eulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
+                transform.localEulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
                 _isHorizontal = value;
             }
         }
