@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
+using Reconnect.Electronics.ResistorComponent;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Breadboards
@@ -107,13 +108,17 @@ namespace Reconnect.Electronics.Breadboards
             Wires.Add(wireScript);
         }
         
-        public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, bool isLocked = false)
+        public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float tolerance, bool isLocked = false)
         {
-            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorColored"), transform.parent, false);
+            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(transform.rotation * PointToPos(destinationPoint));
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            var resistorColor = resistorGameObj.GetComponent<ResistorColorManager>();
+            resistorColor.ResistanceValue = resistance;
+            resistorColor.Tolerance = tolerance;
+            resistorColor.UpdateBandColors();
             var inner = new Resistor(name, resistance);
             var dipoleScript = resistorGameObj.GetComponent<Dipole>();
             dipoleScript.Pole1 = sourcePoint;
