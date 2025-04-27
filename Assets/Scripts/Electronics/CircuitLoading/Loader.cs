@@ -136,8 +136,12 @@ namespace Reconnect.Electronics.CircuitLoading
                 else if (type == "resistor")
                 {
                     float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
+                    float tolerance = 5f;
+                    if (YamlTryGetScalarValue(component.Children, "locked", out string toleranceValue)
+                        && !float.TryParse(toleranceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out tolerance))
+                        throw new InvalidDataException($"Yaml key 'tolerance' expect a floating point numeric value but got {toleranceValue}.");
                     
-                    Resistor resistor = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, isLocked);
+                    Resistor resistor = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
                     if (isTarget) 
                     {
                         if (breadboard.Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");

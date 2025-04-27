@@ -71,8 +71,10 @@ components:
     y-pos: 3
     direction: s
     resistance: 40
+    tolerance: 0.5
   - resistor:
     x-pos: 1
     y-pos: 3
     direction: s
     resistance: 60
+    tolerance: 0.1
