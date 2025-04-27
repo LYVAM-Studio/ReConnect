@@ -95,7 +95,7 @@ namespace Reconnect.Electronics.Breadboards
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             wireGameObj.name = $"WirePrefab ({name})";
             wireGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            wireGameObj.transform.LookAt(transform.position + transform.rotation * PointToPos(destinationPoint));
+            wireGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
             wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var scale = wireGameObj.transform.localScale;
             scale[1] /* y component */ = (PointToPos(sourcePoint) - PointToPos(destinationPoint)).magnitude / 2f;
@@ -113,7 +113,7 @@ namespace Reconnect.Electronics.Breadboards
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            resistorGameObj.transform.LookAt(transform.position + transform.rotation * PointToPos(destinationPoint));
+            resistorGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var resistorColor = resistorGameObj.GetComponent<ResistorColorManager>();
             resistorColor.ResistanceValue = resistance;
@@ -136,7 +136,7 @@ namespace Reconnect.Electronics.Breadboards
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            lampGameObj.transform.LookAt(transform.position + transform.rotation * PointToPos(destinationPoint));
+            lampGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Lamp(name, resistance, nominalTension);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
