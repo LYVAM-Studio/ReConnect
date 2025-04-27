@@ -21,4 +21,3 @@ namespace Reconnect.Electronics.UI
         }
     }
 }
-

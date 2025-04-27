@@ -1,7 +1,6 @@
 using System;
 using Electronics.ResistorComponent;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.ResistorComponent
 {
@@ -52,17 +51,12 @@ namespace Reconnect.Electronics.ResistorComponent
         {
             (int d1, int d2, int d3, int multiplierPower) = ExtractDigits(ResistanceValue);
 
-            if (!ResistorColorCode.DigitToColor.ContainsKey(multiplierPower))
-                throw new ArgumentOutOfRangeException(
-                    nameof(ResistanceValue),
-                    $"The resistance value {ResistanceValue} cannot be represented using the 5-band resistor color code"); 
-            
             // Set band colors
-            SetBandColor(0, ResistorColorCode.DigitToColor[d1]);
-            SetBandColor(1, ResistorColorCode.DigitToColor[d2]);
-            SetBandColor(2, ResistorColorCode.DigitToColor[d3]);
-            SetBandColor(3, ResistorColorCode.DigitToColor[multiplierPower]);
-            SetBandColor(4, ResistorColorCode.ToleranceToColor[Tolerance]);
+            SetBandColor(0, ResistorColorCode.DigitToColor(d1));
+            SetBandColor(1, ResistorColorCode.DigitToColor(d2));
+            SetBandColor(2, ResistorColorCode.DigitToColor(d3));
+            SetBandColor(3, ResistorColorCode.DigitToColor(multiplierPower));
+            SetBandColor(4, ResistorColorCode.ToleranceToColor(Tolerance));
         }
 
         private void SetBandColor(int bandId, Color color)

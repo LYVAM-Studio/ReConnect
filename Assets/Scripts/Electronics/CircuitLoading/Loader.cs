@@ -120,10 +120,9 @@ namespace Reconnect.Electronics.CircuitLoading
                 Vector2Int sourcePoint = new Vector2Int(xPos, yPos);
                 Vector2Int destinationPoint = ShiftToDirection(sourcePoint, direction, allowDiagonal: type == "wire");
                 
-                if (component.Children.TryGetValue(new YamlScalarNode("name"), out YamlNode nameNode))
-                    name += $"{((YamlScalarNode)nameNode).Value} {sourcePoint} <-> {destinationPoint}";
-                else
-                    name += $"{sourcePoint} <-> {destinationPoint}";
+                if (YamlTryGetScalarValue(component.Children , "name", out string nameValue))
+                    name += $"{nameValue} ";
+                name += $"{sourcePoint} <-> {destinationPoint}";
 
                 // Component-specific fields
                 
@@ -137,7 +136,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 {
                     float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     float tolerance = 5f;
-                    if (YamlTryGetScalarValue(component.Children, "locked", out string toleranceValue)
+                    if (YamlTryGetScalarValue(component.Children, "tolerance", out string toleranceValue)
                         && !float.TryParse(toleranceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out tolerance))
                         throw new InvalidDataException($"Yaml key 'tolerance' expect a floating point numeric value but got {toleranceValue}.");
                     

@@ -4,6 +4,7 @@ input-intensity: 16
 target-tension: 182.4
 components:
   - lamp:
+    name: L1
     x-pos: 3
     y-pos: 5
     direction: s
@@ -67,12 +68,14 @@ components:
     direction: s
     locked: true
   - resistor:
+    name: R1
     x-pos: 0
     y-pos: 3
     direction: s
     resistance: 40
     tolerance: 0.5
   - resistor:
+    name: R2
     x-pos: 1
     y-pos: 3
     direction: s
