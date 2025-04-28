@@ -13,7 +13,6 @@ namespace Reconnect.Electronics.ResistorComponent
         [SerializeField] private GameObject band4;
         [NonSerialized] public float ResistanceValue;
         [NonSerialized] public float Tolerance = 5f;
-        private GameObject[] Bands => new[] { band0, band1, band2, band3, band4 };
         
         private static (int, int, int, int) ExtractDigits(float resistance)
         {
@@ -52,19 +51,16 @@ namespace Reconnect.Electronics.ResistorComponent
             (int d1, int d2, int d3, int multiplierPower) = ExtractDigits(ResistanceValue);
 
             // Set band colors
-            SetBandColor(0, ResistorColorCode.DigitToColor(d1));
-            SetBandColor(1, ResistorColorCode.DigitToColor(d2));
-            SetBandColor(2, ResistorColorCode.DigitToColor(d3));
-            SetBandColor(3, ResistorColorCode.DigitToColor(multiplierPower));
-            SetBandColor(4, ResistorColorCode.ToleranceToColor(Tolerance));
+            SetBandColor(band0, ResistorColorCode.DigitToColor(d1));
+            SetBandColor(band1, ResistorColorCode.DigitToColor(d2));
+            SetBandColor(band2, ResistorColorCode.DigitToColor(d3));
+            SetBandColor(band3, ResistorColorCode.DigitToColor(multiplierPower));
+            SetBandColor(band4, ResistorColorCode.ToleranceToColor(Tolerance));
         }
 
-        private void SetBandColor(int bandId, Color color)
+        private void SetBandColor(GameObject band, Color color)
         {
-            if (bandId is < 0 or >= 5 || Bands[bandId] == null)
-                throw new ArgumentException($"Band {bandId} not found.");
-            
-            Renderer rend = Bands[bandId].GetComponent<Renderer>();
+            Renderer rend = band.GetComponent<Renderer>();
             if (rend != null)
                 rend.material.color = color;
         }

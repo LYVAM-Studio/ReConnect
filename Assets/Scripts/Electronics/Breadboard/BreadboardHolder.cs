@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Breadboards
@@ -12,13 +13,13 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            Plane plane = new Plane(transform.rotation * Vector3.forward, transform.position); // todo: +/- 0.5? offset?
+            Plane plane = new Plane(transform.rotation * Vector3.forward, transform.position);
             Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
             if (plane.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);
-            
-            return Vector3.zero; // throw?
+
+            throw new Exception("Failed to raycast on breadboard plane.");
         }
     }
     
