@@ -4182,8 +4182,8 @@ MonoBehaviour:
   m_text: "Default footer.\nLorem ipsum dolor sit amet, consectetur adipiscing elit.
     Mauris congue pharetra massa. \n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fea8925cb071ab94c80f4b536a7a6645, type: 2}
-  m_sharedMaterial: {fileID: -2093060586831220087, guid: fea8925cb071ab94c80f4b536a7a6645, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
+  m_sharedMaterial: {fileID: -5810829106778859948, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5415,7 +5415,7 @@ Canvas:
   m_GameObject: {fileID: 4585693281908051152}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 6613498818838718260}
   m_PlaneDistance: 10
   m_PixelPerfect: 0
@@ -5923,8 +5923,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.7, y: 1.7, z: 1.7}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8589899024183509194}
   - {fileID: 5970487581636528568}
@@ -6045,8 +6045,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play the video lesson
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 36e43138767212f4ea61d435a63fd40f, type: 2}
+  m_sharedMaterial: {fileID: -8663939566707639799, guid: 36e43138767212f4ea61d435a63fd40f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9647,8 +9647,8 @@ MonoBehaviour:
     eget pharetra lectus. Vestibulum feugiat imperdiet laoreet. Aliquam sit amet
     pellentesque libero. Fusce mollis erat sagittis, congue sapien et, sodales.'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fea8925cb071ab94c80f4b536a7a6645, type: 2}
-  m_sharedMaterial: {fileID: -2093060586831220087, guid: fea8925cb071ab94c80f4b536a7a6645, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
+  m_sharedMaterial: {fileID: -5810829106778859948, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10968,8 +10968,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Default title
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: e4d2a68805ac224448c922f20d15471f, type: 2}
-  m_sharedMaterial: {fileID: 2389737738162978692, guid: e4d2a68805ac224448c922f20d15471f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
+  m_sharedMaterial: {fileID: -5810829106778859948, guid: 4d7c8725fbe1531428f625ddc6dd0870, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
