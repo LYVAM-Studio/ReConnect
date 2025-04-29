@@ -33,9 +33,7 @@ namespace Reconnect.Interactions
         {
             _showRange = isShownByDefault;
             _currentNearest = null;
-            visualRange = GetComponent<MeshRenderer>();
             visualRange.enabled = _showRange;
-            player = transform.parent.gameObject;
         }
 
         // Update is called once per frame
