@@ -846,7 +846,7 @@ CapsuleCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Radius: 0.5
   m_Height: 2
@@ -1417,8 +1417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ee971769a840f5a29a573bf97be2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  visualRange: {fileID: 0}
+  player: {fileID: 6700679459460615958}
+  visualRange: {fileID: 3017131213165227921}
   isShownByDefault: 0
 --- !u!23 &3017131213165227921
 MeshRenderer:
@@ -1427,7 +1427,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3729641665707041941}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1

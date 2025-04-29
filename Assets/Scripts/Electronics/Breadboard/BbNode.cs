@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
+using Reconnect.MouseHover;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class BbNode : MonoBehaviour
+    public class BbNode : MonoBehaviour, IMouseInteractable
     {
         [SerializeField]
         private Vector2Int point;
@@ -22,7 +22,7 @@ namespace Reconnect.Electronics.Breadboards
             _outline.enabled = false;
         }
 
-        private void OnMouseEnter()
+        public void OnHoverEnter()
         {
             _outline.enabled = true;
 
@@ -36,7 +36,7 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        private void OnMouseExit()
+        public void OnHoverExit()
         {
             _outline.enabled = false;
         }
@@ -54,7 +54,7 @@ namespace Reconnect.Electronics.Breadboards
             breadboard.EndWire();
         }
         
-        private bool IsPointerOverUI()
+        private static bool IsPointerOverUI()
         {
             PointerEventData pointerData = new PointerEventData(EventSystem.current)
             {

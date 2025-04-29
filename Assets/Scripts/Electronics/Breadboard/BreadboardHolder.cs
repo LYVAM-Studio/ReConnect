@@ -19,9 +19,10 @@ namespace Reconnect.Electronics.Breadboards
         private new void Start()
         {
             base.Start();
-            cam.gameObject.SetActive(false);
-            cam.Priority = 0;
-            ui.SetActive(false);
+            // // Set in the prefab
+            // cam.gameObject.SetActive(false);
+            // cam.Priority = 0;
+            // ui.SetActive(false);
         }
 
         public override void Interact(GameObject player)

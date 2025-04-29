@@ -1,9 +1,10 @@
 using Reconnect.Electronics.Graphs;
+using Reconnect.MouseHover;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Dipole : MonoBehaviour, IDipole
+    public class Dipole : MonoBehaviour, IDipole, IMouseInteractable
     {
         public Breadboard Breadboard { get; set; }
         public Vector2Int Pole1 { get; set; }
@@ -55,6 +56,16 @@ namespace Reconnect.Electronics.Breadboards
             _outline.enabled = false;
         }
         
+        public void OnHoverEnter()
+        {
+            if (!_isLocked) _outline.enabled = true;
+        }
+
+        public void OnHoverExit()
+        {
+            _outline.enabled = false;
+        }
+        
         private void OnMouseDown()
         {
             if (_isLocked) return;
@@ -62,28 +73,7 @@ namespace Reconnect.Electronics.Breadboards
             _wasHorizontal = _isHorizontal;
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
-
-        private void OnMouseDrag()
-        {
-            if (_isLocked) return;
-            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor;
-            if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
-            {
-                // Toggles the rotation
-                IsHorizontal ^= true;
-            }
-        }
-
-        private void OnMouseEnter()
-        {
-            if (!_isLocked) _outline.enabled = true;
-        }
-
-        private void OnMouseExit()
-        {
-            _outline.enabled = false;
-        }
-
+        
         private void OnMouseUp()
         {
             if (_isLocked) return;
@@ -98,6 +88,17 @@ namespace Reconnect.Electronics.Breadboards
                 // Restore the last valid position and rotation
                 transform.localPosition = _lastLocalPosition;
                 IsHorizontal = _wasHorizontal;
+            }
+        }
+
+        private void OnMouseDrag()
+        {
+            if (_isLocked) return;
+            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor;
+            if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
+            {
+                // Toggles the rotation
+                IsHorizontal ^= true;
             }
         }
     }

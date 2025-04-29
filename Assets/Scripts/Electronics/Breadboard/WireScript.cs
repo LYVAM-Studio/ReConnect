@@ -1,11 +1,11 @@
-using System;
 using UnityEngine;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.MouseHover;
 
 
 namespace Reconnect.Electronics.Components
 {
-    public class WireScript : MonoBehaviour, IDipole
+    public class WireScript : MonoBehaviour, IDipole, IMouseInteractable
     {
         public Breadboard Breadboard { get; set; }
 
@@ -31,25 +31,20 @@ namespace Reconnect.Electronics.Components
             _outline.enabled = false;
         }
 
-        private void OnMouseEnter()
+        public void OnHoverEnter()
         {
             if (!_isLocked) _outline.enabled = true;
         }
 
-        private void OnMouseExit()
+        public void OnHoverExit()
         {
             _outline.enabled = false;
         }
 
         private void OnMouseUpAsButton()
         {
-            if (!_isLocked) Breadboard.DeleteWire(this);
+            if (!_isLocked)
+                Breadboard.DeleteWire(this);
         }
-
-        // public static bool operator==(WireScript left, WireScript right) => left is not null && left.Equals(right);
-        // public static bool operator!=(WireScript left, WireScript right) => !(left == right);
-        // public override bool Equals(object obj) => obj is WireScript pole && Equals(pole) ;
-        // private bool Equals(WireScript other) => Pole1 == other.Pole1 && Pole2 == other.Pole2;
-        // public override int GetHashCode() => HashCode.Combine(Pole1, Pole2);
     }
 }
