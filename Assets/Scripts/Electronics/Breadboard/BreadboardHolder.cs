@@ -15,13 +15,13 @@ namespace Reconnect.Electronics.Breadboards
         public CinemachineCamera cam;
         public GameObject ui;
         private bool _isActive = false;
-        private Camera mainCam;
+        private Camera _mainCam;
         
         private Plane? _currentDragPlane;
 
         private void Awake()
         {
-            mainCam = Camera.main;
+            _mainCam = Camera.main;
         }
 
         public void SetDragPlane(Plane plane)
@@ -76,7 +76,7 @@ namespace Reconnect.Electronics.Breadboards
             if (_currentDragPlane == null)
                 throw new Exception("Drag plane not set. Did you forget to call SetDragPlane()?");
 
-            Ray ray = mainCam!.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _mainCam!.ScreenPointToRay(Input.mousePosition);
 
             if (_currentDragPlane.Value.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);
