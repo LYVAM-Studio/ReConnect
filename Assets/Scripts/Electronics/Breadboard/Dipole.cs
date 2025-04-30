@@ -75,12 +75,19 @@ namespace Reconnect.Electronics.Breadboards
             if (_isLocked) return;
             _lastLocalPosition = transform.localPosition;
             _wasHorizontal = _isHorizontal;
+            
+            // Compute and pass the plane
+            var dragPlane = new Plane(transform.rotation * Vector3.forward, transform.position);
+            Breadboard.breadboardHolder.SetDragPlane(dragPlane);
+            
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
         
         void ICursorHandle.OnCursorUp()
         {
             if (_isLocked) return;
+            Breadboard.breadboardHolder.ClearDragPlane(); // clean the cached raycast plane
+            
             if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
                 transform.localPosition = closest;

@@ -15,6 +15,24 @@ namespace Reconnect.Electronics.Breadboards
         public CinemachineCamera cam;
         public GameObject ui;
         private bool _isActive = false;
+        private Camera mainCam;
+        
+        private Plane? _currentDragPlane;
+
+        private void Awake()
+        {
+            mainCam = Camera.main;
+        }
+
+        public void SetDragPlane(Plane plane)
+        {
+            _currentDragPlane = plane;
+        }
+
+        public void ClearDragPlane()
+        {
+            _currentDragPlane = null;
+        }
         
         public override void Interact(GameObject player)
         {
@@ -55,10 +73,12 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            Plane plane = new Plane(transform.rotation * Vector3.forward, transform.position);
-            Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
+            if (_currentDragPlane == null)
+                throw new Exception("Drag plane not set. Did you forget to call SetDragPlane()?");
 
-            if (plane.Raycast(ray, out var dist))
+            Ray ray = mainCam!.ScreenPointToRay(Input.mousePosition);
+
+            if (_currentDragPlane.Value.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);
 
             throw new Exception("Failed to raycast on breadboard plane.");
@@ -68,7 +88,7 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (Input.GetMouseButtonDown(1))
             {
-                Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
+                Ray ray = mainCam!.ScreenPointToRay(Input.mousePosition);
                 if (UnityEngine.Physics.Raycast(ray, out RaycastHit hit))
                 {
                     Debug.Log("Hit: " + hit.collider.gameObject.name);
