@@ -18,23 +18,14 @@ namespace Reconnect.Electronics.Breadboards
         [NonSerialized] public bool IsActive = false;
         private Camera _mainCam;
         
-        private Plane? _currentDragPlane;
+        private Plane _raycastPlane;
 
         private void Awake()
         {
             _mainCam = Camera.main;
+            _raycastPlane = new Plane(transform.rotation * Vector3.forward, transform.position);
         }
 
-        public void SetDragPlane(Plane plane)
-        {
-            _currentDragPlane = plane;
-        }
-
-        public void ClearDragPlane()
-        {
-            _currentDragPlane = null;
-        }
-        
         public override void Interact(GameObject player)
         {
             if (IsActive)
@@ -74,12 +65,9 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            if (_currentDragPlane == null)
-                throw new Exception("Drag plane not set. Did you forget to call SetDragPlane()?");
-
             Ray ray = _mainCam!.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-            if (_currentDragPlane.Value.Raycast(ray, out var dist))
+            if (_raycastPlane.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);
 
             throw new Exception("Failed to raycast on breadboard plane.");
