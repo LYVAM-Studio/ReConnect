@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using Reconnect.MouseHover;
+using Reconnect.MouseEvents;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class BbNode : MonoBehaviour, IMouseInteractable
+    public class BbNode : MonoBehaviour, ICursorHandle
     {
         [SerializeField]
         private Vector2Int point;
@@ -14,6 +12,8 @@ namespace Reconnect.Electronics.Breadboards
         [SerializeField]
         private Breadboard breadboard;
 
+        bool ICursorHandle.IsPointerDown { get; set; }
+        
         private Outline _outline;
 
         private void Start()
@@ -22,49 +22,25 @@ namespace Reconnect.Electronics.Breadboards
             _outline.enabled = false;
         }
 
-        public void OnHoverEnter()
+        void ICursorHandle.OnCursorEnter()
         {
             _outline.enabled = true;
-
-            if (IsPointerOverUI())
-            {
-                breadboard.EndWire();
-            }
-            else
-            {
-                breadboard.OnMouseNodeCollision(point);
-            }
+            breadboard.OnMouseNodeCollision(point);
         }
 
-        public void OnHoverExit()
+        void ICursorHandle.OnCursorExit()
         {
             _outline.enabled = false;
         }
 
-        private void OnMouseDown()
+        void ICursorHandle.OnCursorDown()
         {
-            // The click is over a UI element with Raycast Target = true
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
             breadboard.StartWire(point);
         }
         
-        private void OnMouseUp()
+        void ICursorHandle.OnCursorUp()
         {
             breadboard.EndWire();
-        }
-        
-        private static bool IsPointerOverUI()
-        {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
-
-            return results.Count > 0;
         }
     }
 }

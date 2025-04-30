@@ -1,14 +1,15 @@
 using Reconnect.Electronics.Graphs;
-using Reconnect.MouseHover;
+using Reconnect.MouseEvents;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Dipole : MonoBehaviour, IDipole, IMouseInteractable
+    public class Dipole : MonoBehaviour, IDipole, ICursorHandle
     {
         public Breadboard Breadboard { get; set; }
         public Vector2Int Pole1 { get; set; }
         public Vector2Int Pole2 { get; set; }
+        bool ICursorHandle.IsPointerDown { get; set; }
         public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
 
         // Whether this object is rotated or not
@@ -50,23 +51,26 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vertex Inner { get; set; }
         
+        private Vector3 OverlayOffset => 0.2f * Breadboard.transform.lossyScale.x *
+                                         (Breadboard.transform.rotation * Vector3.back);
+        
         private void Awake()
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
         }
         
-        public void OnHoverEnter()
+        void ICursorHandle.OnCursorEnter()
         {
             if (!_isLocked) _outline.enabled = true;
         }
 
-        public void OnHoverExit()
+        void ICursorHandle.OnCursorExit()
         {
             _outline.enabled = false;
         }
         
-        private void OnMouseDown()
+        void ICursorHandle.OnCursorDown()
         {
             if (_isLocked) return;
             _lastLocalPosition = transform.localPosition;
@@ -74,7 +78,7 @@ namespace Reconnect.Electronics.Breadboards
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
         
-        private void OnMouseUp()
+        void ICursorHandle.OnCursorUp()
         {
             if (_isLocked) return;
             if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
@@ -91,15 +95,12 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        private void OnMouseDrag()
+        void ICursorHandle.OnCursorDrag()
         {
             if (_isLocked) return;
-            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor;
+            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor + OverlayOffset;
             if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
-            {
-                // Toggles the rotation
-                IsHorizontal ^= true;
-            }
+                IsHorizontal ^= true; // Toggles the rotation
         }
     }
 }

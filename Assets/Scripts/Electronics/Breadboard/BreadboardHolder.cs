@@ -16,15 +16,6 @@ namespace Reconnect.Electronics.Breadboards
         public GameObject ui;
         private bool _isActive = false;
         
-        private new void Start()
-        {
-            base.Start();
-            // // Set in the prefab
-            // cam.gameObject.SetActive(false);
-            // cam.Priority = 0;
-            // ui.SetActive(false);
-        }
-
         public override void Interact(GameObject player)
         {
             if (_isActive)
@@ -33,8 +24,9 @@ namespace Reconnect.Electronics.Breadboards
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
                 Outline.enabled = true;
-                player.GetComponent<PlayerMovementsNetwork>().isLocked = false;
-                player.transform.GetChild(0).gameObject.SetActive(true);
+                PlayerGetter p = player.GetComponent<PlayerGetter>();
+                p.MovementsNetwork.isLocked = false;
+                p.DummyModel.SetActive(true);
                 cam.gameObject.SetActive(false);
                 cam.Priority = 0;
                 ui.SetActive(false);
@@ -46,8 +38,9 @@ namespace Reconnect.Electronics.Breadboards
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 Outline.enabled = false;
-                player.GetComponent<PlayerMovementsNetwork>().isLocked = true;
-                player.transform.GetChild(0).gameObject.SetActive(false);
+                PlayerGetter p = player.GetComponent<PlayerGetter>();
+                p.MovementsNetwork.isLocked = true;
+                p.DummyModel.SetActive(false);
                 cam.gameObject.SetActive(true);
                 cam.Priority = 2;
                 ui.SetActive(true);
@@ -70,7 +63,18 @@ namespace Reconnect.Electronics.Breadboards
 
             throw new Exception("Failed to raycast on breadboard plane.");
         }
+        
+        void Update()
+        {
+            if (Input.GetMouseButtonDown(1))
+            {
+                Ray ray = Camera.main!.ScreenPointToRay(Input.mousePosition);
+                if (UnityEngine.Physics.Raycast(ray, out RaycastHit hit))
+                {
+                    Debug.Log("Hit: " + hit.collider.gameObject.name);
+                }
+            }
+        }
+
     }
-    
-    
 }
