@@ -1,7 +1,7 @@
 using System;
 using Mirror;
 using Reconnect.Physics;
-using Reconnect.Scene;
+// using Reconnect.Scene;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -27,8 +27,8 @@ namespace Reconnect.Player
 
         protected PlayerInput PlayerInput;
 
-        // imported components
-        protected SceneScript SceneScript;
+        // // imported components
+        // protected SceneScript SceneScript;
 
         public virtual void Awake()
         {
@@ -37,8 +37,8 @@ namespace Reconnect.Player
             //Locking the cursor to the middle of the screen and making it invisible
             Cursor.lockState = CursorLockMode.Locked;
 
-            //allow all players to run this
-            SceneScript = FindFirstObjectByType<SceneScript>(); // Changed the deprecated FindObjectOfType
+            // //allow all players to run this
+            // SceneScript = FindFirstObjectByType<SceneScript>(); // Changed the deprecated FindObjectOfType
 
             // get the FreeLookCamera game object
             FreeLookCamera = FindFirstObjectByType<CinemachineCamera>() ??
@@ -70,12 +70,12 @@ namespace Reconnect.Player
             Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
         }
 
-        [Command]
-        public void CmdSendPlayerMessage()
-        {
-            if (SceneScript)
-                SceneScript.statusText = $"{playerName} says hello {Random.Range(10, 99)}";
-        }
+        // [Command]
+        // public void CmdSendPlayerMessage()
+        // {
+        //     if (SceneScript)
+        //         SceneScript.statusText = $"{playerName} says hello {Random.Range(10, 99)}";
+        // }
 
         [Command]
         public void CmdSetupPlayer(string name, Color col)
@@ -83,7 +83,7 @@ namespace Reconnect.Player
             //player info sent to server, then server updates sync vars which handles it on all clients
             playerName = name;
             playerColor = col;
-            SceneScript.statusText = $"{playerName} joined.";
+            // SceneScript.statusText = $"{playerName} joined.";
         }
 
         private void OnNameChanged(string old, string @new)
@@ -98,7 +98,7 @@ namespace Reconnect.Player
 
         public override void OnStartLocalPlayer()
         {
-            SceneScript.playerNetwork = this;
+            // SceneScript.playerNetwork = this;
 
             FreeLookCamera.Follow = transform;
             FreeLookCamera.LookAt = LookAtObject;

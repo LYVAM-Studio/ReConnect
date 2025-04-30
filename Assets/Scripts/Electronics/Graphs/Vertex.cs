@@ -23,7 +23,7 @@ namespace Reconnect.Electronics.Graphs
         public void AddAdjacent(Vertex adjacent) => AdjacentComponents.Add(adjacent);
         public void RemoveAdjacent(Vertex v) => AdjacentComponents.Remove(v);
 
-        public static void ReciprocalAddAdjacent(Vertex v1, Vertex v2)
+        public static void AddReciprocalAdjacent(Vertex v1, Vertex v2)
         {
             v1.AddAdjacent(v2);
             v2.AddAdjacent(v1);

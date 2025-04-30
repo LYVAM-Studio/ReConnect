@@ -1,74 +1,46 @@
-using System;
-using System.Collections.Generic;
+using Reconnect.MouseEvents;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class BbNode : MonoBehaviour
+    public class BbNode : MonoBehaviour, ICursorHandle
     {
-        private Point _point;
-        private Breadboard _breadboard;
+        [SerializeField]
+        private Vector2Int point;
 
         // Returns the parent breadboard
-        public Breadboard Breadboard
-        {
-            get
-            {
-                if (_breadboard is null)
-                {
-                    _breadboard = GetComponentInParent<Breadboard>();
-                    if (_breadboard is null)
-                        throw new Exception($"Breadboard not found by BreadboardNode at position ({transform.position.x}, {transform.position.y}, {transform.position.z}).");
-                }
+        [SerializeField]
+        private Breadboard breadboard;
 
-                return _breadboard;
-            }
-        }
+        bool ICursorHandle.IsPointerDown { get; set; }
+        
+        private Outline _outline;
 
         private void Start()
         {
-            _point = Point.VectorToPoint(transform.position);
+            _outline = GetComponent<Outline>();
+            _outline.enabled = false;
         }
 
-        private void OnMouseDown()
+        void ICursorHandle.OnCursorEnter()
         {
-            // The click is over a UI element with Raycast Target = true
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-            Breadboard.StartWire(transform.position, _point);
+            _outline.enabled = true;
+            breadboard.OnMouseNodeCollision(point);
         }
 
-        private void OnMouseEnter()
+        void ICursorHandle.OnCursorExit()
         {
-            if (IsPointerOverUI())
-            {
-                Breadboard.EndWire();
-            }
-            else
-            {
-
-                Breadboard.OnMouseNodeCollision(transform.position, _point);
-            }
+            _outline.enabled = false;
         }
 
-        private void OnMouseUp()
+        void ICursorHandle.OnCursorDown()
         {
-            Breadboard.EndWire();
+            breadboard.StartWire(point);
         }
         
-        private bool IsPointerOverUI()
+        void ICursorHandle.OnCursorUp()
         {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
-
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
-
-            return results.Count > 0;
+            breadboard.EndWire();
         }
     }
 }

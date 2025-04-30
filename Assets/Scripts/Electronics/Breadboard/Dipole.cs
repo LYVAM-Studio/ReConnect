@@ -1,35 +1,41 @@
 using System;
-using System.Linq;
 using Reconnect.Electronics.Graphs;
+using Reconnect.MouseEvents;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Dipole : MonoBehaviour
+    public class Dipole : MonoBehaviour, IDipole, ICursorHandle
     {
-        [Header("Poles management")]
-        [Tooltip(
-            "The vector from the center of gravity of this object to the main pole position used for the breadboard positioning.")]
-        public Vector2 mainPoleAnchor = new(0, 0.5f);
-
-        [SerializeField]
-        [Tooltip(
-            "The poles coordinates. Note that the first pole is considered as the main one. The y axis is from bottom to top like in the Unity editor.")]
-        private Vector2[] poles = { new(0, 0), new(0, -1) };
-
         public Breadboard Breadboard { get; set; }
-
-        // The distance between the cursor and the center of this object
-        private Vector3 _deltaCursor;
+        public Vector2Int Pole1 { get; set; }
+        public Vector2Int Pole2 { get; set; }
+        bool ICursorHandle.IsPointerDown { get; set; }
+        public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
 
         // Whether this object is rotated or not
         private bool _isHorizontal;
+        
+        // Whether this object is rotated or not
+        public bool IsHorizontal
+        {
+            get => _isHorizontal;
+            set
+            {
+                transform.localEulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
+                _isHorizontal = value;
+            }
+        }
 
+        // The distance between the cursor and the center of this object
+        private Vector3 _deltaCursor;
+        
         // The last position occupied by this component
-        private Vector3 _lastPosition;
+        private Vector3 _lastLocalPosition;
         
         // Whether this was rotated or not on its last position
-        private bool _lastRotation;
+        private bool _wasHorizontal;
 
         // The component responsible for the outlines
         private Outline _outline;
@@ -47,109 +53,109 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vertex Inner { get; set; }
         
+        private Vector3 OverlayOffset => 0.2f * Breadboard.transform.lossyScale.x *
+                                         (Breadboard.transform.rotation * Vector3.back);
+        // Control map
+        private PlayerControls _controls;
+        
+        // Dragging status of the dipole
+        private bool _isBeingDragged;
+        
         private void Awake()
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
+            
+            _controls = new PlayerControls();
+
+            _controls.Breadboard.Rotate.performed += OnRotate;
         }
 
-        private void OnMouseDown()
+        private void Start()
         {
-            if (_isLocked) return;
-            _lastPosition = transform.position;
-            _lastRotation = _isHorizontal;
-            _deltaCursor = transform.position - ElecHelper.GetFlattedCursorPos();
+            _lastLocalPosition = transform.localPosition;
         }
 
-        private void OnMouseDrag()
+        private void OnEnable()
         {
-            if (_isLocked) return;
-            transform.position = ElecHelper.GetFlattedCursorPos() + _deltaCursor;
-            if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
-            {
-                // Toggles the rotation
-                SetRotation(!_isHorizontal);
-            }
+            _controls.Enable();
         }
 
-        private void OnMouseEnter()
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
+        
+        private void OnDestroy()
+        {
+            _controls.Breadboard.Rotate.performed -= OnRotate;
+        }
+        
+        void ICursorHandle.OnCursorEnter()
         {
             if (!_isLocked) _outline.enabled = true;
         }
 
-        private void OnMouseExit()
+        void ICursorHandle.OnCursorExit()
         {
             _outline.enabled = false;
         }
-
-        private void OnMouseUp()
+        
+        void ICursorHandle.OnCursorDown()
         {
             if (_isLocked) return;
-            var pos = Breadboard.GetClosestValidPosition(this);
-            if (pos is Vector3 validPos)
+            _isBeingDragged = true;
+            _lastLocalPosition = transform.localPosition;
+            _wasHorizontal = _isHorizontal;
+            
+            _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
+        }
+        
+        void ICursorHandle.OnCursorUp()
+        {
+            if (_isLocked) return;
+            EndDrag();
+        }
+
+        private void RollbackPosition()
+        {
+            // Restore the last valid position and rotation
+            transform.localPosition = _lastLocalPosition;
+            IsHorizontal = _wasHorizontal;
+        }
+
+        private void EndDrag()
+        {
+            _isBeingDragged = false;
+            
+            if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
-                transform.position = validPos;
+                transform.localPosition = closest;
+                Pole1 = newPole1;
+                Pole2 = newPole2;
             }
             else
             {
-                // Restore the last valid position and rotation
-                transform.position = _lastPosition;
-                SetRotation(_lastRotation);
+                RollbackPosition();
             }
         }
 
-        public Point[] GetPoles(Vector2 position)
+        void ICursorHandle.OnCursorDrag()
         {
-            var poleList = from p in poles select Point.VectorToPoint(position + p + mainPoleAnchor);
-            return poleList.ToArray();
+            if (_isLocked) return;
+            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor + OverlayOffset;
+        }
+        
+        private void OnRotate(InputAction.CallbackContext context)
+        {
+            if (_isBeingDragged)
+                IsHorizontal ^= true; // Toggles the rotation
         }
 
-        public Point[] GetPoles()
+        private void Update()
         {
-            return GetPoles(transform.position);
-        }
-
-        public Point GetOtherPole(Point other) => Array.Find(GetPoles(), p => p != other);
-
-        public void SetRotation(bool horizontal)
-        {
-            if (horizontal == _isHorizontal) return;
-
-            if (horizontal)
-            {
-                _isHorizontal = true;
-                poles[1] = new Vector2(1, 0);
-                transform.eulerAngles = new Vector3(0, 0, 90);
-                mainPoleAnchor = new Vector2(-0.5f, 0);
-            }
-            else
-            {
-                _isHorizontal = false;
-                poles[1] = new Vector2(0, -1);
-                transform.eulerAngles = Vector3.zero;
-                mainPoleAnchor = new Vector2(0, 0.5f);
-            }
-        }
-
-        public void SetPosition(Point pole1, Point pole2)
-        {
-            if (!Mathf.Approximately(((Vector2)pole1 - (Vector2)pole2).magnitude, 1))
-                throw new Exception(
-                    $"This dipole cannot be set between nodes {pole1} and {pole2} because the distance between them is not 1.");
-            if (pole1.H == pole2.H)
-            {
-                // Horizontal
-                if (pole1.W > pole2.W) pole1 = pole2; // Make the pole1 the leftmost point
-                SetRotation(true);
-            }
-            else
-            {
-                // Vertical
-                if (pole1.H > pole2.H) pole1 = pole2; // Make the pole1 the upmost point
-                SetRotation(false);
-            }
-
-            transform.position = Point.PointToVector(pole1, Breadboard.zPositionDipoles) - (Vector3)mainPoleAnchor;
+            if (!Breadboard.breadboardHolder.IsActive) // returns to last pos when the player exists the breadboard holder
+                RollbackPosition();
         }
     }
 }

@@ -4,75 +4,80 @@ input-intensity: 16
 target-tension: 182.4
 components:
   - lamp:
-    h-pos: 5
-    w-pos: 3
+    name: L1
+    x-pos: 3
+    y-pos: 5
     direction: s
     resistance: 76
     nominal-tension: 182.4
     target: true
     locked: true
   - wire:
-    h-pos: 0
-    w-pos: 3
+    x-pos: 3
+    y-pos: 0
     direction: s
     locked: true
   - wire:
-    h-pos: 1
-    w-pos: 3
+    x-pos: 3
+    y-pos: 1
     direction: w
     locked: true
   - wire:
-    h-pos: 1
-    w-pos: 3
+    x-pos: 3
+    y-pos: 1
     direction: e
     locked: true
   - wire:
-    h-pos: 1
-    w-pos: 2
+    x-pos: 2
+    y-pos: 1
     direction: s
     locked: true
   - wire:
-    h-pos: 1
-    w-pos: 4
+    x-pos: 4
+    y-pos: 1
     direction: s
     locked: true
   - wire:
-    h-pos: 3
-    w-pos: 2
+    x-pos: 2
+    y-pos: 3
     direction: s
     locked: true
   - wire:
-    h-pos: 3
-    w-pos: 4
+    x-pos: 4
+    y-pos: 3
     direction: s
     locked: true
   - wire:
-    h-pos: 4
-    w-pos: 2
+    x-pos: 2
+    y-pos: 4
     direction: e
     locked: true
   - wire:
-    h-pos: 4
-    w-pos: 4
+    x-pos: 4
+    y-pos: 4
     direction: w
     locked: true
   - wire:
-    h-pos: 4
-    w-pos: 3
+    x-pos: 3
+    y-pos: 4
     direction: s
     locked: true
   - wire:
-    h-pos: 6
-    w-pos: 3
+    x-pos: 3
+    y-pos: 6
     direction: s
     locked: true
   - resistor:
-    h-pos: 3
-    w-pos: 0
+    name: R1
+    x-pos: 0
+    y-pos: 3
     direction: s
     resistance: 40
+    tolerance: 0.5
   - resistor:
-    h-pos: 3
-    w-pos: 1
+    name: R2
+    x-pos: 1
+    y-pos: 3
     direction: s
     resistance: 60
+    tolerance: 0.1

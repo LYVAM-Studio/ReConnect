@@ -1,3 +1,4 @@
+using Reconnect.Electronics.CircuitLoading;
 using UnityEngine;
 
 namespace Reconnect.Electronics.UI
@@ -16,8 +17,7 @@ namespace Reconnect.Electronics.UI
 
         public void LoadCircuitLevel()
         {
-            _breadboardUI.Breadboard.LoadCircuit(CircuitName);
+            Loader.LoadCircuit(_breadboardUI.Breadboard, CircuitName);
         }
     }
 }
-

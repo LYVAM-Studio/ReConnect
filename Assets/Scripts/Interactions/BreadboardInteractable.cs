@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Reconnect.Interactions
 {
-    public class CircuitInterface : Interactable
+    public class BreadboardInteractable : Interactable
     {
         [Tooltip("The interface that will be opened and closed when the player interacts.")]
         public GameObject circuitInterface;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Interactions
 {
@@ -22,27 +22,53 @@ namespace Reconnect.Interactions
         private readonly List<(Interactable interactable, Transform transform)> _interactableInRange = new();
 
         // The most recently calculated nearest interactable in range (avoids recalculation).
-        [CanBeNull] private Interactable _currentNearest;
+        private Interactable _currentNearest;
 
         // Whether the interaction range is shown or not
         private bool _showRange;
         // // Whether the player has already started an interaction
         // private bool _isInteracting;
+        
+        private PlayerControls _controls;
 
+        private void Awake()
+        {
+            _controls = new PlayerControls();
+
+            _controls.Player.Interact.performed += OnInteraction;
+        }
+        
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
+        
+        private void OnDestroy()
+        {
+            _controls.Player.Interact.performed -= OnInteraction;
+        }
+        
         public void Start()
         {
             _showRange = isShownByDefault;
             _currentNearest = null;
-            visualRange = GetComponent<MeshRenderer>();
             visualRange.enabled = _showRange;
-            player = transform.parent.gameObject;
+        }
+
+        private void OnInteraction(InputAction.CallbackContext context)
+        {
+            if (_interactableInRange.Count > 0)
+                GetNearestInteractable()!.Interact(player);
         }
 
         // Update is called once per frame
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R) && _interactableInRange.Count > 0) // TODO -> use new input system
-                GetNearestInteractable()!.Interact(player);
 
             // Make the nearest interactable glow more
             if (_currentNearest is not null) _currentNearest.ResetNearest();
@@ -90,7 +116,6 @@ namespace Reconnect.Interactions
         }
 
         // Gets the nearest interactable in the range of the player. If none is found, returns null.
-        [CanBeNull]
         private Interactable GetNearestInteractable()
         {
             Interactable nearest = null;
