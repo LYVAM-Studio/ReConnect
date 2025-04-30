@@ -1,6 +1,7 @@
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -53,11 +54,34 @@ namespace Reconnect.Electronics.Breadboards
         
         private Vector3 OverlayOffset => 0.2f * Breadboard.transform.lossyScale.x *
                                          (Breadboard.transform.rotation * Vector3.back);
+        // Control map
+        private PlayerControls _controls;
+        
+        // Dragging status of the dipole
+        private bool _isBeingDragged;
         
         private void Awake()
         {
             _outline = GetComponent<Outline>();
             _outline.enabled = false;
+            
+            _controls = new PlayerControls();
+
+            _controls.Breadboard.Rotate.performed += OnRotate;
+        }
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
+        
+        private void OnDestroy()
+        {
+            _controls.Breadboard.Rotate.performed -= OnRotate;
         }
         
         void ICursorHandle.OnCursorEnter()
@@ -73,6 +97,7 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorDown()
         {
             if (_isLocked) return;
+            _isBeingDragged = true;
             _lastLocalPosition = transform.localPosition;
             _wasHorizontal = _isHorizontal;
             
@@ -82,6 +107,7 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorUp()
         {
             if (_isLocked) return;
+            _isBeingDragged = false;
             
             if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
@@ -101,7 +127,11 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (_isLocked) return;
             transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor + OverlayOffset;
-            if (Input.GetKeyDown(KeyCode.R)) // todo: use new input system
+        }
+        
+        private void OnRotate(InputAction.CallbackContext context)
+        {
+            if (_isBeingDragged)
                 IsHorizontal ^= true; // Toggles the rotation
         }
     }
