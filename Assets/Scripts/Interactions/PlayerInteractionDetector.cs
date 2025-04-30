@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,7 +22,7 @@ namespace Reconnect.Interactions
         private readonly List<(Interactable interactable, Transform transform)> _interactableInRange = new();
 
         // The most recently calculated nearest interactable in range (avoids recalculation).
-        [CanBeNull] private Interactable _currentNearest;
+        private Interactable _currentNearest;
 
         // Whether the interaction range is shown or not
         private bool _showRange;
@@ -117,7 +116,6 @@ namespace Reconnect.Interactions
         }
 
         // Gets the nearest interactable in the range of the player. If none is found, returns null.
-        [CanBeNull]
         private Interactable GetNearestInteractable()
         {
             Interactable nearest = null;
