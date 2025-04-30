@@ -15,7 +15,7 @@ namespace Reconnect.Electronics.Breadboards
         public Breadboard breadboard;
         public CinemachineCamera cam;
         public GameObject ui;
-        private bool _isActive = false;
+        [NonSerialized] public bool IsActive = false;
         private Camera _mainCam;
         
         private Plane? _currentDragPlane;
@@ -37,7 +37,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public override void Interact(GameObject player)
         {
-            if (_isActive)
+            if (IsActive)
             {
                 // quit the interface
                 Cursor.visible = false;
@@ -49,7 +49,7 @@ namespace Reconnect.Electronics.Breadboards
                 cam.gameObject.SetActive(false);
                 cam.Priority = 0;
                 ui.SetActive(false);
-                _isActive = false;
+                IsActive = false;
             }
             else
             {
@@ -63,7 +63,7 @@ namespace Reconnect.Electronics.Breadboards
                 cam.gameObject.SetActive(true);
                 cam.Priority = 2;
                 ui.SetActive(true);
-                _isActive = true;
+                IsActive = true;
             }
         }
 
