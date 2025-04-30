@@ -4,13 +4,13 @@ namespace Reconnect.Interactions
 {
     public abstract class Interactable : MonoBehaviour
     {
-        private Outline _glowScript;
+        protected Outline Outline;
 
         protected void Start()
         {
-            _glowScript = GetComponent<Outline>();
-            _glowScript.enabled = false;
-            _glowScript.OutlineWidth = 2.5f;
+            Outline = GetComponent<Outline>();
+            Outline.enabled = false;
+            Outline.OutlineWidth = 2.5f;
         }
 
         public abstract void Interact(GameObject player);
@@ -19,27 +19,27 @@ namespace Reconnect.Interactions
         // This method is called by the player when this interactable enters its range.
         public void OnEnterPlayerRange()
         {
-            _glowScript.enabled = true;
+            Outline.enabled = true;
         }
 
         // This method is called by the player when this interactable exits its range.
         public void OnExitPlayerRange()
         {
-            _glowScript.enabled = false;
+            Outline.enabled = false;
         }
 
         // This method is called from the player interaction detector script to inform this interactable that it is no longer the nearest.
         public void ResetNearest()
         {
             // Make it glow less
-            _glowScript.OutlineWidth = 2.5f;
+            Outline.OutlineWidth = 2.5f;
         }
 
         // This method is called from the player interaction detector script to inform this interactable that it is the nearest.
         public void SetNearest()
         {
             // Make it glow more
-            _glowScript.OutlineWidth = 5;
+            Outline.OutlineWidth = 5;
         }
     }
 }

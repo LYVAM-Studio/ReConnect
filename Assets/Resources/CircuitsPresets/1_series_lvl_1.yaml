@@ -5,8 +5,8 @@ target-tension: 120
 components:
   - lamp:
     name: L1
-    h-pos: 5
-    w-pos: 3
+    x-pos: 3
+    y-pos: 5
     direction: s
     resistance: 250
     nominal-tension: 120
@@ -14,32 +14,32 @@ components:
     locked: true
   - resistor:
     name: R1
-    h-pos: 3
-    w-pos: 5
+    x-pos: 5
+    y-pos: 3
     direction: s
     resistance: 250
   - wire:
-    h-pos: 0
-    w-pos: 3
+    x-pos: 3
+    y-pos: 0
     direction: s
     locked: true
   - wire:
-    h-pos: 1
-    w-pos: 3
+    x-pos: 3
+    y-pos: 1
     direction: s
     locked: true
   - wire:
-    h-pos: 2
-    w-pos: 3
+    x-pos: 3
+    y-pos: 2
     direction: s
     locked: true
   - wire:
-    h-pos: 4
-    w-pos: 3
+    x-pos: 3
+    y-pos: 4
     direction: s
     locked: true
   - wire:
-    h-pos: 6
-    w-pos: 3
+    x-pos: 3
+    y-pos: 6
     direction: s
     locked: true

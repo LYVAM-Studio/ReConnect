@@ -22,7 +22,7 @@ namespace Reconnect.Player
                 if (!other.gameObject.TryGetComponent(out IAirlockCollider airlockCollider))
                     throw new ArgumentException("No Airlock collider found on this AirLock tagged object");
                 airlockCollider.CollisionHandle(_physicsScript);
-                Debug.Log(-_physicsScript.Gravity);
+                // Debug.Log(-_physicsScript.Gravity);
             }
         }
     }
