@@ -1,3 +1,4 @@
+using System;
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
 using UnityEngine;
@@ -69,6 +70,12 @@ namespace Reconnect.Electronics.Breadboards
 
             _controls.Breadboard.Rotate.performed += OnRotate;
         }
+
+        private void Start()
+        {
+            _lastLocalPosition = transform.localPosition;
+        }
+
         private void OnEnable()
         {
             _controls.Enable();
@@ -111,6 +118,18 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorUp()
         {
             if (_isLocked) return;
+            EndDrag();
+        }
+
+        private void RollbackPosition()
+        {
+            // Restore the last valid position and rotation
+            transform.localPosition = _lastLocalPosition;
+            IsHorizontal = _wasHorizontal;
+        }
+
+        private void EndDrag()
+        {
             _isBeingDragged = false;
             Breadboard.breadboardHolder.ClearDragPlane(); // clean the cached raycast plane
             
@@ -122,9 +141,7 @@ namespace Reconnect.Electronics.Breadboards
             }
             else
             {
-                // Restore the last valid position and rotation
-                transform.localPosition = _lastLocalPosition;
-                IsHorizontal = _wasHorizontal;
+                RollbackPosition();
             }
         }
         void ICursorHandle.OnCursorDrag()
@@ -137,6 +154,12 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (_isBeingDragged)
                 IsHorizontal ^= true; // Toggles the rotation
+        }
+
+        private void Update()
+        {
+            if (!Breadboard.breadboardHolder.IsActive) // returns to last pos when the player exists the breadboard holder
+                RollbackPosition();
         }
     }
 }
