@@ -1,12 +1,13 @@
 using UnityEngine;
 using Reconnect.Electronics.Breadboards;
-using Reconnect.MouseHover;
-
+using Reconnect.MouseEvents;
 
 namespace Reconnect.Electronics.Components
 {
-    public class WireScript : MonoBehaviour, IDipole, IMouseInteractable
+    public class WireScript : MonoBehaviour, IDipole, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        
         public Breadboard Breadboard { get; set; }
 
         public Vector2Int Pole1 { get; set; }
@@ -31,17 +32,17 @@ namespace Reconnect.Electronics.Components
             _outline.enabled = false;
         }
 
-        public void OnHoverEnter()
+        void ICursorHandle.OnCursorEnter()
         {
             if (!_isLocked) _outline.enabled = true;
         }
 
-        public void OnHoverExit()
+        void ICursorHandle.OnCursorExit()
         {
             _outline.enabled = false;
         }
 
-        private void OnMouseUpAsButton()
+        void ICursorHandle.OnCursorClick()
         {
             if (!_isLocked)
                 Breadboard.DeleteWire(this);

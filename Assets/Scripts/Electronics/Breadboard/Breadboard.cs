@@ -53,13 +53,13 @@ namespace Reconnect.Electronics.Breadboards
         [NonSerialized] public CircuitInfo CircuitInfo;
 
 
-        public Vector3 PointToPos(Vector2Int point)
+        public static Vector3 PointToPos(Vector2Int point)
             => new Vector3(
                 -3.5f + point.x,
                 3.5f - point.y,
                 -0.5f);
 
-        public Vector2Int PosToPoint(Vector3 pos)
+        public static Vector2Int PosToPoint(Vector3 pos)
             => new Vector2Int(
                 (int)(pos.x + 3.5f),
                 (int)(-pos.y + 3.5f));
@@ -191,18 +191,21 @@ namespace Reconnect.Electronics.Breadboards
             else if (delta != Vector2Int.zero)
             {
                 // Is null if a wire is not already at the given position. Otherwise, contains the wire.
-                var wire = Wires.Find(w =>
+                var wireAtPos = Wires.Find(w =>
                     (w.Pole1 == _lastNodePoint && w.Pole2 == nodePoint) ||
                     (w.Pole2 == _lastNodePoint && w.Pole1 == nodePoint));
-                if (wire is not null)
+                var dipoleAtPos = Dipoles.Find(d =>
+                    (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
+                    (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
+                if (wireAtPos != null)
                 {
                     // A wire is already at this position
                     // Delete the wire at this position
-                    if (!wire.IsLocked) DeleteWire(wire);
+                    if (!wireAtPos.IsLocked) DeleteWire(wireAtPos);
                     // Enter the deletion mode
                     _onDeletionMode = true;
                 }
-                else if (!_onDeletionMode)
+                else if (dipoleAtPos == null && !_onDeletionMode)
                 {
                     CreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}");
                 }
