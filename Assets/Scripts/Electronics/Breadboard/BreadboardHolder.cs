@@ -3,6 +3,7 @@ using Reconnect.Interactions;
 using Reconnect.Player;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -64,7 +65,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            Ray ray = _mainCam!.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _mainCam!.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (_raycastPlane.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);

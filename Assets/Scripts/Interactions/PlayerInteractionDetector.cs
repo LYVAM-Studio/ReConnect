@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Interactions
 {
@@ -28,7 +29,31 @@ namespace Reconnect.Interactions
         private bool _showRange;
         // // Whether the player has already started an interaction
         // private bool _isInteracting;
+        
+        private PlayerControls _controls;
 
+        private void Awake()
+        {
+            _controls = new PlayerControls();
+
+            _controls.Player.Interact.performed += OnInteraction;
+        }
+        
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
+        
+        private void OnDestroy()
+        {
+            _controls.Player.Interact.performed -= OnInteraction;
+        }
+        
         public void Start()
         {
             _showRange = isShownByDefault;
@@ -36,11 +61,15 @@ namespace Reconnect.Interactions
             visualRange.enabled = _showRange;
         }
 
+        private void OnInteraction(InputAction.CallbackContext context)
+        {
+            if (_interactableInRange.Count > 0)
+                GetNearestInteractable()!.Interact(player);
+        }
+
         // Update is called once per frame
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R) && _interactableInRange.Count > 0) // TODO -> use new input system
-                GetNearestInteractable()!.Interact(player);
 
             // Make the nearest interactable glow more
             if (_currentNearest is not null) _currentNearest.ResetNearest();

@@ -15,10 +15,10 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
+public partial class @PlayerControls: IInputActionCollection2, IDisposable
 {
     public InputActionAsset asset { get; }
-    public @InputSystem_Actions()
+    public @PlayerControls()
     {
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""InputSystem_Actions"",
@@ -85,16 +85,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""852140f2-7766-474d-8707-702459ba45f3"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
+                    ""interactions"": """",
                     ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""Previous"",
                     ""type"": ""Button"",
                     ""id"": ""2776c80d-3c14-4091-8c56-d04ced07a2b0"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -121,6 +121,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""UnlockCursor"",
                     ""type"": ""Button"",
                     ""id"": ""d711a416-76dc-477e-bc36-6d322118a767"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""dd3db892-7ee4-4b64-9bd4-57b21af29f91"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -466,6 +475,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""UnlockCursor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d2b46248-b078-4d59-a55b-a679b893c9fa"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Inventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -986,6 +1006,34 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Breadboard"",
+            ""id"": ""4c6d4c1d-8826-411e-82ab-b8726e1d4091"",
+            ""actions"": [
+                {
+                    ""name"": ""Rotate"",
+                    ""type"": ""Button"",
+                    ""id"": ""70f1b012-847c-4788-a8c8-4e2a3fcedc45"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0350f6d4-6928-4552-bfeb-f58462d124e0"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Rotate"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1064,6 +1112,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Dance = m_Player.FindAction("Dance", throwIfNotFound: true);
         m_Player_UnlockCursor = m_Player.FindAction("UnlockCursor", throwIfNotFound: true);
+        m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1076,12 +1125,16 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        // Breadboard
+        m_Breadboard = asset.FindActionMap("Breadboard", throwIfNotFound: true);
+        m_Breadboard_Rotate = m_Breadboard.FindAction("Rotate", throwIfNotFound: true);
     }
 
-    ~@InputSystem_Actions()
+    ~@PlayerControls()
     {
-        UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, InputSystem_Actions.Player.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, InputSystem_Actions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Breadboard.enabled, "This will cause a leak and performance issues, PlayerControls.Breadboard.Disable() has not been called.");
     }
 
     public void Dispose()
@@ -1154,10 +1207,11 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Dance;
     private readonly InputAction m_Player_UnlockCursor;
+    private readonly InputAction m_Player_Inventory;
     public struct PlayerActions
     {
-        private @InputSystem_Actions m_Wrapper;
-        public PlayerActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        private @PlayerControls m_Wrapper;
+        public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
         public InputAction @Jump => m_Wrapper.m_Player_Jump;
@@ -1169,6 +1223,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         public InputAction @Next => m_Wrapper.m_Player_Next;
         public InputAction @Dance => m_Wrapper.m_Player_Dance;
         public InputAction @UnlockCursor => m_Wrapper.m_Player_UnlockCursor;
+        public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1211,6 +1266,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @UnlockCursor.started += instance.OnUnlockCursor;
             @UnlockCursor.performed += instance.OnUnlockCursor;
             @UnlockCursor.canceled += instance.OnUnlockCursor;
+            @Inventory.started += instance.OnInventory;
+            @Inventory.performed += instance.OnInventory;
+            @Inventory.canceled += instance.OnInventory;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1248,6 +1306,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @UnlockCursor.started -= instance.OnUnlockCursor;
             @UnlockCursor.performed -= instance.OnUnlockCursor;
             @UnlockCursor.canceled -= instance.OnUnlockCursor;
+            @Inventory.started -= instance.OnInventory;
+            @Inventory.performed -= instance.OnInventory;
+            @Inventory.canceled -= instance.OnInventory;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1281,8 +1342,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     public struct UIActions
     {
-        private @InputSystem_Actions m_Wrapper;
-        public UIActions(@InputSystem_Actions wrapper) { m_Wrapper = wrapper; }
+        private @PlayerControls m_Wrapper;
+        public UIActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
         public InputAction @Submit => m_Wrapper.m_UI_Submit;
         public InputAction @Cancel => m_Wrapper.m_UI_Cancel;
@@ -1383,6 +1444,52 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
+
+    // Breadboard
+    private readonly InputActionMap m_Breadboard;
+    private List<IBreadboardActions> m_BreadboardActionsCallbackInterfaces = new List<IBreadboardActions>();
+    private readonly InputAction m_Breadboard_Rotate;
+    public struct BreadboardActions
+    {
+        private @PlayerControls m_Wrapper;
+        public BreadboardActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Rotate => m_Wrapper.m_Breadboard_Rotate;
+        public InputActionMap Get() { return m_Wrapper.m_Breadboard; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(BreadboardActions set) { return set.Get(); }
+        public void AddCallbacks(IBreadboardActions instance)
+        {
+            if (instance == null || m_Wrapper.m_BreadboardActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_BreadboardActionsCallbackInterfaces.Add(instance);
+            @Rotate.started += instance.OnRotate;
+            @Rotate.performed += instance.OnRotate;
+            @Rotate.canceled += instance.OnRotate;
+        }
+
+        private void UnregisterCallbacks(IBreadboardActions instance)
+        {
+            @Rotate.started -= instance.OnRotate;
+            @Rotate.performed -= instance.OnRotate;
+            @Rotate.canceled -= instance.OnRotate;
+        }
+
+        public void RemoveCallbacks(IBreadboardActions instance)
+        {
+            if (m_Wrapper.m_BreadboardActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IBreadboardActions instance)
+        {
+            foreach (var item in m_Wrapper.m_BreadboardActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_BreadboardActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public BreadboardActions @Breadboard => new BreadboardActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     public InputControlScheme KeyboardMouseScheme
     {
@@ -1441,6 +1548,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnNext(InputAction.CallbackContext context);
         void OnDance(InputAction.CallbackContext context);
         void OnUnlockCursor(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
@@ -1454,5 +1562,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         void OnScrollWheel(InputAction.CallbackContext context);
         void OnTrackedDevicePosition(InputAction.CallbackContext context);
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+    }
+    public interface IBreadboardActions
+    {
+        void OnRotate(InputAction.CallbackContext context);
     }
 }
