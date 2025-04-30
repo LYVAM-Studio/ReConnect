@@ -83,18 +83,5 @@ namespace Reconnect.Electronics.Breadboards
 
             throw new Exception("Failed to raycast on breadboard plane.");
         }
-        
-        void Update()
-        {
-            if (Input.GetMouseButtonDown(1))
-            {
-                Ray ray = mainCam!.ScreenPointToRay(Input.mousePosition);
-                if (UnityEngine.Physics.Raycast(ray, out RaycastHit hit))
-                {
-                    Debug.Log("Hit: " + hit.collider.gameObject.name);
-                }
-            }
-        }
-
     }
 }
