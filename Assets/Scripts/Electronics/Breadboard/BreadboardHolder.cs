@@ -3,6 +3,7 @@ using Reconnect.Interactions;
 using Reconnect.Player;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -76,7 +77,7 @@ namespace Reconnect.Electronics.Breadboards
             if (_currentDragPlane == null)
                 throw new Exception("Drag plane not set. Did you forget to call SetDragPlane()?");
 
-            Ray ray = _mainCam!.ScreenPointToRay(Input.mousePosition);
+            Ray ray = _mainCam!.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (_currentDragPlane.Value.Raycast(ray, out var dist))
                 return ray.GetPoint(dist);
