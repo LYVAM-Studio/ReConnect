@@ -53,8 +53,6 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vertex Inner { get; set; }
         
-        private Vector3 OverlayOffset => 0.2f * Breadboard.transform.lossyScale.x *
-                                         (Breadboard.transform.rotation * Vector3.back);
         // Control map
         private PlayerControls _controls;
         
@@ -143,7 +141,8 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorDrag()
         {
             if (_isLocked) return;
-            transform.position = Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor + OverlayOffset;
+            transform.position = Vector3.MoveTowards(Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor,
+                Breadboard.breadboardHolder.cam.transform.position, Breadboard.transform.lossyScale.x * 0.2f);
         }
         
         private void OnRotate(InputAction.CallbackContext context)
