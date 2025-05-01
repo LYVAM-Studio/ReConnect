@@ -21,6 +21,7 @@ namespace Reconnect.Electronics.Breadboards
         private Camera _mainCam;
         private Plane _raycastPlane;
 
+        // Cache to avoid multiple raycasts in the same frame
         private Vector3 _lastRaycast;
         private int _lastFrame;
 
