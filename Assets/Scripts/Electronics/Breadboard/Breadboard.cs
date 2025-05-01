@@ -215,32 +215,16 @@ namespace Reconnect.Electronics.Breadboards
             // This vector corresponds to the future wire
             var delta = nodePoint - _lastNodePoint;
 
-            // nodes are spaced by 1.0f, the diagonal distance would be sqrt(2) ~ 1.41
-            // We check if the distance is greater because we want to avoid skipping surrounding nodes.
-            if (delta.magnitude > 1.5f)
+            if (delta.magnitude is < 1.5f and > 0)
             {
-                // Set the start to the current end
-                _lastNodePoint = nodePoint;
-            }
-            else if (delta != Vector2Int.zero)
-            {
-                // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wireAtPos = Wires.Find(w =>
                     (w.Pole1 == _lastNodePoint && w.Pole2 == nodePoint) ||
                     (w.Pole2 == _lastNodePoint && w.Pole1 == nodePoint));
                 var dipoleAtPos = Dipoles.Find(d =>
                     (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
                     (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
-                if (wireAtPos != null)
-                {
-                    // A wire is already at this position
-                    // Delete the wire at this position
-                    if (!wireAtPos.IsLocked) DeleteWire(wireAtPos);
-                }
-                else if (dipoleAtPos == null)
-                {
+                if (wireAtPos == null && dipoleAtPos == null)
                     CreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}");
-                }
 
                 // Set the start to the current end
                 _lastNodePoint = nodePoint;
