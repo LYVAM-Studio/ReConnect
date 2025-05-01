@@ -28,11 +28,6 @@ namespace Reconnect.Electronics.Breadboards
         private Vector2Int _lastNodePoint;
 
         /// <summary>
-        /// Whether the user has entered the "deletion mode" which destroys every wire touched with the mouse.
-        /// </summary>
-        private bool _onDeletionMode;
-
-        /// <summary>
         /// Whether a wire is being created. It implies that the mouse is down.
         /// </summary>
         private bool _onWireCreation;
@@ -75,28 +70,40 @@ namespace Reconnect.Electronics.Breadboards
         private void Start()
         {
             _onWireCreation = false;
-            _onDeletionMode = false;
+            _wireBeingCreated =
+                Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+            _wireBeingCreated.GetComponent<WireScript>().enabled = false;
+            _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
             Loader.LoadCircuit(this, "2_parallel_lvl_2");
         }
         
         private void Update()
         {
-            if (_wireBeingCreated != null)
+            if (breadboardHolder.IsActive)
             {
-                _wireBeingCreated.transform.position =
-                    (LocalToWorld(PointToLocalPos(_lastNodePoint)) + breadboardHolder.GetFlattenedCursorPos()) / 2;
-                _wireBeingCreated.transform.LookAt(breadboardHolder.GetFlattenedCursorPos());
-                _wireBeingCreated.transform.eulerAngles += new Vector3(90, 0, 0);
-                var scale = _wireBeingCreated.transform.lossyScale;
-                scale[1] = (_wireBeingCreated.transform.position - breadboardHolder.GetFlattenedCursorPos()).magnitude;
-                _wireBeingCreated.transform.localScale = scale / transform.lossyScale.x;
-
-                if (!_onWireCreation || _onDeletionMode || _wireBeingCreated.transform.localScale.y > 0.9f)
+                if (_onWireCreation)
                 {
-                    Destroy(_wireBeingCreated);
-                    _wireBeingCreated = null;
-                    _onDeletionMode = true;
+                    _wireBeingCreated.SetActive(true);
+                    _wireBeingCreated.transform.position =
+                        (LocalToWorld(PointToLocalPos(_lastNodePoint)) + breadboardHolder.GetFlattenedCursorPos()) / 2;
+                    _wireBeingCreated.transform.LookAt(breadboardHolder.GetFlattenedCursorPos());
+                    _wireBeingCreated.transform.eulerAngles += new Vector3(90, 0, 0);
+                    var scale = _wireBeingCreated.transform.lossyScale;
+                    scale[1] = (_wireBeingCreated.transform.position - breadboardHolder.GetFlattenedCursorPos())
+                        .magnitude;
+                    _wireBeingCreated.transform.localScale = scale / transform.lossyScale.x;
+
+                    if (_wireBeingCreated.transform.localScale.y > 0.9f)
+                    {
+                        _wireBeingCreated.SetActive(false);
+                        _onWireCreation = false;
+                    }
                 }
+            }
+            else
+            {
+                _wireBeingCreated.SetActive(false);
+                _onWireCreation = false;
             }
         }
 
@@ -182,18 +189,14 @@ namespace Reconnect.Electronics.Breadboards
         public void StartWire(Vector2Int nodePoint)
         {
             _onWireCreation = true;
-            _onDeletionMode = false;
             _lastNodePoint = nodePoint;
-            // create the wire animation
-            _wireBeingCreated =
-                Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
-            _wireBeingCreated.GetComponent<WireScript>().enabled = false;
-            _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
+            _wireBeingCreated.SetActive(true);
         }
 
         public void EndWire()
         {
             _onWireCreation = false;
+            _wireBeingCreated.SetActive(false);
         }
         
         public void DeleteWire(WireScript wire)
@@ -216,9 +219,6 @@ namespace Reconnect.Electronics.Breadboards
             // We check if the distance is greater because we want to avoid skipping surrounding nodes.
             if (delta.magnitude > 1.5f)
             {
-                // The user skipped one or more node. A wire cannot be created that way
-                // Enter in deletion mode to delete wires if the users wants to
-                _onDeletionMode = true;
                 // Set the start to the current end
                 _lastNodePoint = nodePoint;
             }
@@ -236,10 +236,8 @@ namespace Reconnect.Electronics.Breadboards
                     // A wire is already at this position
                     // Delete the wire at this position
                     if (!wireAtPos.IsLocked) DeleteWire(wireAtPos);
-                    // Enter the deletion mode
-                    _onDeletionMode = true;
                 }
-                else if (dipoleAtPos == null && !_onDeletionMode)
+                else if (dipoleAtPos == null)
                 {
                     CreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}");
                 }
