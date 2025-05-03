@@ -1335,7 +1335,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7828983708751818251}
-  - component: {fileID: 7882834521565603696}
   - component: {fileID: 3553645358341655891}
   - component: {fileID: 3086090693040877118}
   - component: {fileID: 934192716237819471}
@@ -1362,20 +1361,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1168607751103198489}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7882834521565603696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3729641665707041941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 339c97a12a1b47a57887d121ee0e837e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  comment: This object synchronizes the dimensions of the interaction range and the
-    displayed range.
 --- !u!33 &3553645358341655891
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -2360,8 +2345,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MovementsNetwork: {fileID: 8583066610830916097}
   DummyModel: {fileID: 4152482304919436090}
-  Interactions: {fileID: 3086090693040877118}
-  AirLockDetector: {fileID: 3764311718482648137}
 --- !u!114 &8583066610830916097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2506,6 +2489,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: d711a416-76dc-477e-bc36-6d322118a767
     m_ActionName: 'Player/UnlockCursor[/Keyboard/tab]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: dd3db892-7ee4-4b64-9bd4-57b21af29f91
+    m_ActionName: 'Player/Inventory[/Keyboard/f]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 70f1b012-847c-4788-a8c8-4e2a3fcedc45
+    m_ActionName: 'Breadboard/Rotate[/Keyboard/r]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: f83ecbca-9be4-47cc-a27c-47f78c908db6
+    m_ActionName: 'Menu/Esc[/Keyboard/escape]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
