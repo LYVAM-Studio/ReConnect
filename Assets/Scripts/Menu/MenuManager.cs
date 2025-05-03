@@ -194,6 +194,7 @@ namespace Reconnect.Menu
                     break;
             }
 
+            CamInputAxis.enabled = true;
             CurrentMenu = MenuState.Main;
             IsInGame = false;
         }
