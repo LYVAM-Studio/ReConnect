@@ -6,6 +6,7 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Reconnect.Menu
 {
@@ -27,6 +28,10 @@ namespace Reconnect.Menu
         public GameObject pauseMenu;
 
         private PlayerControls _controls;
+
+        private CursorLockMode _previousCursorLockMode;
+        private bool _previousCursorVisibility;
+        
         private CinemachineInputAxisController _camInputAxis;
         private CinemachineInputAxisController CamInputAxis
         {
@@ -110,6 +115,8 @@ namespace Reconnect.Menu
         {
             if (value)
             {
+                _previousCursorVisibility = Cursor.visible;
+                _previousCursorLockMode = Cursor.lockState;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
                 NetworkClient.localPlayer.GetComponent<PlayerMovementsNetwork>().isLocked = true;
@@ -117,9 +124,8 @@ namespace Reconnect.Menu
             }
             else
             {
-                // todo manage if paused when in an interface
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = _previousCursorVisibility;
+                Cursor.lockState = _previousCursorLockMode;
                 NetworkClient.localPlayer.GetComponent<PlayerMovementsNetwork>().isLocked = false;
                 CamInputAxis.enabled = true;
             }
@@ -194,6 +200,14 @@ namespace Reconnect.Menu
                     break;
             }
 
+            // // if a temporary cam (bb holder cam), then reset it
+            // var currentCam = CinemachineCore.GetVirtualCamera(0);
+            // if (currentCam.Priority == 2)
+            //     currentCam.Priority = 0;
+            // CamInputAxis.enabled = true;
+            // Destroy(NetworkClient.localPlayer);
+            // CamInputAxis.enabled = true;
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             CamInputAxis.enabled = true;
             CurrentMenu = MenuState.Main;
             IsInGame = false;
