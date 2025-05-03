@@ -97,9 +97,8 @@ namespace Reconnect.Player
             PlayerInput.actions.Disable();
         }
 
-        public override void OnDestroy()
+        public void OnDestroy()
         {
-            base.OnDestroy();
             // It's a good practice to unsubscribe from actions when the object is destroyed
             PlayerInput.actions["Move"].started -= OnMove;
             PlayerInput.actions["Move"].performed -= OnMove;
