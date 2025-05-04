@@ -11,12 +11,12 @@ namespace Reconnect.Electronics.Breadboards
     public class Breadboard : MonoBehaviour
     {
         public BreadboardHolder breadboardHolder;
-        
+
         /// <summary>
         /// The list of the components currently on the breadboard.
         /// </summary>
         public readonly List<Dipole> Dipoles = new List<Dipole>();
-        
+
         /// <summary>
         /// The list of the wires currently on the breadboard.
         /// </summary>
@@ -26,11 +26,6 @@ namespace Reconnect.Electronics.Breadboards
         /// The "virtual" start position of the wire being created. Equivalent to _lastNodePosition.
         /// </summary>
         private Vector2Int _lastNodePoint;
-
-        /// <summary>
-        /// Whether the user has entered the "deletion mode" which destroys every wire touched with the mouse.
-        /// </summary>
-        private bool _onDeletionMode;
 
         /// <summary>
         /// Whether a wire is being created. It implies that the mouse is down.
@@ -52,25 +47,66 @@ namespace Reconnect.Electronics.Breadboards
         /// </summary>
         [NonSerialized] public CircuitInfo CircuitInfo;
 
+        private GameObject _wireBeingCreated;
 
-        public static Vector3 PointToPos(Vector2Int point)
+
+        public static Vector3 PointToLocalPos(Vector2Int point)
             => new Vector3(
                 -3.5f + point.x,
                 3.5f - point.y,
                 -0.5f);
 
-        public static Vector2Int PosToPoint(Vector3 pos)
+        public static Vector2Int LocalPosToPoint(Vector3 pos)
             => new Vector2Int(
                 (int)(pos.x + 3.5f),
                 (int)(-pos.y + 3.5f));
         
+        public Vector3 LocalToWorld(Vector3 localPos)
+            => transform.position + transform.rotation * (transform.lossyScale.x * localPos);
+
+        public Vector3 WorldToLocal(Vector3 worldPos)
+            => Quaternion.Inverse(transform.rotation) * (worldPos - transform.position) / transform.lossyScale.x;
+
         private void Start()
         {
             _onWireCreation = false;
-            _onDeletionMode = false;
+            _wireBeingCreated =
+                Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+            _wireBeingCreated.GetComponent<WireScript>().enabled = false;
+            _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
             Loader.LoadCircuit(this, "2_parallel_lvl_2");
         }
         
+        private void Update()
+        {
+            if (breadboardHolder.IsActive)
+            {
+                if (_onWireCreation)
+                {
+                    _wireBeingCreated.SetActive(true);
+                    _wireBeingCreated.transform.position =
+                        (LocalToWorld(PointToLocalPos(_lastNodePoint)) + breadboardHolder.GetFlattenedCursorPos()) / 2;
+                    _wireBeingCreated.transform.LookAt(breadboardHolder.GetFlattenedCursorPos());
+                    _wireBeingCreated.transform.eulerAngles += new Vector3(90, 0, 0);
+                    var scale = _wireBeingCreated.transform.lossyScale;
+                    scale[1] = (_wireBeingCreated.transform.position - breadboardHolder.GetFlattenedCursorPos())
+                        .magnitude;
+                    _wireBeingCreated.transform.localScale = scale / transform.lossyScale.x;
+
+                    if (_wireBeingCreated.transform.localScale.y > 0.9f)
+                    {
+                        _wireBeingCreated.SetActive(false);
+                        _onWireCreation = false;
+                    }
+                }
+            }
+            else
+            {
+                _wireBeingCreated.SetActive(false);
+                _onWireCreation = false;
+            }
+        }
+
         /// <summary>
         /// Cleans the breadboard i.e. deletes the registered wires and dipoles. It both destroys the game objects and removes their pointers in _wires and _dipoles.
         /// </summary>
@@ -94,11 +130,11 @@ namespace Reconnect.Electronics.Breadboards
         {
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             wireGameObj.name = $"WirePrefab ({name})";
-            wireGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            wireGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
+            wireGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
+            wireGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             wireGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var scale = wireGameObj.transform.localScale;
-            scale[1] /* y component */ = (PointToPos(sourcePoint) - PointToPos(destinationPoint)).magnitude / 2f;
+            scale[1] /* y component */ = (PointToLocalPos(sourcePoint) - PointToLocalPos(destinationPoint)).magnitude / 2f;
             wireGameObj.transform.localScale = scale;
             var wireScript = wireGameObj.GetComponent<WireScript>();
             wireScript.Breadboard = this;
@@ -112,8 +148,8 @@ namespace Reconnect.Electronics.Breadboards
         {
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
-            resistorGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            resistorGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
+            resistorGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
+            resistorGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var resistorColor = resistorGameObj.GetComponent<ResistorColorManager>();
             resistorColor.ResistanceValue = resistance;
@@ -135,8 +171,8 @@ namespace Reconnect.Electronics.Breadboards
         {
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
-            lampGameObj.transform.localPosition = (PointToPos(sourcePoint) + PointToPos(destinationPoint)) / 2;
-            lampGameObj.transform.LookAt(transform.position + transform.rotation * (transform.lossyScale.x * PointToPos(destinationPoint)));
+            lampGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
+            lampGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             var inner = new Lamp(name, resistance, nominalTension);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
@@ -153,13 +189,14 @@ namespace Reconnect.Electronics.Breadboards
         public void StartWire(Vector2Int nodePoint)
         {
             _onWireCreation = true;
-            _onDeletionMode = false;
             _lastNodePoint = nodePoint;
+            _wireBeingCreated.SetActive(true);
         }
 
         public void EndWire()
         {
             _onWireCreation = false;
+            _wireBeingCreated.SetActive(false);
         }
         
         public void DeleteWire(WireScript wire)
@@ -178,37 +215,16 @@ namespace Reconnect.Electronics.Breadboards
             // This vector corresponds to the future wire
             var delta = nodePoint - _lastNodePoint;
 
-            // nodes are spaced by 1.0f, the diagonal distance would be sqrt(2) ~ 1.41
-            // We check if the distance is greater because we want to avoid skipping surrounding nodes.
-            if (delta.magnitude > 1.5f)
+            if (delta.magnitude is < 1.5f and > 0)
             {
-                // The user skipped one or more node. A wire cannot be created that way
-                // Enter in deletion mode to delete wires if the users wants to
-                _onDeletionMode = true;
-                // Set the start to the current end
-                _lastNodePoint = nodePoint;
-            }
-            else if (delta != Vector2Int.zero)
-            {
-                // Is null if a wire is not already at the given position. Otherwise, contains the wire.
                 var wireAtPos = Wires.Find(w =>
                     (w.Pole1 == _lastNodePoint && w.Pole2 == nodePoint) ||
                     (w.Pole2 == _lastNodePoint && w.Pole1 == nodePoint));
                 var dipoleAtPos = Dipoles.Find(d =>
                     (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
                     (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
-                if (wireAtPos != null)
-                {
-                    // A wire is already at this position
-                    // Delete the wire at this position
-                    if (!wireAtPos.IsLocked) DeleteWire(wireAtPos);
-                    // Enter the deletion mode
-                    _onDeletionMode = true;
-                }
-                else if (dipoleAtPos == null && !_onDeletionMode)
-                {
+                if (wireAtPos == null && dipoleAtPos == null)
                     CreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}");
-                }
 
                 // Set the start to the current end
                 _lastNodePoint = nodePoint;
@@ -236,8 +252,8 @@ namespace Reconnect.Electronics.Breadboards
                 ClosestHalf(component.transform.localPosition.y + component.MainPoleAnchor.y) - component.MainPoleAnchor.y,
                 ZPositionDipoles);
             
-            newPole1 = PosToPoint(closest + component.MainPoleAnchor);
-            newPole2 = PosToPoint(closest - component.MainPoleAnchor);
+            newPole1 = LocalPosToPoint(closest + component.MainPoleAnchor);
+            newPole2 = LocalPosToPoint(closest - component.MainPoleAnchor);
             var newPoles = new[] { newPole1, newPole2 };
 
             if (newPoles.Any(pole => pole.x is < 0 or >= 8 || pole.y is < 0 or >= 8))
