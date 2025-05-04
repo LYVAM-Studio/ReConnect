@@ -155,7 +155,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private void Update()
         {
-            if (!Breadboard.breadboardHolder.IsActive) // returns to last pos when the player exists the breadboard holder
+            if (!Breadboard.breadboardHolder.IsActive && _isBeingDragged) // returns to last pos when the player exists the breadboard holder
                 RollbackPosition();
         }
     }
