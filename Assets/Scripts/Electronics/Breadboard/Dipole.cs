@@ -153,9 +153,10 @@ namespace Reconnect.Electronics.Breadboards
                 IsHorizontal ^= true; // Toggles the rotation
         }
 
-        private void Update()
+        // Returns to last pos when the player exists the breadboard holder
+        public void OnBreadBoardExit()
         {
-            if (!Breadboard.breadboardHolder.IsActive && _isBeingDragged) // returns to last pos when the player exists the breadboard holder
+            if (_isBeingDragged)
                 RollbackPosition();
         }
     }
