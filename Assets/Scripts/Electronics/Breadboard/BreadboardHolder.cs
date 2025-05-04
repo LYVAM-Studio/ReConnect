@@ -38,6 +38,7 @@ namespace Reconnect.Electronics.Breadboards
             if (IsActive)
             {
                 // quit the interface
+                breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
                 Outline.enabled = true;
