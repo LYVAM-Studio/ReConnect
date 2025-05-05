@@ -15,15 +15,22 @@ namespace Reconnect.Electronics.Breadboards
         public Breadboard breadboard;
         public CinemachineCamera cam;
         public GameObject ui;
+
         [NonSerialized] public bool IsActive = false;
+
         private Camera _mainCam;
-        
         private Plane _raycastPlane;
+
+        // Cache to avoid multiple raycasts in the same frame
+        private Vector3 _lastRaycast;
+        private int _lastFrame;
 
         private void Awake()
         {
             _mainCam = Camera.main;
-            _raycastPlane = new Plane(transform.rotation * Vector3.forward, transform.position);
+            _raycastPlane = new Plane(
+                transform.forward,
+                transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
         }
 
         public override void Interact(GameObject player)
@@ -65,12 +72,17 @@ namespace Reconnect.Electronics.Breadboards
         
         public Vector3 GetFlattenedCursorPos()
         {
-            Ray ray = _mainCam!.ScreenPointToRay(Mouse.current.position.ReadValue());
+            if (_lastFrame == Time.frameCount)
+                return _lastRaycast;
 
-            if (_raycastPlane.Raycast(ray, out var dist))
-                return ray.GetPoint(dist);
+            var ray = _mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-            throw new Exception("Failed to raycast on breadboard plane.");
+            if (!_raycastPlane.Raycast(ray, out var dist))
+                throw new Exception("Failed to raycast on breadboard plane.");
+
+            _lastRaycast = ray.GetPoint(dist);
+            _lastFrame = Time.frameCount;
+            return _lastRaycast;
         }
     }
 }
