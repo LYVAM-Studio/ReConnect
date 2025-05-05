@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Mirror;
 using Reconnect.Player;
 using TMPro;
@@ -18,7 +19,7 @@ namespace Reconnect.Menu
         public static MenuManager Instance;
         
         [Header("Multiplayer parameters")]
-        public NetworkManager networkManager;
+        public ReconnectNetworkManager networkManager;
         public TMP_InputField serverAddress;
         [Header("Menu canvas")]
         public GameObject mainMenu;
@@ -27,6 +28,12 @@ namespace Reconnect.Menu
         public GameObject settingsMenu;
         public GameObject pauseMenu;
 
+        public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
+        public TextMeshProUGUI errorBannerText;        // Error message text mesh
+        public float errorDisplayDuration = 3f;    // How long the error bqnner stays visible
+
+        private Coroutine _currentBannerRoutine;
+        
         private PlayerControls _controls;
 
         private CursorLockMode _previousCursorLockMode;
@@ -179,13 +186,20 @@ namespace Reconnect.Menu
             networkManager.StartHost();
         }
         
-        public void RunMultiplayerMode()
+        public async void RunMultiplayerMode()
         {
             GameMode = PlayMode.MultiServer;
-            CurrentMenu = MenuState.None;
             IsInGame = true;
             networkManager.networkAddress = serverAddress.text;
-            networkManager.StartClient();
+            bool success = await networkManager.StartClientAsync();
+            if (success)
+            {
+                CurrentMenu = MenuState.None;
+            }
+            else
+            {
+                ShowConnectionError("Connection failed. Please try again.");
+            }
         }
 
         public void StopRunning()
@@ -211,6 +225,24 @@ namespace Reconnect.Menu
             CamInputAxis.enabled = true;
             CurrentMenu = MenuState.Main;
             IsInGame = false;
+        }
+        
+        public void ShowConnectionError(string message)
+        {
+            if (_currentBannerRoutine != null)
+                StopCoroutine(_currentBannerRoutine);
+
+            _currentBannerRoutine = StartCoroutine(ShowBannerRoutine(message));
+        }
+
+        private IEnumerator ShowBannerRoutine(string message)
+        {
+            errorBannerText.text = message;
+            errorBanner.SetActive(true);
+
+            yield return new WaitForSeconds(errorDisplayDuration);
+
+            errorBanner.SetActive(false);
         }
         
         public void QuitGame()
