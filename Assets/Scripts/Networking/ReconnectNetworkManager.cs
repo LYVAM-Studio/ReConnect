@@ -10,11 +10,6 @@ public class ReconnectNetworkManager : NetworkManager
     public static event Action OnClientConnectedEvent;
     public static event Action OnClientDisconnectedEvent;
     
-    public void ConnectToServer()
-    {
-        StartClient();
-    }
-
     public override void OnClientConnect()
     {
         base.OnClientConnect();
