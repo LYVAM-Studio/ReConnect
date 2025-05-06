@@ -20,6 +20,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private Camera _mainCam;
         private Plane _raycastPlane;
+        private CinemachineInputAxisController _freeLookAxisController;
 
         // Cache to avoid multiple raycasts in the same frame
         private Vector3 _lastRaycast;
@@ -31,6 +32,8 @@ namespace Reconnect.Electronics.Breadboards
             _raycastPlane = new Plane(
                 transform.forward,
                 transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
+            _freeLookAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
+                .GetComponent<CinemachineInputAxisController>();
         }
 
         public override void Interact(GameObject player)
@@ -44,6 +47,7 @@ namespace Reconnect.Electronics.Breadboards
                 PlayerGetter p = player.GetComponent<PlayerGetter>();
                 p.MovementsNetwork.isLocked = false;
                 p.DummyModel.SetActive(true);
+                _freeLookAxisController.enabled = true;
                 cam.gameObject.SetActive(false);
                 cam.Priority = 0;
                 ui.SetActive(false);
@@ -58,6 +62,7 @@ namespace Reconnect.Electronics.Breadboards
                 PlayerGetter p = player.GetComponent<PlayerGetter>();
                 p.MovementsNetwork.isLocked = true;
                 p.DummyModel.SetActive(false);
+                _freeLookAxisController.enabled = false;
                 cam.gameObject.SetActive(true);
                 cam.Priority = 2;
                 ui.SetActive(true);

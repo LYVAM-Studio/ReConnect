@@ -188,12 +188,12 @@ namespace Reconnect.Menu
         
         public async void RunMultiplayerMode()
         {
-            GameMode = PlayMode.MultiServer;
-            IsInGame = true;
             networkManager.networkAddress = serverAddress.text;
             bool success = await networkManager.StartClientAsync();
             if (success)
             {
+                IsInGame = true;
+                GameMode = PlayMode.MultiServer;
                 CurrentMenu = MenuState.None;
             }
             else
@@ -214,14 +214,10 @@ namespace Reconnect.Menu
                     break;
             }
 
-            // // if a temporary cam (bb holder cam), then reset it
-            // var currentCam = CinemachineCore.GetVirtualCamera(0);
-            // if (currentCam.Priority == 2)
-            //     currentCam.Priority = 0;
-            // CamInputAxis.enabled = true;
-            // Destroy(NetworkClient.localPlayer);
-            // CamInputAxis.enabled = true;
-            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            // if a temporary cam (bb holder cam), then reset it
+            var currentCam = CinemachineCore.GetVirtualCamera(0);
+            if (currentCam.Priority == 2)
+                currentCam.Priority = 0;
             CamInputAxis.enabled = true;
             CurrentMenu = MenuState.Main;
             IsInGame = false;
