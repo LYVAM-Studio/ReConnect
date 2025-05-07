@@ -11,6 +11,7 @@ namespace Reconnect.Interactions
             Outline = GetComponent<Outline>();
             Outline.enabled = false;
             Outline.OutlineWidth = 2.5f;
+            Outline.OutlineMode = Outline.Mode.OutlineVisible;
         }
 
         public abstract void Interact(GameObject player);
