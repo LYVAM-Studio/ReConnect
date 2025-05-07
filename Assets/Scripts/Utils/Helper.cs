@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Reconnect
+namespace Reconnect.Utils
 {
     public static class Helper
     {
