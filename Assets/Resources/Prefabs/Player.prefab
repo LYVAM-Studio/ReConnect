@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MovementsNetwork: {fileID: 8583066610830916097}
-  DummyModel: {fileID: 0}
+  DummyModel: {fileID: 7555439701663789874}
 --- !u!114 &8583066610830916097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -636,7 +636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
       propertyPath: m_LocalPosition.z
@@ -683,5 +683,10 @@ PrefabInstance:
 --- !u!4 &7174657296268388744 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
+  m_PrefabInstance: {fileID: 7213422661467147875}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7555439701663789874 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
   m_PrefabInstance: {fileID: 7213422661467147875}
   m_PrefabAsset: {fileID: 0}
