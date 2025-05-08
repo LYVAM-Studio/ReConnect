@@ -83,7 +83,7 @@ namespace Reconnect.Electronics.Breadboards
             var ray = _mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!_raycastPlane.Raycast(ray, out var dist))
-                throw new Exception("Failed to raycast on breadboard plane.");
+                throw new UnreachableCaseException("Failed to raycast on breadboard plane.");
 
             _lastRaycast = ray.GetPoint(dist);
             _lastFrame = Time.frameCount;
