@@ -91,7 +91,8 @@ namespace Reconnect.Electronics.Breadboards
         
         void ICursorHandle.OnCursorEnter()
         {
-            if (!_isLocked) _outline.enabled = true;
+            if (!_isLocked && !Breadboard.OnWireCreation)
+                _outline.enabled = true;
         }
 
         void ICursorHandle.OnCursorExit()
