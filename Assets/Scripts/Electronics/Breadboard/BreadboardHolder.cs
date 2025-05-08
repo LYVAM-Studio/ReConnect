@@ -4,6 +4,7 @@ using Reconnect.Player;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -15,7 +16,12 @@ namespace Reconnect.Electronics.Breadboards
         public Breadboard breadboard;
         public CinemachineCamera cam;
         public GameObject ui;
+        public TextAsset circuitYaml;
 
+        public static Vector3 SwitchWireInputCorner = new Vector3(4, 4, -0.5f);
+
+        public static Vector3 SwitchWireOutputCorner = new Vector3(4, -4, -0.5f);
+        
         [NonSerialized] public bool IsActive = false;
 
         private Camera _mainCam;
@@ -34,6 +40,7 @@ namespace Reconnect.Electronics.Breadboards
                 transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
             _freeLookAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
                 .GetComponent<CinemachineInputAxisController>();
+            breadboard.circuitToLoad = circuitYaml;
         }
 
         public override void Interact(GameObject player)
