@@ -1,4 +1,5 @@
 using System;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -59,12 +60,12 @@ namespace Reconnect.Player
             PlayerInput.actions["Jump"].started += OnJump;
             PlayerInput.actions["Dance"].started += OnDance;
 
-            Animator = GetComponent<Animator>() ??
-                       throw new ArgumentException(
-                           "There is no Animator component in the children of the current GameObject");
+            if (!TryGetComponent(out Animator))
+                throw new ComponentNotFoundException("No Animator component has been found on the player.");
 
-            CameraTransform = GameObject.FindGameObjectWithTag("MainCamera")?.transform
-                              ?? throw new ArgumentException("There is no MainCamera tagged GameObject.");
+            if (Camera.main is null)
+                throw new GameObjectNotFoundException("No main camera has been found in the scene?");
+            CameraTransform = Camera.main.transform;
 
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");

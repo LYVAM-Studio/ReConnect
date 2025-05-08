@@ -123,6 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb45fa4145bc4d844a6e8560e530f8c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  physicsScript: {fileID: 8557946643257415027}
 --- !u!1 &3729641665707041941
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,9 +368,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  lookAtObject: {fileID: 1667432634277388400}
   isLocked: 0
-  playerName: 
-  playerColor: {r: 1, g: 1, b: 1, a: 1}
   jumpHeight: 0.7
   defaultSpeed: 6
   sprintingFactor: 1.8
