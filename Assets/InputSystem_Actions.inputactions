@@ -54,7 +54,7 @@
                     "name": "Attack",
                     "type": "Button",
                     "id": "6c2ab1b8-8984-453a-af3d-a3c78ae1679a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -90,15 +90,6 @@
                     "name": "Dance",
                     "type": "Button",
                     "id": "dc7e3816-693f-4915-841b-d1cd55401914",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "UnlockCursor",
-                    "type": "Button",
-                    "id": "d711a416-76dc-477e-bc36-6d322118a767",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -442,17 +433,6 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Dance",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "30e84180-ef13-466f-8543-d0c5a7262089",
-                    "path": "<Keyboard>/tab",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "UnlockCursor",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1008,6 +988,34 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Rotate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "4871ca26-c43b-4bd5-9cde-7d282002ac0a",
+            "actions": [
+                {
+                    "name": "Esc",
+                    "type": "Button",
+                    "id": "f83ecbca-9be4-47cc-a27c-47f78c908db6",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "6fbf5e9a-db15-4999-b519-15e97fbabea2",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Esc",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
