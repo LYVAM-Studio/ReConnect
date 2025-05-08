@@ -61,7 +61,7 @@ namespace Reconnect.Menu
 
         private void Awake()
         {
-            if (Instance != null)
+            if (Instance is not null)
                 throw new Exception("A MenuController has already been instantiated.");
             Instance = this;
             
@@ -226,7 +226,7 @@ namespace Reconnect.Menu
         
         public void ShowConnectionError(string message)
         {
-            if (_currentBannerRoutine != null)
+            if (_currentBannerRoutine is not null)
                 StopCoroutine(_currentBannerRoutine);
 
             _currentBannerRoutine = StartCoroutine(ShowBannerRoutine(message));

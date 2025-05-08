@@ -10,7 +10,7 @@ namespace Reconnect.Utils
             bool forceActive = false)
             where T : Component
         {
-            if (parent == null) throw new ArgumentNullException();
+            if (parent is null) throw new ArgumentNullException();
             if (string.IsNullOrEmpty(tag)) throw new ArgumentNullException(nameof(tag));
             var list = new List<T>(parent.GetComponentsInChildren<T>(forceActive));
             if (list.Count == 0) return null;
@@ -26,7 +26,7 @@ namespace Reconnect.Utils
             bool forceActive = false)
             where T : Component
         {
-            if (parent == null) throw new ArgumentNullException();
+            if (parent is null) throw new ArgumentNullException();
             if (string.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
             var list = new List<T>(parent.GetComponentsInChildren<T>(forceActive));
             if (list.Count == 0) return null;
