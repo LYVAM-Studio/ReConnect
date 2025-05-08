@@ -1,6 +1,7 @@
 using System;
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -61,9 +62,10 @@ namespace Reconnect.Electronics.Breadboards
         
         private void Awake()
         {
-            _outline = GetComponent<Outline>();
-            _outline.enabled = false;
+            if (!TryGetComponent(out _outline))
+                throw new ComponentNotFoundException("No Outline component found on this Dipole.");
             
+            _outline.enabled = false;
             _controls = new PlayerControls();
 
             _controls.Breadboard.Rotate.performed += OnRotate;

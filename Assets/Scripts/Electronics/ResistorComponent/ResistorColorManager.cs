@@ -58,10 +58,9 @@ namespace Reconnect.Electronics.ResistorComponent
             SetBandColor(band4, ResistorColorCode.ToleranceToColor(Tolerance));
         }
 
-        private void SetBandColor(GameObject band, Color color)
+        private static void SetBandColor(GameObject band, Color color)
         {
-            Renderer rend = band.GetComponent<Renderer>();
-            if (rend != null)
+            if (band.TryGetComponent(out Renderer rend))
                 rend.material.color = color;
         }
     }
