@@ -5,6 +5,7 @@ using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.ResistorComponent;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -30,7 +31,7 @@ namespace Reconnect.Electronics.Breadboards
         /// <summary>
         /// Whether a wire is being created. It implies that the mouse is down.
         /// </summary>
-        private bool _onWireCreation;
+        [NonSerialized] public bool OnWireCreation;
 
         /// <summary>
         /// The Z coordinate at which the dipoles are positioned on the breadboard. It is the Z position of the breadboard (8f) minus half its thickness (1f / 2) to have it sunk into the board.
@@ -69,7 +70,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private void Start()
         {
-            _onWireCreation = false;
+            OnWireCreation = false;
             _wireBeingCreated =
                 Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             _wireBeingCreated.GetComponent<WireScript>().enabled = false;
@@ -81,7 +82,7 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (breadboardHolder.IsActive)
             {
-                if (_onWireCreation)
+                if (OnWireCreation)
                 {
                     _wireBeingCreated.SetActive(true);
                     _wireBeingCreated.transform.position =
@@ -96,14 +97,14 @@ namespace Reconnect.Electronics.Breadboards
                     if (_wireBeingCreated.transform.localScale.y > 0.9f)
                     {
                         _wireBeingCreated.SetActive(false);
-                        _onWireCreation = false;
+                        OnWireCreation = false;
                     }
                 }
             }
             else
             {
                 _wireBeingCreated.SetActive(false);
-                _onWireCreation = false;
+                OnWireCreation = false;
             }
         }
 
@@ -188,14 +189,14 @@ namespace Reconnect.Electronics.Breadboards
         
         public void StartWire(Vector2Int nodePoint)
         {
-            _onWireCreation = true;
+            OnWireCreation = true;
             _lastNodePoint = nodePoint;
             _wireBeingCreated.SetActive(true);
         }
 
         public void EndWire()
         {
-            _onWireCreation = false;
+            OnWireCreation = false;
             _wireBeingCreated.SetActive(false);
         }
         
@@ -209,7 +210,7 @@ namespace Reconnect.Electronics.Breadboards
         public void OnMouseNodeCollision(Vector2Int nodePoint)
         {
             // If not no wire creation, then does nothing
-            if (!_onWireCreation) return;
+            if (!OnWireCreation) return;
 
             // The difference between the two wire start position and the current mouse position, ignoring the z component
             // This vector corresponds to the future wire

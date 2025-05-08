@@ -242,10 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dff1c1c56bb7cbbeabdf69e1783d399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainPoleAnchor: {x: 0, y: 0.5}
-  poles:
-  - {x: 0, y: 0}
-  - {x: 0, y: -1}
 --- !u!65 &565025997999189985
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -279,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineMode: 0
+  outlineMode: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineWidth: 2
   precomputeOutline: 0

@@ -27,9 +27,6 @@ namespace Reconnect.Player
 
         protected PlayerInput PlayerInput;
 
-        // // imported components
-        // protected SceneScript SceneScript;
-
         public virtual void Awake()
         {
             isLocked = false;
@@ -50,24 +47,10 @@ namespace Reconnect.Player
                                "There is no LookAt named gameObject in the children of the current GameObject");
             PlayerInput = GetComponent<PlayerInput>();
 
-            if (!isLocalPlayer) PlayerInput.actions["UnlockCursor"].started += OnEscape;
-
             CharacterController = GetComponent<CharacterController>();
 
             if (!TryGetComponent(out Physics))
                 throw new ArgumentException("No Physics Script found on the player !");
-        }
-
-        public virtual void OnDestroy()
-        {
-            // It's a good practice to unsubscribe from actions when the object is destroyed
-            if (!isLocalPlayer) PlayerInput.actions["UnlockCursor"].started -= OnEscape;
-        }
-
-        // TODO : this is a debug capability
-        private void OnEscape(InputAction.CallbackContext context)
-        {
-            Cursor.lockState = Cursor.lockState == CursorLockMode.Locked ? CursorLockMode.None : CursorLockMode.Locked;
         }
 
         // [Command]
