@@ -773,9 +773,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841936239662886408}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 8.5, y: 8.5, z: 1}
+  m_LocalScale: {x: 9.5, y: 8.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5970487581636528568}
@@ -4103,7 +4103,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VideoController, Assembly-CSharp
+        m_TargetAssemblyTypeName: Reconnect.UI.VideoController, Assembly-CSharp
         m_MethodName: PlayPauseVideo
         m_Mode: 1
         m_Arguments:
@@ -5225,7 +5225,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VideoController, Assembly-CSharp
+        m_TargetAssemblyTypeName: Reconnect.UI.VideoController, Assembly-CSharp
         m_MethodName: PlayVideo
         m_Mode: 1
         m_Arguments:
@@ -5234,7 +5234,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!1 &4565597020680676948
 GameObject:
@@ -5354,7 +5354,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: VideoController, Assembly-CSharp
+        m_TargetAssemblyTypeName: Reconnect.UI.VideoController, Assembly-CSharp
         m_MethodName: StopVideo
         m_Mode: 1
         m_Arguments:
@@ -5383,7 +5383,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5389469409864873062
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5926,7 +5926,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.7, y: 1.7, z: 1.7}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3775082671284104077}
@@ -7598,7 +7598,7 @@ Transform:
   m_GameObject: {fileID: 6026284687752361544}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8688,7 +8688,7 @@ Transform:
   m_GameObject: {fileID: 6969237398230794944}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8718,7 +8718,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 60
     OrthographicSize: 5
     NearClipPlane: 0.3
     FarClipPlane: 1000
@@ -10999,15 +10999,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8782040247065797685, guid: b34cc4b011af3644cbb6d78e58ceee2d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8782040247065797685, guid: b34cc4b011af3644cbb6d78e58ceee2d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.357
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8782040247065797685, guid: b34cc4b011af3644cbb6d78e58ceee2d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.09
       objectReference: {fileID: 0}
     - target: {fileID: 8782040247065797685, guid: b34cc4b011af3644cbb6d78e58ceee2d, type: 3}
       propertyPath: m_LocalRotation.w

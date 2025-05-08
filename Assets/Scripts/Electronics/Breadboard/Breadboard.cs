@@ -48,17 +48,21 @@ namespace Reconnect.Electronics.Breadboards
         [NonSerialized] public CircuitInfo CircuitInfo;
 
         private GameObject _wireBeingCreated;
-
+        
+        /// <summary>
+        /// The YAML TextAsset of the circuit to be loaded on the breadboard.
+        /// </summary>
+        public TextAsset circuitToLoad;
 
         public static Vector3 PointToLocalPos(Vector2Int point)
             => new Vector3(
-                -3.5f + point.x,
+                -4f + point.x,
                 3.5f - point.y,
                 -0.5f);
 
         public static Vector2Int LocalPosToPoint(Vector3 pos)
             => new Vector2Int(
-                (int)(pos.x + 3.5f),
+                (int)(pos.x + 4f),
                 (int)(-pos.y + 3.5f));
         
         public Vector3 LocalToWorld(Vector3 localPos)
@@ -74,7 +78,7 @@ namespace Reconnect.Electronics.Breadboards
                 Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
             _wireBeingCreated.GetComponent<WireScript>().enabled = false;
             _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
-            Loader.LoadCircuit(this, "2_parallel_lvl_2");
+            Loader.LoadCircuit(this, circuitToLoad);
         }
         
         private void Update()

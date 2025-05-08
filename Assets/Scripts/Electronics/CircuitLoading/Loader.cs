@@ -7,6 +7,7 @@ using Reconnect.Electronics.Components;
 using UnityEngine;
 using YamlDotNet.Helpers;
 using YamlDotNet.RepresentationModel;
+using Object = UnityEngine.Object;
 
 namespace Reconnect.Electronics.CircuitLoading
 {
@@ -68,16 +69,41 @@ namespace Reconnect.Electronics.CircuitLoading
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
             };
         }
+
+        private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
+        {
+            GameObject wire = GameObject.Instantiate(wirePrefab, breadboard.transform, false);
+            wire.transform.localPosition = localPos;
+            wire.transform.localScale = scale;
+            wire.transform.localEulerAngles = eulerAngle;
+        }
+        private static void DrawSwitchWires(Breadboard breadboard)
+        {
+            GameObject wirePrefab = Resources.Load<GameObject>("Prefabs/Components/SwitchWirePrefab");
+            Vector3 inputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.InputPoint) + new Vector3(0, 0.5f, 0);
+            // wire input horizontal
+            SummonSwitchWire(wirePrefab, breadboard,
+                (inputPos + BreadboardHolder.SwitchWireInputCorner) / 2,
+                new Vector3(0, (inputPos - BreadboardHolder.SwitchWireInputCorner).magnitude, 0),
+                new Vector3(0, 0, 90));
+            
+            Vector3 outputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.OutputPoint) - new Vector3(0, 0.5f, 0);
+            // wire output horizontal
+            SummonSwitchWire(wirePrefab, breadboard,
+                (outputPos + BreadboardHolder.SwitchWireOutputCorner) / 2,
+                new Vector3(0, (outputPos - BreadboardHolder.SwitchWireOutputCorner).magnitude, 0),
+                new Vector3(0, 0, 90));
+        }
         
         /// <summary>
         /// Loads the given circuit. Cleans the breadboard and load all the components required for the circuit.
         /// </summary>
         /// <param name="circuitName">The name of the circuit to be loaded. It must contain neither the extension (.yaml) nor the path (CircuitsPresets/).</param>
-        public static void LoadCircuit(Breadboard breadboard, string circuitName)
+        public static void LoadCircuit(Breadboard breadboard, TextAsset yamlAsset)
         {
             breadboard.Clean();
             
-            TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
+            //TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
 
             using StringReader reader = new StringReader(yamlAsset.text);
             YamlStream yaml = new YamlStream();
@@ -90,9 +116,13 @@ namespace Reconnect.Electronics.CircuitLoading
                 Title = YamlGetScalarValue(root.Children, "title"),
                 InputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture),
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
-                TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture)
+                TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture),
+                InputPoint = new Vector2Int(0,3), // TODO: parse YAML
+                OutputPoint = new Vector2Int(7,3) // TODO: parse YAML
             };
 
+            DrawSwitchWires(breadboard);
+            
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
 
             int componentId = 0;
