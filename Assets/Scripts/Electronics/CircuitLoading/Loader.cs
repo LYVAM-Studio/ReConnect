@@ -80,19 +80,36 @@ namespace Reconnect.Electronics.CircuitLoading
         private static void DrawSwitchWires(Breadboard breadboard)
         {
             GameObject wirePrefab = Resources.Load<GameObject>("Prefabs/Components/SwitchWirePrefab");
-            Vector3 inputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.InputPoint) + new Vector3(0, 0.5f, 0);
+            
             // wire input horizontal
+            Vector3 inputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.InputPoint);
+            Vector3 inputOffsetPos = inputPos + new Vector3(0, 0.5f, 0);
             SummonSwitchWire(wirePrefab, breadboard,
-                (inputPos + BreadboardHolder.SwitchWireInputCorner) / 2,
-                new Vector3(0, (inputPos - BreadboardHolder.SwitchWireInputCorner).magnitude, 0),
+                (inputOffsetPos + BreadboardHolder.SwitchWireInputCorner) / 2,
+                new Vector3(1, (inputOffsetPos - BreadboardHolder.SwitchWireInputCorner).magnitude, 1),
                 new Vector3(0, 0, 90));
             
-            Vector3 outputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.OutputPoint) - new Vector3(0, 0.5f, 0);
-            // wire output horizontal
+            // wire input vertical
+            Vector3 inputWireJoinPos = new Vector3(inputPos.x, BreadboardHolder.SwitchWireInputCorner.y, inputPos.z);
             SummonSwitchWire(wirePrefab, breadboard,
-                (outputPos + BreadboardHolder.SwitchWireOutputCorner) / 2,
-                new Vector3(0, (outputPos - BreadboardHolder.SwitchWireOutputCorner).magnitude, 0),
+                (inputPos + inputWireJoinPos) / 2,
+                new Vector3(1, (inputWireJoinPos - inputPos).magnitude, 1),
+                Vector3.zero);
+            
+            // wire output horizontal
+            Vector3 outputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.OutputPoint) ;
+            Vector3 outputOffsetPos = outputPos - new Vector3(0, 0.5f, 0);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (outputOffsetPos + BreadboardHolder.SwitchWireOutputCorner) / 2,
+                new Vector3(1, (outputOffsetPos - BreadboardHolder.SwitchWireOutputCorner).magnitude, 1),
                 new Vector3(0, 0, 90));
+            
+            // wire input vertical
+            Vector3 outputWireJoinPos = new Vector3(outputPos.x, BreadboardHolder.SwitchWireOutputCorner.y, outputPos.z);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (outputPos + outputWireJoinPos) / 2,
+                new Vector3(1, (outputWireJoinPos - outputPos).magnitude, 1),
+                Vector3.zero);
         }
         
         /// <summary>
@@ -117,8 +134,8 @@ namespace Reconnect.Electronics.CircuitLoading
                 InputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture),
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
                 TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture),
-                InputPoint = new Vector2Int(0,3), // TODO: parse YAML
-                OutputPoint = new Vector2Int(7,3) // TODO: parse YAML
+                InputPoint = new Vector2Int(3,0), // TODO: parse YAML
+                OutputPoint = new Vector2Int(3,7) // TODO: parse YAML
             };
 
             DrawSwitchWires(breadboard);
