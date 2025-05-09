@@ -280,7 +280,7 @@ namespace Reconnect.Electronics.Graphs
         /// Give the potential difference at the terminals of the <see cref="Target"/> component
         /// </summary>
         /// <returns>The tension in Volts</returns>
-        public double GetVoltageTarget() => Target.GetVoltage(GetGlobalIntensity());
+        public double GetVoltageTarget() => Target.GetTension(GetGlobalIntensity());
     }
 
     public class UnreachableException : Exception
