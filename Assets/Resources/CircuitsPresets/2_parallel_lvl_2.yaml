@@ -2,6 +2,8 @@ title: lvl2
 input-tension: 240
 input-intensity: 16
 target-tension: 182.4
+input-x-pos: 3
+output-x-pos: 3
 components:
   - lamp:
     name: L1
