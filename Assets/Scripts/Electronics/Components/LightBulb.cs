@@ -1,3 +1,4 @@
+using Reconnect.Utils;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Components
@@ -6,10 +7,13 @@ namespace Reconnect.Electronics.Components
     {
         public Material lightOn;
         public Material lightOff;
-        public void Set(bool on)
+        public void Set(bool isOn)
         {
             // Debug.Log($"Activated to {on}");
-            GetComponent<Renderer>().material = on ? lightOn : lightOff;
+            if (!TryGetComponent(out Renderer renderer))
+                throw new ComponentNotFoundException("No Renderer component has been found on the light bulb.");
+
+            renderer.material = isOn ? lightOn : lightOff;
         }
     }
 }

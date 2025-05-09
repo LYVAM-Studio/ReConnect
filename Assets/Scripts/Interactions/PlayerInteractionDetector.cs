@@ -94,8 +94,7 @@ namespace Reconnect.Interactions
         // This method is called when a trigger enters the player interaction range.
         public void OnTriggerEnter(Collider other)
         {
-            var interactable = other.GetComponent<Interactable>();
-            if (interactable is not null)
+            if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
                 interactable.OnEnterPlayerRange();
@@ -106,8 +105,8 @@ namespace Reconnect.Interactions
         // This method is called when a trigger leaves the player interaction range.
         public void OnTriggerExit(Collider other)
         {
-            var interactable = other.GetComponent<Interactable>();
-            if (interactable is not null && _interactableInRange.Any(e => e.interactable.Equals(interactable)))
+            if (other.TryGetComponent(out Interactable interactable) &&
+                _interactableInRange.Any(e => e.interactable.Equals(interactable)))
             {
                 // Debug.Log("Interactable exited");
                 interactable.OnExitPlayerRange();

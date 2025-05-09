@@ -1,6 +1,7 @@
 using System;
 using Reconnect.Interactions;
 using Reconnect.Player;
+using Reconnect.Utils;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,7 +21,6 @@ namespace Reconnect.Electronics.Breadboards
 
         private Camera _mainCam;
         private Plane _raycastPlane;
-        private CinemachineInputAxisController _freeLookAxisController;
 
         // Cache to avoid multiple raycasts in the same frame
         private Vector3 _lastRaycast;
@@ -32,12 +32,13 @@ namespace Reconnect.Electronics.Breadboards
             _raycastPlane = new Plane(
                 transform.forward,
                 transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
-            _freeLookAxisController = GameObject.FindGameObjectWithTag("freeLookCamera")
-                .GetComponent<CinemachineInputAxisController>();
         }
 
         public override void Interact(GameObject player)
         {
+            if (!player.TryGetComponent(out PlayerGetter p))
+                throw new ComponentNotFoundException("No PlayerGetter component found on the player.");
+            
             if (IsActive)
             {
                 // quit the interface
@@ -45,10 +46,9 @@ namespace Reconnect.Electronics.Breadboards
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
                 Outline.enabled = true;
-                PlayerGetter p = player.GetComponent<PlayerGetter>();
                 p.MovementsNetwork.isLocked = false;
                 p.DummyModel.SetActive(true);
-                _freeLookAxisController.enabled = true;
+                FreeLookCamera.InputAxisController.enabled = true;
                 cam.gameObject.SetActive(false);
                 cam.Priority = 0;
                 ui.SetActive(false);
@@ -60,10 +60,9 @@ namespace Reconnect.Electronics.Breadboards
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 Outline.enabled = false;
-                PlayerGetter p = player.GetComponent<PlayerGetter>();
                 p.MovementsNetwork.isLocked = true;
                 p.DummyModel.SetActive(false);
-                _freeLookAxisController.enabled = false;
+                FreeLookCamera.InputAxisController.enabled = false;
                 cam.gameObject.SetActive(true);
                 cam.Priority = 2;
                 ui.SetActive(true);
@@ -84,7 +83,7 @@ namespace Reconnect.Electronics.Breadboards
             var ray = _mainCam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
             if (!_raycastPlane.Raycast(ray, out var dist))
-                throw new Exception("Failed to raycast on breadboard plane.");
+                throw new UnreachableCaseException("Failed to raycast on breadboard plane.");
 
             _lastRaycast = ray.GetPoint(dist);
             _lastFrame = Time.frameCount;

@@ -143,7 +143,8 @@ namespace Reconnect.Electronics.CircuitLoading
                     Resistor resistor = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
+                        if (breadboard.Target is not null)
+                            throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
                         breadboard.Target = resistor;
                     }
                 }
@@ -155,7 +156,8 @@ namespace Reconnect.Electronics.CircuitLoading
                     Lamp lamp = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, nominalTension, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.Target != null) throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
+                        if (breadboard.Target is not null)
+                            throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
                         breadboard.Target = lamp;
                     }
                 }
