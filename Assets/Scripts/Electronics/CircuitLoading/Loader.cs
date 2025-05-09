@@ -134,8 +134,8 @@ namespace Reconnect.Electronics.CircuitLoading
                 InputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture),
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
                 TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture),
-                InputPoint = new Vector2Int(3,0), // TODO: parse YAML
-                OutputPoint = new Vector2Int(3,7) // TODO: parse YAML
+                InputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "input-x-pos"), CultureInfo.InvariantCulture), 0),
+                OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7)
             };
 
             DrawSwitchWires(breadboard);
