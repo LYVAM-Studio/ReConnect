@@ -19,14 +19,14 @@ namespace Reconnect.Player
 
         protected PhysicsScript Physics;
         protected CharacterController CharacterController;
-        protected PlayerInput PlayerInput;
+        protected PlayerControls PlayerControls;
 
         public virtual void Awake()
         {
+            PlayerControls = new PlayerControls();
+                
             isLocked = false;
 
-            if (!TryGetComponent(out PlayerInput))
-                throw new ComponentNotFoundException("No PlayerInput component has been found on the player.");
             if (!TryGetComponent(out CharacterController))
                 throw new ComponentNotFoundException("No CharacterController component has been found on the player.");
             if (!TryGetComponent(out Physics))
@@ -37,13 +37,6 @@ namespace Reconnect.Player
         {
             FreeLookCamera.VirtualCamera.Follow = transform;
             FreeLookCamera.VirtualCamera.LookAt = lookAtObject;
-        }
-
-        public override void OnStartAuthority()
-        {
-            base.OnStartAuthority();
-            
-            PlayerInput.enabled = true;
         }
     }
 }
