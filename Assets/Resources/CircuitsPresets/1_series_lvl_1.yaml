@@ -1,7 +1,9 @@
 title: lvl1
 input-tension: 240
 input-intensity: 16
-target-tension: 120 
+target-tension: 120
+input-x-pos: 3
+output-x-pos: 3
 components:
   - lamp:
     name: L1
