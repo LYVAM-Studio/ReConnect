@@ -144,9 +144,14 @@ namespace Reconnect.Player
                 return;
 
             if (context.started)
+            {
                 _isRunning = true;
+                _isCrouching = false;
+            }
             else if (context.canceled)
+            {
                 _isRunning = false;
+            }
         }
 
         public void OnDance(InputAction.CallbackContext context)
