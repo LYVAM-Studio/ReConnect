@@ -128,6 +128,8 @@ namespace Reconnect.Electronics.CircuitLoading
 
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
 
+            // TODO : TargetQuantity and TargetValue
+            // TODO : Add Tolerance from YAML
             breadboard.CircuitInfo = new CircuitInfo
             {
                 Title = YamlGetScalarValue(root.Children, "title"),
@@ -135,7 +137,8 @@ namespace Reconnect.Electronics.CircuitLoading
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
                 TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture),
                 InputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "input-x-pos"), CultureInfo.InvariantCulture), 0),
-                OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7)
+                OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7),
+                Tolerance = 0.1f
             };
 
             DrawSwitchWires(breadboard);

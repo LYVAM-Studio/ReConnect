@@ -14,10 +14,8 @@ namespace Reconnect.Electronics.Components
         public Resistor(string name, List<Vertex> adjacentComponents, double resistance) : base(name, adjacentComponents, resistance)
         {
         }
-    
-        public override double GetVoltage(double intensity)
-        {
-            return Resistance * intensity;
-        }
+
+        public override void Action() {}
+        public override void UndoAction() {}
     }
 }

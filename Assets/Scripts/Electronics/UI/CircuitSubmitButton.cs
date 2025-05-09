@@ -30,7 +30,7 @@ namespace Reconnect.Electronics.UI
             double intensity = circuitGraph.GetGlobalIntensity();
             //Debug.Log($"INSENTITY ::: {intensity} A");
             Lamp targetLamp = (Lamp) BreadboardUI.Breadboard.Target;
-            targetLamp.Set(intensity);
+            //targetLamp.Set(intensity);
             //Debug.Log(targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success" : "The lamp is OFF ! You failed");
             //Debug.Log($"tension of the target : {targetLamp.GetVoltage(intensity)} Volts");
         }
