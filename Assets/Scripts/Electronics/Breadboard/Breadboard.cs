@@ -76,7 +76,7 @@ namespace Reconnect.Electronics.Breadboards
         {
             OnWireCreation = false;
             _wireBeingCreated =
-                Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+                Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
             _wireBeingCreated.GetComponent<WireScript>().enabled = false;
             _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
             Loader.LoadCircuit(this, circuitToLoad);
@@ -133,7 +133,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public void CreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked = false)
         {
-            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
             wireGameObj.name = $"WirePrefab ({name})";
             wireGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             wireGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
@@ -151,7 +151,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float tolerance, bool isLocked = false)
         {
-            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
+            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
@@ -174,7 +174,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Lamp CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float nominalTension, bool isLocked = false)
         {
-            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
+            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             lampGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));

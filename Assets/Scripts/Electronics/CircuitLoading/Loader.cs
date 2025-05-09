@@ -79,7 +79,7 @@ namespace Reconnect.Electronics.CircuitLoading
         }
         private static void DrawSwitchWires(Breadboard breadboard)
         {
-            GameObject wirePrefab = Resources.Load<GameObject>("Prefabs/Components/SwitchWirePrefab");
+            GameObject wirePrefab = Resources.Load<GameObject>("Prefabs/Electronics/Components/SwitchWirePrefab");
             
             // wire input horizontal
             Vector3 inputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.InputPoint);
