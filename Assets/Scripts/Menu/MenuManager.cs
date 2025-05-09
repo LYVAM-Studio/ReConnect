@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Mirror;
 using Reconnect.Player;
+using Reconnect.Utils;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEditor;
@@ -39,18 +40,6 @@ namespace Reconnect.Menu
         private CursorLockMode _previousCursorLockMode;
         private bool _previousCursorVisibility;
         
-        private CinemachineInputAxisController _camInputAxis;
-        private CinemachineInputAxisController CamInputAxis
-        {
-            get
-            {
-                if (_camInputAxis == null)
-                    _camInputAxis = GameObject.FindGameObjectWithTag("freeLookCamera")
-                        .GetComponent<CinemachineInputAxisController>();
-                return _camInputAxis;
-            }
-        }
-        
         // Should not be directly used
         private MenuState _currentMenu;
         public MenuState CurrentMenu
@@ -72,7 +61,7 @@ namespace Reconnect.Menu
 
         private void Awake()
         {
-            if (Instance != null)
+            if (Instance is not null)
                 throw new Exception("A MenuController has already been instantiated.");
             Instance = this;
             
@@ -126,15 +115,21 @@ namespace Reconnect.Menu
                 _previousCursorLockMode = Cursor.lockState;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
-                NetworkClient.localPlayer.GetComponent<PlayerMovementsNetwork>().isLocked = true;
-                CamInputAxis.enabled = false;
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
+                    throw new ComponentNotFoundException(
+                        "No PlayerMovementsNetwork component has been found on the local player.");
+                movements.isLocked = true;
+                FreeLookCamera.InputAxisController.enabled = false;
             }
             else
             {
                 Cursor.visible = _previousCursorVisibility;
                 Cursor.lockState = _previousCursorLockMode;
-                NetworkClient.localPlayer.GetComponent<PlayerMovementsNetwork>().isLocked = false;
-                CamInputAxis.enabled = true;
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
+                    throw new ComponentNotFoundException(
+                        "No PlayerMovementsNetwork component has been found on the local player.");
+                movements.isLocked = true;
+                FreeLookCamera.InputAxisController.enabled = true;
             }
         }
         
@@ -171,6 +166,8 @@ namespace Reconnect.Menu
 
         public void RunSingleplayerMode()
         {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             GameMode = PlayMode.Single;
             CurrentMenu = MenuState.None;
             IsInGame = true;
@@ -180,6 +177,8 @@ namespace Reconnect.Menu
         
         public void RunHostMode()
         {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             GameMode = PlayMode.MultiHost;
             CurrentMenu = MenuState.None;
             IsInGame = true;
@@ -192,6 +191,8 @@ namespace Reconnect.Menu
             bool success = await networkManager.StartClientAsync();
             if (success)
             {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
                 IsInGame = true;
                 GameMode = PlayMode.MultiServer;
                 CurrentMenu = MenuState.None;
@@ -218,14 +219,14 @@ namespace Reconnect.Menu
             var currentCam = CinemachineCore.GetVirtualCamera(0);
             if (currentCam.Priority == 2)
                 currentCam.Priority = 0;
-            CamInputAxis.enabled = true;
+            FreeLookCamera.InputAxisController.enabled = true;
             CurrentMenu = MenuState.Main;
             IsInGame = false;
         }
         
         public void ShowConnectionError(string message)
         {
-            if (_currentBannerRoutine != null)
+            if (_currentBannerRoutine is not null)
                 StopCoroutine(_currentBannerRoutine);
 
             _currentBannerRoutine = StartCoroutine(ShowBannerRoutine(message));

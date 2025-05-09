@@ -1,4 +1,5 @@
 using Reconnect.MouseEvents;
+using Reconnect.Utils;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Breadboards
@@ -18,7 +19,8 @@ namespace Reconnect.Electronics.Breadboards
 
         private void Start()
         {
-            _outline = GetComponent<Outline>();
+            if (!TryGetComponent(out _outline))
+                throw new ComponentNotFoundException("Outline component not found in this BbNode.");
             _outline.enabled = false;
         }
 

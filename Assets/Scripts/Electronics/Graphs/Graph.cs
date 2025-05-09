@@ -4,6 +4,7 @@ using Unity;
 using System.Linq;
 using System.Reflection;
 using Reconnect.Electronics.Components;
+using Reconnect.Utils;
 using UnityEngine;
 
 namespace Reconnect.Electronics.Graphs
@@ -260,7 +261,7 @@ namespace Reconnect.Electronics.Graphs
             }
             
             if (Branches.Count == 0)
-                throw new UnreachableException("There should be at least 1 branch remaining. This is not possible that there are no branch left !");
+                throw new UnreachableCaseException("There should be at least 1 branch remaining. This is not possible that there are no branch left !");
             
             // get the final resistance of the circuit, associating in series remaining branches
             double totalResistance = 0;
@@ -281,15 +282,5 @@ namespace Reconnect.Electronics.Graphs
         /// </summary>
         /// <returns>The tension in Volts</returns>
         public double GetVoltageTarget() => Target.GetVoltage(GetGlobalIntensity());
-    }
-
-    public class UnreachableException : Exception
-    {
-        public UnreachableException() : base("An unreachable section of the code has been reached. This is an unexpected behavior")
-        {
-        }
-        public UnreachableException(string message) : base(message)
-        {
-        }
     }
 }

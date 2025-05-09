@@ -1,4 +1,5 @@
 using System;
+using Reconnect.Utils;
 using UnityEngine;
 
 namespace Electronics.ResistorComponent
@@ -36,7 +37,7 @@ namespace Electronics.ResistorComponent
                 ResistorColor.White => Color.white,
                 ResistorColor.Black => Color.black,
                 ResistorColor.Red => Color.red,
-                _ => throw new Exception("Impossible case")
+                _ => throw new UnreachableCaseException("Impossible case")
             };
 
         public static Color DigitToColor(int digit)
