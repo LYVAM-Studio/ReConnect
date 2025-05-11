@@ -22,15 +22,36 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         set => _animator.SetBool(_isOnHash, value);
     }
     
+    private bool IsUp
+    {
+        get
+        {
+            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
+            return state.IsName("IdleUp");
+        }
+    }
+    
+    private bool IsDown
+    {
+        get
+        {
+            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
+            return state.IsName("IdleDown");
+        }
+    }
+    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _animator = GetComponent<Animator>();
+        _animator = GetComponentInChildren<Animator>();
         // TODO : Component not found
         _isOnHash = Animator.StringToHash("isON");
         _outline = GetComponent<Outline>();
         // TODO : Component not found
         _outline.enabled = false;
+        BbSwitchAnimation childrenAnimationScript = _animator.GetComponent<BbSwitchAnimation>();
+        if (childrenAnimationScript != null)
+            childrenAnimationScript.bbSwitch = this;
     }
 
     void ICursorHandle.OnCursorEnter()
@@ -62,7 +83,8 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
         double intensity = circuitGraph.GetGlobalIntensity();
-        //Debug.Log($"INSENTITY ::: {intensity} A");
+        Debug.Log($"INSENTITY ::: {intensity} A");
+        Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetTension}");
         if (!CheckTension(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetTension))
         {
             return false;
@@ -77,16 +99,19 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
     void ICursorHandle.OnCursorClick()
     {
         Debug.Log("clicked");
+        //_animator.Play("LeverDown");
         ToggleAnimation();
-        if (IsOn)
-        {
-            if (!ExecuteCircuit())
-                ToggleAnimation();
-        }
-        else
-        {
-            Breadboard.Target.UndoAction();
-        }
     }
 
+    public void OnSwitchIdleUp()
+    {
+        Breadboard.Target.UndoAction();
+    }
+    
+    public void OnSwitchIdleDown()
+    {
+        if (!ExecuteCircuit())
+            ToggleAnimation();
+    }
+    
 }
