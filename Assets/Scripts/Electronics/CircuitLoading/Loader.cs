@@ -129,7 +129,6 @@ namespace Reconnect.Electronics.CircuitLoading
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
 
             // TODO : TargetQuantity and TargetValue
-            // TODO : Add Tolerance from YAML
             breadboard.CircuitInfo = new CircuitInfo
             {
                 Title = YamlGetScalarValue(root.Children, "title"),
@@ -141,6 +140,10 @@ namespace Reconnect.Electronics.CircuitLoading
                 Tolerance = 0.1f
             };
 
+            if (YamlTryGetScalarValue(root.Children, "target-tolerance", out string targetTolerance)
+                && !float.TryParse(targetTolerance, NumberStyles.Float, CultureInfo.InvariantCulture, out breadboard.CircuitInfo.Tolerance))
+                throw new InvalidDataException($"Yaml key 'tolerance' of the circuit should be a floating point number. Got {targetTolerance}.");
+            
             DrawSwitchWires(breadboard);
             
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
