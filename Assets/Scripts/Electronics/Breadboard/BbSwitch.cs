@@ -4,6 +4,7 @@ using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
+using Reconnect.Utils;
 using UnityEngine;
 
 public class BbSwitch : MonoBehaviour, ICursorHandle
@@ -47,8 +48,8 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         _animator = GetComponentInChildren<Animator>();
         // TODO : Component not found
         _isOnHash = Animator.StringToHash("isON");
-        _outline = GetComponent<Outline>();
-        // TODO : Component not found
+        if (!TryGetComponent(out _outline))
+            throw new ComponentNotFoundException("No Outline component has been found on the switch.");
         _outline.enabled = false;
         BbSwitchAnimation childrenAnimationScript = _animator.GetComponent<BbSwitchAnimation>();
         if (childrenAnimationScript != null)
