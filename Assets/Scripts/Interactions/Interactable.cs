@@ -1,3 +1,4 @@
+using Reconnect.Utils;
 using UnityEngine;
 
 namespace Reconnect.Interactions
@@ -8,7 +9,8 @@ namespace Reconnect.Interactions
 
         protected void Start()
         {
-            Outline = GetComponent<Outline>();
+            if (!TryGetComponent(out Outline))
+                throw new ComponentNotFoundException("No Outline component has been found attached to this interactable.");
             Outline.enabled = false;
             Outline.OutlineWidth = 2.5f;
             Outline.OutlineMode = Outline.Mode.OutlineVisible;

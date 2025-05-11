@@ -1,6 +1,7 @@
 using UnityEngine;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.MouseEvents;
+using Reconnect.Utils;
 
 namespace Reconnect.Electronics.Components
 {
@@ -28,7 +29,9 @@ namespace Reconnect.Electronics.Components
 
         private void Awake()
         {
-            _outline = GetComponent<Outline>();
+            if (!TryGetComponent(out _outline))
+                throw new ComponentNotFoundException("No Outline component found on this WireScript.");
+            
             _outline.enabled = false;
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.ResistorComponent;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -141,7 +142,9 @@ namespace Reconnect.Electronics.Breadboards
             var scale = wireGameObj.transform.localScale;
             scale[1] /* y component */ = (PointToLocalPos(sourcePoint) - PointToLocalPos(destinationPoint)).magnitude / 2f;
             wireGameObj.transform.localScale = scale;
-            var wireScript = wireGameObj.GetComponent<WireScript>();
+            if (!wireGameObj.TryGetComponent(out WireScript wireScript))
+                throw new ComponentNotFoundException(
+                    "The wire prefab clone does not contain any WireScript component.");
             wireScript.Breadboard = this;
             wireScript.Pole1 = sourcePoint;
             wireScript.Pole2 = destinationPoint;
@@ -156,12 +159,16 @@ namespace Reconnect.Electronics.Breadboards
             resistorGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-            var resistorColor = resistorGameObj.GetComponent<ResistorColorManager>();
+            if (!resistorGameObj.TryGetComponent(out ResistorColorManager resistorColor))
+                throw new ComponentNotFoundException(
+                    "The resistor prefab clone does not contain any ResistorColorManager component.");
             resistorColor.ResistanceValue = resistance;
             resistorColor.Tolerance = tolerance;
             resistorColor.UpdateBandColors();
             var inner = new Resistor(name, resistance);
-            var dipoleScript = resistorGameObj.GetComponent<Dipole>();
+            if (!resistorGameObj.TryGetComponent(out Dipole dipoleScript))
+                throw new ComponentNotFoundException(
+                    "The resistor prefab clone does not contain any Dipole component.");
             dipoleScript.Pole1 = sourcePoint;
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;
@@ -182,7 +189,9 @@ namespace Reconnect.Electronics.Breadboards
             LightBulb lightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
             // TODO : add exception component not found
             var inner = new Lamp(name, resistance, lightBulb);
-            var dipoleScript = lampGameObj.GetComponent<Dipole>();
+            if (!lampGameObj.TryGetComponent(out Dipole dipoleScript))
+                throw new ComponentNotFoundException(
+                    "The lamp prefab clone does not contain any Dipole component.");
             dipoleScript.Pole1 = sourcePoint;
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;

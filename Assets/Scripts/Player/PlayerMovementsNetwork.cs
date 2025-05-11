@@ -1,4 +1,5 @@
 using System;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -50,21 +51,21 @@ namespace Reconnect.Player
         {
             base.Awake();
 
-            PlayerInput.actions["Move"].started += OnMove;
-            PlayerInput.actions["Move"].performed += OnMove;
-            PlayerInput.actions["Move"].canceled += OnMove;
-            PlayerInput.actions["Sprint"].started += OnSprint;
-            PlayerInput.actions["Sprint"].canceled += OnSprint;
-            PlayerInput.actions["Crouch"].started += OnCrouch;
-            PlayerInput.actions["Jump"].started += OnJump;
-            PlayerInput.actions["Dance"].started += OnDance;
+            PlayerControls.Player.Move.started += OnMove;
+            PlayerControls.Player.Move.performed += OnMove;
+            PlayerControls.Player.Move.canceled += OnMove;
+            PlayerControls.Player.Sprint.started += OnSprint;
+            PlayerControls.Player.Sprint.canceled += OnSprint;
+            PlayerControls.Player.Crouch.started += OnCrouch;
+            PlayerControls.Player.Jump.started += OnJump;
+            PlayerControls.Player.Dance.started += OnDance;
 
-            Animator = GetComponent<Animator>() ??
-                       throw new ArgumentException(
-                           "There is no Animator component in the children of the current GameObject");
+            if (!TryGetComponent(out Animator))
+                throw new ComponentNotFoundException("No Animator component has been found on the player.");
 
-            CameraTransform = GameObject.FindGameObjectWithTag("MainCamera")?.transform
-                              ?? throw new ArgumentException("There is no MainCamera tagged GameObject.");
+            if (Camera.main is null)
+                throw new GameObjectNotFoundException("No main camera has been found in the scene?");
+            CameraTransform = Camera.main.transform;
 
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");
@@ -89,25 +90,25 @@ namespace Reconnect.Player
 
         private void OnEnable()
         {
-            PlayerInput.actions.Enable();
+            PlayerControls.Player.Enable();
         }
 
         private void OnDisable()
         {
-            PlayerInput.actions.Disable();
+            PlayerControls.Player.Disable();
         }
 
         public void OnDestroy()
         {
             // It's a good practice to unsubscribe from actions when the object is destroyed
-            PlayerInput.actions["Move"].started -= OnMove;
-            PlayerInput.actions["Move"].performed -= OnMove;
-            PlayerInput.actions["Move"].canceled -= OnMove;
-            PlayerInput.actions["Sprint"].started -= OnSprint;
-            PlayerInput.actions["Sprint"].canceled -= OnSprint;
-            PlayerInput.actions["Crouch"].started -= OnCrouch;
-            PlayerInput.actions["Jump"].started -= OnJump;
-            PlayerInput.actions["Dance"].started -= OnDance;
+            PlayerControls.Player.Move.started -= OnMove;
+            PlayerControls.Player.Move.performed -= OnMove;
+            PlayerControls.Player.Move.canceled -= OnMove;
+            PlayerControls.Player.Sprint.started -= OnSprint;
+            PlayerControls.Player.Sprint.canceled -= OnSprint;
+            PlayerControls.Player.Crouch.started -= OnCrouch;
+            PlayerControls.Player.Jump.started -= OnJump;
+            PlayerControls.Player.Dance.started -= OnDance;
         }
 
         public void OnMove(InputAction.CallbackContext context)
