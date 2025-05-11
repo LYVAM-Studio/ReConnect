@@ -264,7 +264,7 @@ namespace Reconnect.Electronics.Breadboards
         public bool TryGetClosestValidPos(Dipole component, out Vector3 closest, out Vector2Int newPole1, out Vector2Int newPole2)
         {
             closest = new Vector3(
-                ClosestHalf(component.transform.localPosition.x + component.MainPoleAnchor.x) - component.MainPoleAnchor.x,
+                (float)Math.Round(component.transform.localPosition.x + component.MainPoleAnchor.x) - component.MainPoleAnchor.x,
                 ClosestHalf(component.transform.localPosition.y + component.MainPoleAnchor.y) - component.MainPoleAnchor.y,
                 ZPositionDipoles);
             
