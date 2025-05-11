@@ -179,7 +179,7 @@ namespace Reconnect.Electronics.Breadboards
             lampGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             lampGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-            LightBulb lightBulb = GetComponentInChildren<LightBulb>();
+            LightBulb lightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
             // TODO : add exception component not found
             var inner = new Lamp(name, resistance, lightBulb);
             var dipoleScript = lampGameObj.GetComponent<Dipole>();
