@@ -1,5 +1,6 @@
 using System;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
@@ -67,7 +68,10 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
     private void ToggleAnimation() => IsOn = !IsOn;
 
     private bool CheckTension(ElecComponent target, double intensity, double expectedTension)
-        => Math.Abs(target.GetTension(intensity) - expectedTension) < Breadboard.CircuitInfo.Tolerance; 
+        => Math.Abs(target.GetTension(intensity) - expectedTension) < Breadboard.CircuitInfo.TargetTolerance;
+    
+    private bool CheckIntensity(ElecComponent target, double tension, double expectedIntensity)
+        => Math.Abs(target.GetIntensity(tension) - expectedIntensity) < Breadboard.CircuitInfo.TargetTolerance;
     
     public bool ExecuteCircuit()
     {
@@ -83,11 +87,19 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
         double intensity = circuitGraph.GetGlobalIntensity();
-        Debug.Log($"INSENTITY ::: {intensity} A");
-        Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetTension}");
-        if (!CheckTension(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetTension))
+        // Debug.Log($"INSENTITY ::: {intensity} A");
+        // Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetValue}");
+
+        if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
         {
-            return false;
+            if (!CheckTension(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetValue))
+                return false;
+        }
+        else
+        {
+            if (!CheckIntensity(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetValue))
+                // TODO: what to put there? ______ ^^^^^^^^^
+                return false;
         }
         
         Breadboard.Target.Action();
