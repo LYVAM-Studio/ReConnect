@@ -1,7 +1,8 @@
 title: lvl1
 input-tension: 240
 input-intensity: 16
-target-tension: 120
+target-value: 120
+target-quantity: tension
 input-x-pos: 3
 output-x-pos: 3
 components:

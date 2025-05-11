@@ -128,20 +128,20 @@ namespace Reconnect.Electronics.CircuitLoading
 
             YamlMappingNode root = (YamlMappingNode)yaml.Documents[0].RootNode;
 
-            // TODO : TargetQuantity and TargetValue
             breadboard.CircuitInfo = new CircuitInfo
             {
                 Title = YamlGetScalarValue(root.Children, "title"),
                 InputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture),
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
-                TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture),
+                TargetValue = float.Parse(YamlGetScalarValue(root.Children, "target-value"), CultureInfo.InvariantCulture),
+                TargetQuantity = Enum.Parse<CircuitInfo.Quantity>(YamlGetScalarValue(root.Children, "target-quantity"), true),
+                TargetTolerance = 0.1f, // default value
                 InputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "input-x-pos"), CultureInfo.InvariantCulture), 0),
                 OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7),
-                Tolerance = 0.1f
             };
 
             if (YamlTryGetScalarValue(root.Children, "target-tolerance", out string targetTolerance)
-                && !float.TryParse(targetTolerance, NumberStyles.Float, CultureInfo.InvariantCulture, out breadboard.CircuitInfo.Tolerance))
+                && !float.TryParse(targetTolerance, NumberStyles.Float, CultureInfo.InvariantCulture, out breadboard.CircuitInfo.TargetTolerance))
                 throw new InvalidDataException($"Yaml key 'tolerance' of the circuit should be a floating point number. Got {targetTolerance}.");
             
             DrawSwitchWires(breadboard);
@@ -223,7 +223,5 @@ namespace Reconnect.Electronics.CircuitLoading
             if (breadboard.Target is null)
                 throw new FormatException("The loaded circuit does not contain any target.");
         }
-
-        
     }
 }
