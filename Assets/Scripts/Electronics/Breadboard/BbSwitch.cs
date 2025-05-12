@@ -51,10 +51,10 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
     private void ToggleAnimation() => IsOn = !IsOn;
 
     private bool CheckTension(ElecComponent target, double intensity, double expectedTension)
-        => Math.Abs(target.GetTension(intensity) - expectedTension) < Breadboard.CircuitInfo.TargetTolerance;
+        => Math.Abs(target.GetTension(intensity) - expectedTension) / expectedTension < Breadboard.CircuitInfo.TargetTolerance;
     
-    private bool CheckIntensity(ElecComponent target, double tension, double expectedIntensity)
-        => Math.Abs(target.GetIntensity(tension) - expectedIntensity) < Breadboard.CircuitInfo.TargetTolerance;
+    private bool CheckIntensity(double intensity, double expectedIntensity)
+        => Math.Abs(intensity - expectedIntensity) / expectedIntensity < Breadboard.CircuitInfo.TargetTolerance;
     
     public bool ExecuteCircuit()
     {
@@ -80,8 +80,7 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         }
         else
         {
-            if (!CheckIntensity(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetValue))
-                // TODO: what to put there? ______ ^^^^^^^^^
+            if (!CheckIntensity(intensity, Breadboard.CircuitInfo.TargetValue))
                 return false;
         }
         
