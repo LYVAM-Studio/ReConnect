@@ -96,11 +96,17 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
     {
         Breadboard.Target.UndoAction();
     }
+
+    private void OnFailedExercise()
+    {
+        ToggleAnimation(); // automatic shutdown of the switch
+        // TODO: handle KO of the player
+    }
     
     public void OnSwitchIdleDown()
     {
         if (!ExecuteCircuit())
-            ToggleAnimation();
+            OnFailedExercise();
     }
     
 }
