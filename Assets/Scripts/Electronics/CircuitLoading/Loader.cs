@@ -68,16 +68,59 @@ namespace Reconnect.Electronics.CircuitLoading
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
             };
         }
-        
+
+        private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
+        {
+            GameObject wire = UnityEngine.Object.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
+            wire.transform.localPosition = localPos;
+            wire.transform.localScale = scale;
+            wire.transform.localEulerAngles = eulerAngle;
+        }
+        private static void DrawSwitchWires(Breadboard breadboard)
+        {
+            GameObject wirePrefab = Resources.Load<GameObject>("Prefabs/Electronics/Components/SwitchWirePrefab");
+            
+            // wire input horizontal
+            Vector3 inputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.InputPoint);
+            Vector3 inputOffsetPos = inputPos + new Vector3(0, 0.5f, 0);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (inputOffsetPos + BreadboardHolder.SwitchWireInputCorner) / 2,
+                new Vector3(1, (inputOffsetPos - BreadboardHolder.SwitchWireInputCorner).magnitude, 1),
+                new Vector3(0, 0, 90));
+            
+            // wire input vertical
+            Vector3 inputWireJoinPos = new Vector3(inputPos.x, BreadboardHolder.SwitchWireInputCorner.y, inputPos.z);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (inputPos + inputWireJoinPos) / 2,
+                new Vector3(1, (inputWireJoinPos - inputPos).magnitude, 1),
+                Vector3.zero);
+            
+            // wire output horizontal
+            Vector3 outputPos = Breadboard.PointToLocalPos(breadboard.CircuitInfo.OutputPoint) ;
+            Vector3 outputOffsetPos = outputPos - new Vector3(0, 0.5f, 0);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (outputOffsetPos + BreadboardHolder.SwitchWireOutputCorner) / 2,
+                new Vector3(1, (outputOffsetPos - BreadboardHolder.SwitchWireOutputCorner).magnitude, 1),
+                new Vector3(0, 0, 90));
+            
+            // wire input vertical
+            Vector3 outputWireJoinPos = new Vector3(outputPos.x, BreadboardHolder.SwitchWireOutputCorner.y, outputPos.z);
+            SummonSwitchWire(wirePrefab, breadboard,
+                (outputPos + outputWireJoinPos) / 2,
+                new Vector3(1, (outputWireJoinPos - outputPos).magnitude, 1),
+                Vector3.zero);
+        }
+
         /// <summary>
         /// Loads the given circuit. Cleans the breadboard and load all the components required for the circuit.
         /// </summary>
-        /// <param name="circuitName">The name of the circuit to be loaded. It must contain neither the extension (.yaml) nor the path (CircuitsPresets/).</param>
-        public static void LoadCircuit(Breadboard breadboard, string circuitName)
+        /// <param name="breadboard">The breadboard on which the circuit must be loaded.</param>
+        /// <param name="yamlAsset">The YAML Ressource of the ciruit to be loaded.</param>
+        public static void LoadCircuit(Breadboard breadboard, TextAsset yamlAsset)
         {
             breadboard.Clean();
             
-            TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
+            //TextAsset yamlAsset = Resources.Load<TextAsset>($"CircuitsPresets/{circuitName}");
 
             using StringReader reader = new StringReader(yamlAsset.text);
             YamlStream yaml = new YamlStream();
@@ -90,9 +133,19 @@ namespace Reconnect.Electronics.CircuitLoading
                 Title = YamlGetScalarValue(root.Children, "title"),
                 InputTension = float.Parse(YamlGetScalarValue(root.Children, "input-tension"), CultureInfo.InvariantCulture),
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
-                TargetTension = float.Parse(YamlGetScalarValue(root.Children, "target-tension"), CultureInfo.InvariantCulture)
+                TargetValue = float.Parse(YamlGetScalarValue(root.Children, "target-value"), CultureInfo.InvariantCulture),
+                TargetQuantity = Enum.Parse<CircuitInfo.Quantity>(YamlGetScalarValue(root.Children, "target-quantity"), true),
+                TargetTolerance = 0.05f, // default percentage value
+                InputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "input-x-pos"), CultureInfo.InvariantCulture), 0),
+                OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7),
             };
 
+            if (YamlTryGetScalarValue(root.Children, "target-tolerance", out string targetTolerance)
+                && !float.TryParse(targetTolerance, NumberStyles.Float, CultureInfo.InvariantCulture, out breadboard.CircuitInfo.TargetTolerance))
+                throw new InvalidDataException($"Yaml key 'tolerance' of the circuit should be a floating point number. Got {targetTolerance}.");
+            
+            DrawSwitchWires(breadboard);
+            
             YamlSequenceNode componentsNode = (YamlSequenceNode)root.Children[new YamlScalarNode("components")];
 
             int componentId = 0;
@@ -172,7 +225,5 @@ namespace Reconnect.Electronics.CircuitLoading
             if (breadboard.Target is null)
                 throw new FormatException("The loaded circuit does not contain any target.");
         }
-
-        
     }
 }

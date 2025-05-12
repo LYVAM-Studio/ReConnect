@@ -4122,7 +4122,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.2534014, y: 0.0000000017058146, z: -4.468401e-10, w: 0.9673612}
+  m_LocalRotation: {x: 0.25340137, y: 0.0000000016508105, z: -2.3686236e-10, w: 0.9673613}
   m_LocalPosition: {x: 0, y: 17.25, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16948,42 +16948,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 535804720258257089, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 411580708}
-    - target: {fileID: 535804720258257089, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: StopVideo
-      objectReference: {fileID: 0}
-    - target: {fileID: 535804720258257089, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Reconnect.UI.VideoController, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 1567642407511763755, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 411580708}
-    - target: {fileID: 1567642407511763755, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayPauseVideo
-      objectReference: {fileID: 0}
-    - target: {fileID: 1567642407511763755, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Reconnect.UI.VideoController, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 5008100586115424281, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5008100586115424281, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5008100586115424281, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.2
-      objectReference: {fileID: 0}
     - target: {fileID: 5008100586115424281, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -17027,30 +16991,6 @@ PrefabInstance:
     - target: {fileID: 5028337126911305549, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: m_Name
       value: BreadboardHolder
-      objectReference: {fileID: 0}
-    - target: {fileID: 5762435643429332872, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5762435643429332872, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 411580708}
-    - target: {fileID: 5762435643429332872, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: PlayVideo
-      objectReference: {fileID: 0}
-    - target: {fileID: 5762435643429332872, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: Reconnect.UI.VideoController, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 5762435643429332872, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7986682997813188295, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

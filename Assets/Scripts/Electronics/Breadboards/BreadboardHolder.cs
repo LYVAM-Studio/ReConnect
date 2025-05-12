@@ -16,7 +16,12 @@ namespace Reconnect.Electronics.Breadboards
         public Breadboard breadboard;
         public CinemachineCamera cam;
         public GameObject ui;
+        public TextAsset circuitYaml;
 
+        public static Vector3 SwitchWireInputCorner = new Vector3(4, 4, -0.5f);
+
+        public static Vector3 SwitchWireOutputCorner = new Vector3(4, -4, -0.5f);
+        
         [NonSerialized] public bool IsActive = false;
 
         private Camera _mainCam;
@@ -32,6 +37,7 @@ namespace Reconnect.Electronics.Breadboards
             _raycastPlane = new Plane(
                 transform.forward,
                 transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
+            breadboard.circuitToLoad = circuitYaml;
         }
 
         public override void Interact(GameObject player)
