@@ -50,17 +50,26 @@ namespace Reconnect.Electronics.Breadboards
         [NonSerialized] public CircuitInfo CircuitInfo;
 
         private GameObject _wireBeingCreated;
-
+        
+        /// <summary>
+        /// The YAML TextAsset of the circuit to be loaded on the breadboard.
+        /// </summary>
+        public TextAsset circuitToLoad;
+        
+        /// <summary>
+        /// The GameObject that holds all the dependencies of the breadboard switch
+        /// </summary>
+        public GameObject switchHolder;
 
         public static Vector3 PointToLocalPos(Vector2Int point)
             => new Vector3(
-                -3.5f + point.x,
+                -4f + point.x,
                 3.5f - point.y,
                 -0.5f);
 
         public static Vector2Int LocalPosToPoint(Vector3 pos)
             => new Vector2Int(
-                (int)(pos.x + 3.5f),
+                (int)(pos.x + 4f),
                 (int)(-pos.y + 3.5f));
         
         public Vector3 LocalToWorld(Vector3 localPos)
@@ -73,10 +82,10 @@ namespace Reconnect.Electronics.Breadboards
         {
             OnWireCreation = false;
             _wireBeingCreated =
-                Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+                Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
             _wireBeingCreated.GetComponent<WireScript>().enabled = false;
             _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
-            Loader.LoadCircuit(this, "2_parallel_lvl_2");
+            Loader.LoadCircuit(this, circuitToLoad);
         }
         
         private void Update()
@@ -130,7 +139,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public void CreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked = false)
         {
-            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/WirePrefab"), transform.parent, false);
+            var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
             wireGameObj.name = $"WirePrefab ({name})";
             wireGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             wireGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
@@ -150,7 +159,7 @@ namespace Reconnect.Electronics.Breadboards
         
         public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float tolerance, bool isLocked = false)
         {
-            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/ResistorPrefab"), transform.parent, false);
+            var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
@@ -177,12 +186,16 @@ namespace Reconnect.Electronics.Breadboards
         
         public Lamp CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float nominalTension, bool isLocked = false)
         {
-            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Components/LampPrefab"), transform.parent, false);
+            var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
             lampGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             lampGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
-            var inner = new Lamp(name, resistance, nominalTension);
+            LightBulb lightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
+            if (lightBulb is null)
+                throw new ComponentNotFoundException(
+                    "The lamp prefab does not contain LightBulb component in its children");
+            var inner = new Lamp(name, resistance, lightBulb);
             if (!lampGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
                     "The lamp prefab clone does not contain any Dipole component.");
@@ -258,7 +271,7 @@ namespace Reconnect.Electronics.Breadboards
         public bool TryGetClosestValidPos(Dipole component, out Vector3 closest, out Vector2Int newPole1, out Vector2Int newPole2)
         {
             closest = new Vector3(
-                ClosestHalf(component.transform.localPosition.x + component.MainPoleAnchor.x) - component.MainPoleAnchor.x,
+                (float)Math.Round(component.transform.localPosition.x + component.MainPoleAnchor.x) - component.MainPoleAnchor.x,
                 ClosestHalf(component.transform.localPosition.y + component.MainPoleAnchor.y) - component.MainPoleAnchor.y,
                 ZPositionDipoles);
             
