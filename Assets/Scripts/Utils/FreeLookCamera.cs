@@ -6,6 +6,7 @@ namespace Reconnect.Utils
     public static class FreeLookCamera
     {
         private static GameObject _gameObject;
+        private static Transform _transform;
         private static CinemachineCamera _virtualCamera;
         private static CinemachineInputAxisController _inputAxisController;
 
@@ -21,6 +22,17 @@ namespace Reconnect.Utils
                 }
 
                 return _gameObject;
+            }
+        }
+
+        public static Transform Transform
+        {
+            get
+            {
+                if (_transform is null)
+                    _transform = GameObject.transform;
+
+                return _transform;
             }
         }
 
