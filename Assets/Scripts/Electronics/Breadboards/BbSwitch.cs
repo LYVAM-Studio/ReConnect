@@ -29,7 +29,8 @@ namespace Reconnect.Electronics.Breadboards
         void Start()
         {
             _animator = GetComponentInChildren<Animator>();
-            // TODO : Component not found
+            if (_animator is not null)
+                throw new ComponentNotFoundException("No Animator component found on the switch");
             _isOnHash = Animator.StringToHash("isON");
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component has been found on the switch.");
@@ -85,7 +86,7 @@ namespace Reconnect.Electronics.Breadboards
                     return false;
             }
             
-            Breadboard.Target.Action();
+            Breadboard.Target.DoAction();
             return true;
         }
         void ICursorHandle.OnCursorClick()
