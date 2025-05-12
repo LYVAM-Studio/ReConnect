@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace Reconnect.Interactions
 {
+    [RequireComponent(typeof(Outline))]
     public abstract class Interactable : MonoBehaviour
     {
         protected Outline Outline;
