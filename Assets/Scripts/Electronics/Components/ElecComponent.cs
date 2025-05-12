@@ -21,7 +21,18 @@ namespace Reconnect.Electronics.Components
             Resistance = resistance;
         }
 
-        public abstract double GetVoltage(double intensity);
+        public double GetTension(double intensity)
+        {
+            return Resistance * intensity;
+        }
+        
+        public double GetIntensity(double tension)
+        {
+            return tension / Resistance;
+        }
 
+        public virtual void DoAction() { }
+
+        public virtual void UndoAction() { }
     }
 }
