@@ -8131,6 +8131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mob_Passive
       objectReference: {fileID: 0}
+    - target: {fileID: 67332364570029529, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3154407928399342950, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6.8
@@ -21826,12 +21830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a5d07f4ed74477c8a85dc54dfa7f1e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 1807968258}
---- !u!195 &1807968258 stripped
-NavMeshAgent:
-  m_CorrespondingSourceObject: {fileID: 1075956692425450564, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
-  m_PrefabInstance: {fileID: 586222230}
-  m_PrefabAsset: {fileID: 0}
+  agent: {fileID: 0}
 --- !u!1001 &1821585101
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -25608,12 +25607,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479fe0a18ece415187dcbec508a1efc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 2000113784}
---- !u!195 &2000113784 stripped
-NavMeshAgent:
-  m_CorrespondingSourceObject: {fileID: 7281239185946322518, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-  m_PrefabInstance: {fileID: 736120202}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2026255378
 GameObject:
   m_ObjectHideFlags: 0
