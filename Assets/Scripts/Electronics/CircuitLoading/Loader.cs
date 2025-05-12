@@ -72,7 +72,7 @@ namespace Reconnect.Electronics.CircuitLoading
 
         private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
         {
-            GameObject wire = GameObject.Instantiate(wirePrefab, breadboard.transform, false);
+            GameObject wire = GameObject.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
             wire.transform.localPosition = localPos;
             wire.transform.localScale = scale;
             wire.transform.localEulerAngles = eulerAngle;
@@ -111,11 +111,12 @@ namespace Reconnect.Electronics.CircuitLoading
                 new Vector3(1, (outputWireJoinPos - outputPos).magnitude, 1),
                 Vector3.zero);
         }
-        
+
         /// <summary>
         /// Loads the given circuit. Cleans the breadboard and load all the components required for the circuit.
         /// </summary>
-        /// <param name="circuitName">The name of the circuit to be loaded. It must contain neither the extension (.yaml) nor the path (CircuitsPresets/).</param>
+        /// <param name="breadboard">The breadboard on which the circuit must be loaded.</param>
+        /// <param name="yamlAsset">The YAML Ressource of the ciruit to be loaded.</param>
         public static void LoadCircuit(Breadboard breadboard, TextAsset yamlAsset)
         {
             breadboard.Clean();
