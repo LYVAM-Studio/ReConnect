@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Reconnect.Electronics.Graphs;
 
@@ -13,11 +12,6 @@ namespace Reconnect.Electronics.Components
 
         public Resistor(string name, List<Vertex> adjacentComponents, double resistance) : base(name, adjacentComponents, resistance)
         {
-        }
-    
-        public override double GetVoltage(double intensity)
-        {
-            return Resistance * intensity;
         }
     }
 }
