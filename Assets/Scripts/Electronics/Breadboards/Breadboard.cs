@@ -55,6 +55,11 @@ namespace Reconnect.Electronics.Breadboards
         /// The YAML TextAsset of the circuit to be loaded on the breadboard.
         /// </summary>
         public TextAsset circuitToLoad;
+        
+        /// <summary>
+        /// The GameObject that holds all the dependencies of the breadboard switch
+        /// </summary>
+        public GameObject switchHolder;
 
         public static Vector3 PointToLocalPos(Vector2Int point)
             => new Vector3(

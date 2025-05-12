@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7106575530311284054}
   - component: {fileID: 8127086875148998721}
   m_Layer: 0
-  m_Name: Breadboard_Switch
+  m_Name: BreadboardSwitch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
