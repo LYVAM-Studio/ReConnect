@@ -19,7 +19,7 @@ namespace Reconnect.Electronics.Components
             LightBulb = lightBulb;
         }
 
-        public override void Action()
+        public override void DoAction()
         {
             LightBulb.Set(true);
         }

@@ -14,8 +14,5 @@ namespace Reconnect.Electronics.Components
         public Resistor(string name, List<Vertex> adjacentComponents, double resistance) : base(name, adjacentComponents, resistance)
         {
         }
-
-        public override void Action() {}
-        public override void UndoAction() {}
     }
 }
