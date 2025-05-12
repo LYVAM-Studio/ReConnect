@@ -1,4 +1,3 @@
-using System;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,16 +6,27 @@ namespace Reconnect.Player
 {
     public class PlayerMovementsNetwork : PlayerNetwork
     {
-        public float jumpHeight = 0.7f; // the height the player should jump
+        [Tooltip("The height the player should jump")]
+        public float jumpHeight = 0.7f;
 
-        [Header("Speed settings")] public float defaultSpeed = 6.0f; // the walking speed of the player
+        [Header("Speed settings")]
+        [Tooltip("The walking speed of the player")]
+        public float defaultSpeed = 1f;
 
-        public float sprintingFactor = 1.8f; // the sprinting speed modifier to be applied to the defaultSpeed
-        public float crouchingFactor = 0.7f; // the crouching speed modifier to be applied to the defaultSpeed
-        public float turnSmoothTime = 0.1f; // the time to smooth the rotation of the player (camera and keyboard)
-        private Vector3 _currentMovement; // the movement to be applies to the player
-
+        [Tooltip("The sprinting speed modifier to be applied to the defaultSpeed")]
+        public float sprintingFactor = 1.2f;
+        [Tooltip("The crouching speed modifier to be applied to the defaultSpeed")]
+        public float crouchingFactor = 0.7f;
+        [Tooltip("The time to smooth the rotation of the player (camera and keyboard)")]
+        public float turnSmoothTime = 0.1f;
+        [Tooltip("The time tp smooth the rotation of the player while mid air")]
+        public float turnSmoothTimeMidAir = 0.5f;
+        [Tooltip("In air movement smooth")]
+        private const float AirControlAcceleration = 8f;
+        
         // movement
+        private Vector3 _currentMovement; // the movement to be applies to the player
+        private Vector3 _currentVelocity;
         private Vector2 _currentMovementInput;
         private bool _isCrouching;
         private int _isCrouchingHash;
@@ -38,13 +48,12 @@ namespace Reconnect.Player
 
         // internal values
         private float _turnSmoothVelocity;
-        private float _velocityY; // the velocity on the Y axis (jumping and falling)
+       
 
         // imported components
-        protected Animator
-            Animator; // the animator component on the 3D model of the Player inside the current GameObject
-
-        protected Transform CameraTransform; // the MainCamera 3rd person inside the current GameObject
+        
+        // the animator component on the 3D model of the Player inside the current GameObject
+        private Animator _animator;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public override void Awake()
@@ -60,12 +69,8 @@ namespace Reconnect.Player
             PlayerControls.Player.Jump.started += OnJump;
             PlayerControls.Player.Dance.started += OnDance;
 
-            if (!TryGetComponent(out Animator))
+            if (!TryGetComponent(out _animator))
                 throw new ComponentNotFoundException("No Animator component has been found on the player.");
-
-            if (Camera.main is null)
-                throw new GameObjectNotFoundException("No main camera has been found in the scene?");
-            CameraTransform = Camera.main.transform;
 
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");
@@ -115,7 +120,6 @@ namespace Reconnect.Player
         {
             if (isLocked)
                 return;
-
             _currentMovementInput = context.ReadValue<Vector2>();
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
@@ -140,13 +144,18 @@ namespace Reconnect.Player
 
         public void OnSprint(InputAction.CallbackContext context)
         {
-            if (isLocked)
+            if (isLocked || !CharacterController.isGrounded)
                 return;
 
             if (context.started)
+            {
                 _isRunning = true;
+                _isCrouching = false;
+            }
             else if (context.canceled)
+            {
                 _isRunning = false;
+            }
         }
 
         public void OnDance(InputAction.CallbackContext context)
@@ -175,64 +184,64 @@ namespace Reconnect.Player
         {
             if (_isJumpingPressed && !_isJumping)
             {
-                Animator.SetBool(_isJumpingHash, true);
+                _animator.SetBool(_isJumpingHash, true);
                 _isJumping = true;
                 _isJumpingPressed = false;
             }
             else if (CharacterController.isGrounded) // is character grounded, no more falling nor jumping
             {
-                Animator.SetBool(_isGroundedHash, true);
-                Animator.SetBool(_isJumpingHash, false);
+                _animator.SetBool(_isGroundedHash, true);
+                _animator.SetBool(_isJumpingHash, false);
                 _isJumping = false;
-                Animator.SetBool(_isFallingHash, false);
+                _animator.SetBool(_isFallingHash, false);
             }
             else // if the character is not grounded, then it is maybe falling
             {
-                Animator.SetBool(_isGroundedHash, false);
+                _animator.SetBool(_isGroundedHash, false);
 
                 // if not grounded, it's falling if it's on the descending part of the jump or if it fell from a height (with velocityY threshold of -2f)
-                if ((_velocityY < 0 && _isJumping) || _velocityY < -2f) Animator.SetBool(_isFallingHash, true);
+                if ((_currentVelocity.y < 0 && _isJumping) || _currentVelocity.y < -2f) _animator.SetBool(_isFallingHash, true);
             }
         }
 
         private void HandleAnimation()
         {
-            var isWalking = Animator.GetBool(_isWalkingHash);
-            var isRunning = Animator.GetBool(_isRunningHash);
-            var isCrouching = Animator.GetBool(_isCrouchingHash);
-            var isDancing = Animator.GetBool(_isDancingHash);
+            var isWalking = _animator.GetBool(_isWalkingHash);
+            var isRunning = _animator.GetBool(_isRunningHash);
+            var isCrouching = _animator.GetBool(_isCrouchingHash);
+            var isDancing = _animator.GetBool(_isDancingHash);
             JumpAnimation();
 
             if (_isDancing && !isDancing && !_isMovementPressed)
-                Animator.SetBool(_isDancingHash, true);
+                _animator.SetBool(_isDancingHash, true);
 
             if (isDancing && _isMovementPressed)
             {
-                Animator.SetBool(_isDancingHash, false);
+                _animator.SetBool(_isDancingHash, false);
                 _isDancing = false;
             }
 
             if (_isMovementPressed && !isWalking)
-                Animator.SetBool(_isWalkingHash, true);
+                _animator.SetBool(_isWalkingHash, true);
 
             if (_isRunning && !isRunning)
-                Animator.SetBool(_isRunningHash, true);
+                _animator.SetBool(_isRunningHash, true);
 
             if (_isCrouching && !isCrouching)
-                Animator.SetBool(_isCrouchingHash, true);
+                _animator.SetBool(_isCrouchingHash, true);
 
             if (!_isMovementPressed && isWalking)
-                Animator.SetBool(_isWalkingHash, false);
+                _animator.SetBool(_isWalkingHash, false);
 
             // stop running if key released
-            if (!_isRunning && isRunning) Animator.SetBool(_isRunningHash, false);
+            if (!_isRunning && isRunning) _animator.SetBool(_isRunningHash, false);
 
             // stop running if no more moving (even though the key is still pressed)
             if (!_isMovementPressed && isRunning)
-                Animator.SetBool(_isRunningHash, false);
+                _animator.SetBool(_isRunningHash, false);
 
             if (!_isCrouching && isCrouching)
-                Animator.SetBool(_isCrouchingHash, false);
+                _animator.SetBool(_isCrouchingHash, false);
         }
 
         private void HandleRotation2()
@@ -252,15 +261,34 @@ namespace Reconnect.Player
             {
                 // Calculate target rotation based on camera orientation
                 var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg +
-                                  CameraTransform.eulerAngles.y;
+                                  FreeLookCamera.Transform.eulerAngles.y;
 
                 // Smooth the player's rotation
                 var smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
-                    ref _turnSmoothVelocity, turnSmoothTime);
+                    ref _turnSmoothVelocity, (CharacterController.isGrounded ? turnSmoothTime : turnSmoothTimeMidAir));
                 transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
 
                 // Calculate movement direction relative to the player's rotation
                 _currentMovement = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            }
+        }
+
+        private void HandleMidAirMovements(float speed)
+        {
+            Vector3 inputDirection = new Vector3(_currentMovement.x, 0, _currentMovement.z).normalized;
+            Vector3 desiredVelocity = inputDirection * speed;
+
+            if (!CharacterController.isGrounded)
+            {
+                // Smoothly accelerate toward desiredVelocity in air
+                _currentVelocity.x = Mathf.Lerp(_currentVelocity.x, desiredVelocity.x, AirControlAcceleration * Time.deltaTime);
+                _currentVelocity.z = Mathf.Lerp(_currentVelocity.z, desiredVelocity.z, AirControlAcceleration * Time.deltaTime);
+            }
+            else
+            {
+                // Grounded : directly set horizontal movement
+                _currentVelocity.x = desiredVelocity.x;
+                _currentVelocity.z = desiredVelocity.z;
             }
         }
 
@@ -269,20 +297,22 @@ namespace Reconnect.Player
             var speed = defaultSpeed;
             if (_isRunning)
                 speed *= sprintingFactor;
-            else if (_isCrouching) speed *= crouchingFactor;
+            else if (_isCrouching)
+                speed *= crouchingFactor;
 
-            var move = new Vector3(_currentMovement.x * speed, _velocityY, _currentMovement.z * speed);
-            CharacterController.Move(move * Time.deltaTime);
+            HandleMidAirMovements(speed);
+            
+            CharacterController.Move(_currentVelocity * Time.deltaTime);
         }
 
         private void HandleGravityAndJump()
         {
             if (CharacterController.isGrounded && _isJumpingPressed) // jumping vertical velocity
-                _velocityY = Mathf.Sqrt(jumpHeight * -2f * Physics.Gravity);
+                _currentVelocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.Gravity);
             else if (CharacterController.isGrounded) // on ground vertical velocity
-                _velocityY = Physics.Gravity * Time.deltaTime;
+                _currentVelocity.y = Physics.Gravity;
             else
-                _velocityY += Physics.Gravity * Time.deltaTime;
+                _currentVelocity.y += Physics.Gravity * Time.deltaTime;
         }
 
         private void HandleLockedPlayer()
