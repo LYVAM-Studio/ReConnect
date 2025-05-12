@@ -88,7 +88,7 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
         double intensity = circuitGraph.GetGlobalIntensity();
-        // Debug.Log($"INSENTITY ::: {intensity} A");
+        // Debug.Log($"INTENSITY ::: {intensity} A");
         // Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetValue}");
 
         if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
@@ -111,12 +111,10 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
     }
     void ICursorHandle.OnCursorClick()
     {
-        Debug.Log("clicked");
-        //_animator.Play("LeverDown");
         ToggleAnimation();
     }
 
-    public void OnSwitchIdleUp()
+    public void OnSwitchStartUp()
     {
         Breadboard.Target.UndoAction();
     }

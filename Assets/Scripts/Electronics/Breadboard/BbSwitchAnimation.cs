@@ -8,15 +8,13 @@ public class BbSwitchAnimation : MonoBehaviour
 
     public void OnIdleDown()
     {
-        Debug.Log("Lever is Down");
         if (bbSwitch != null)
             bbSwitch.OnSwitchIdleDown();
     }
 
-    public void OnIdleUp()
+    public void OnStartUp()
     {
-        Debug.Log("Lever is Up");
         if (bbSwitch != null)
-            bbSwitch.OnSwitchIdleUp();
+            bbSwitch.OnSwitchStartUp();
     }
 }
