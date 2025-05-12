@@ -135,7 +135,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 InputIntensity = float.Parse(YamlGetScalarValue(root.Children, "input-intensity"), CultureInfo.InvariantCulture),
                 TargetValue = float.Parse(YamlGetScalarValue(root.Children, "target-value"), CultureInfo.InvariantCulture),
                 TargetQuantity = Enum.Parse<CircuitInfo.Quantity>(YamlGetScalarValue(root.Children, "target-quantity"), true),
-                TargetTolerance = 0.1f, // default value
+                TargetTolerance = 0.05f, // default percentage value
                 InputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "input-x-pos"), CultureInfo.InvariantCulture), 0),
                 OutputPoint = new Vector2Int(int.Parse(YamlGetScalarValue(root.Children, "output-x-pos"), CultureInfo.InvariantCulture), 7),
             };
