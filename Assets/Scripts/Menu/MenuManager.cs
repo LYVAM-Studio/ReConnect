@@ -128,7 +128,7 @@ namespace Reconnect.Menu
                 if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
                     throw new ComponentNotFoundException(
                         "No PlayerMovementsNetwork component has been found on the local player.");
-                movements.isLocked = true;
+                movements.isLocked = false;
                 FreeLookCamera.InputAxisController.enabled = true;
             }
         }
