@@ -5,7 +5,6 @@ using Reconnect.Utils;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {

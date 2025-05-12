@@ -26,18 +26,19 @@ namespace Reconnect.Electronics.Breadboards
         }
         
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Start()
         {
             _animator = GetComponentInChildren<Animator>();
-            if (_animator is not null)
-                throw new ComponentNotFoundException("No Animator component found on the switch");
+            if (_animator is null)
+                throw new ComponentNotFoundException("No Animator component has been found on the switch");
             _isOnHash = Animator.StringToHash("isON");
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component has been found on the switch.");
             _outline.enabled = false;
-            BbSwitchAnimation childrenAnimationScript = _animator.GetComponent<BbSwitchAnimation>();
-            if (childrenAnimationScript != null)
-                childrenAnimationScript.bbSwitch = this;
+            if (_animator.TryGetComponent(out BbSwitchAnimation childrenAnimationScript))
+                throw new ComponentNotFoundException(
+                    "no BbSwitchAnimation component has been found in the switch prefab children");
+            childrenAnimationScript.bbSwitch = this;
         }
 
         void ICursorHandle.OnCursorEnter()
@@ -57,18 +58,18 @@ namespace Reconnect.Electronics.Breadboards
         
         private bool CheckIntensity(double intensity, double expectedIntensity)
             => Math.Abs(intensity - expectedIntensity) / expectedIntensity < Breadboard.CircuitInfo.TargetTolerance;
-        
-        public bool ExecuteCircuit()
+
+        private bool ExecuteCircuit()
         {
             Graph circuitGraph = GraphConverter.CreateGraph(Breadboard);
             //Debug.Log($"STATE :::\n"+string.Join('\n', from v in circuitGraph.Vertices select $"{v.GetType().Name[..3]} {v.Name}: [{string.Join(", ", v.AdjacentComponents)}]"));
             circuitGraph.DefineBranches();
             //Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices));
-            string branchesDebug = "";
-            foreach (Branch circuitGraphBranch in circuitGraph.Branches)
-            {
-                branchesDebug += circuitGraphBranch.Display() + '\n';
-            }
+            // string branchesDebug = "";
+            // foreach (Branch circuitGraphBranch in circuitGraph.Branches)
+            // {
+            //     branchesDebug += circuitGraphBranch.Display() + '\n';
+            // }
             //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
             //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
             double intensity = circuitGraph.GetGlobalIntensity();
