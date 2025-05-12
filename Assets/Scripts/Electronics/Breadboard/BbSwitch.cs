@@ -24,24 +24,6 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         set => _animator.SetBool(_isOnHash, value);
     }
     
-    private bool IsUp
-    {
-        get
-        {
-            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
-            return state.IsName("IdleUp");
-        }
-    }
-    
-    private bool IsDown
-    {
-        get
-        {
-            AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(0);
-            return state.IsName("IdleDown");
-        }
-    }
-    
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -88,7 +70,7 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
         double intensity = circuitGraph.GetGlobalIntensity();
-        // Debug.Log($"INTENSITY ::: {intensity} A");
+        Debug.Log($"INTENSITY ::: {intensity} A");
         // Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetValue}");
 
         if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
@@ -105,9 +87,6 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         
         Breadboard.Target.Action();
         return true;
-        
-        //Debug.Log(targetLamp.isLampOn(intensity) ? "The lamp is ON ! Success" : "The lamp is OFF ! You failed");
-        //Debug.Log($"tension of the target : {targetLamp.GetVoltage(intensity)} Volts");
     }
     void ICursorHandle.OnCursorClick()
     {
