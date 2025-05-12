@@ -43,10 +43,10 @@ namespace Reconnect.Player
        
 
         // imported components
-        protected Animator
-            Animator; // the animator component on the 3D model of the Player inside the current GameObject
+        private Animator
+            _animator; // the animator component on the 3D model of the Player inside the current GameObject
 
-        protected Transform CameraTransform; // the MainCamera 3rd person inside the current GameObject
+        private Transform _cameraTransform; // the MainCamera 3rd person inside the current GameObject
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public override void Awake()
@@ -62,12 +62,12 @@ namespace Reconnect.Player
             PlayerControls.Player.Jump.started += OnJump;
             PlayerControls.Player.Dance.started += OnDance;
 
-            if (!TryGetComponent(out Animator))
+            if (!TryGetComponent(out _animator))
                 throw new ComponentNotFoundException("No Animator component has been found on the player.");
 
             if (Camera.main is null)
                 throw new GameObjectNotFoundException("No main camera has been found in the scene?");
-            CameraTransform = Camera.main.transform;
+            _cameraTransform = Camera.main.transform;
 
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");
@@ -182,20 +182,20 @@ namespace Reconnect.Player
         {
             if (_isJumpingPressed && !_isJumping)
             {
-                Animator.SetBool(_isJumpingHash, true);
+                _animator.SetBool(_isJumpingHash, true);
                 _isJumping = true;
                 _isJumpingPressed = false;
             }
             else if (CharacterController.isGrounded) // is character grounded, no more falling nor jumping
             {
-                Animator.SetBool(_isGroundedHash, true);
-                Animator.SetBool(_isJumpingHash, false);
+                _animator.SetBool(_isGroundedHash, true);
+                _animator.SetBool(_isJumpingHash, false);
                 _isJumping = false;
-                Animator.SetBool(_isFallingHash, false);
+                _animator.SetBool(_isFallingHash, false);
             }
             else // if the character is not grounded, then it is maybe falling
             {
-                Animator.SetBool(_isGroundedHash, false);
+                _animator.SetBool(_isGroundedHash, false);
 
                 // if not grounded, it's falling if it's on the descending part of the jump or if it fell from a height (with velocityY threshold of -2f)
                 if ((_currentVelocity.y < 0 && _isJumping) || _currentVelocity.y < -2f) _animator.SetBool(_isFallingHash, true);
@@ -204,42 +204,42 @@ namespace Reconnect.Player
 
         private void HandleAnimation()
         {
-            var isWalking = Animator.GetBool(_isWalkingHash);
-            var isRunning = Animator.GetBool(_isRunningHash);
-            var isCrouching = Animator.GetBool(_isCrouchingHash);
-            var isDancing = Animator.GetBool(_isDancingHash);
+            var isWalking = _animator.GetBool(_isWalkingHash);
+            var isRunning = _animator.GetBool(_isRunningHash);
+            var isCrouching = _animator.GetBool(_isCrouchingHash);
+            var isDancing = _animator.GetBool(_isDancingHash);
             JumpAnimation();
 
             if (_isDancing && !isDancing && !_isMovementPressed)
-                Animator.SetBool(_isDancingHash, true);
+                _animator.SetBool(_isDancingHash, true);
 
             if (isDancing && _isMovementPressed)
             {
-                Animator.SetBool(_isDancingHash, false);
+                _animator.SetBool(_isDancingHash, false);
                 _isDancing = false;
             }
 
             if (_isMovementPressed && !isWalking)
-                Animator.SetBool(_isWalkingHash, true);
+                _animator.SetBool(_isWalkingHash, true);
 
             if (_isRunning && !isRunning)
-                Animator.SetBool(_isRunningHash, true);
+                _animator.SetBool(_isRunningHash, true);
 
             if (_isCrouching && !isCrouching)
-                Animator.SetBool(_isCrouchingHash, true);
+                _animator.SetBool(_isCrouchingHash, true);
 
             if (!_isMovementPressed && isWalking)
-                Animator.SetBool(_isWalkingHash, false);
+                _animator.SetBool(_isWalkingHash, false);
 
             // stop running if key released
-            if (!_isRunning && isRunning) Animator.SetBool(_isRunningHash, false);
+            if (!_isRunning && isRunning) _animator.SetBool(_isRunningHash, false);
 
             // stop running if no more moving (even though the key is still pressed)
             if (!_isMovementPressed && isRunning)
-                Animator.SetBool(_isRunningHash, false);
+                _animator.SetBool(_isRunningHash, false);
 
             if (!_isCrouching && isCrouching)
-                Animator.SetBool(_isCrouchingHash, false);
+                _animator.SetBool(_isCrouchingHash, false);
         }
 
         private void HandleRotation2()
@@ -259,7 +259,7 @@ namespace Reconnect.Player
             {
                 // Calculate target rotation based on camera orientation
                 var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg +
-                                  CameraTransform.eulerAngles.y;
+                                  _cameraTransform.eulerAngles.y;
 
                 // Smooth the player's rotation
                 var smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
