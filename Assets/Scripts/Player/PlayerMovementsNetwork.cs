@@ -9,9 +9,9 @@ namespace Reconnect.Player
     {
         public float jumpHeight = 0.7f; // the height the player should jump
 
-        [Header("Speed settings")] public float defaultSpeed = 6.0f; // the walking speed of the player
+        [Header("Speed settings")] public float defaultSpeed = 2f; // the walking speed of the player
 
-        public float sprintingFactor = 1.8f; // the sprinting speed modifier to be applied to the defaultSpeed
+        public float sprintingFactor = 1.5f; // the sprinting speed modifier to be applied to the defaultSpeed
         public float crouchingFactor = 0.7f; // the crouching speed modifier to be applied to the defaultSpeed
         public float turnSmoothTime = 0.1f; // the time to smooth the rotation of the player (camera and keyboard)
         private const float AirControlAcceleration = 8f; // in air movement smooth
@@ -117,7 +117,6 @@ namespace Reconnect.Player
         {
             if (isLocked)
                 return;
-
             _currentMovementInput = context.ReadValue<Vector2>();
             _currentMovement.x = _currentMovementInput.x;
             _currentMovement.z = _currentMovementInput.y;
