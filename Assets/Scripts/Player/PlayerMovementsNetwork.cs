@@ -14,9 +14,11 @@ namespace Reconnect.Player
         public float sprintingFactor = 1.8f; // the sprinting speed modifier to be applied to the defaultSpeed
         public float crouchingFactor = 0.7f; // the crouching speed modifier to be applied to the defaultSpeed
         public float turnSmoothTime = 0.1f; // the time to smooth the rotation of the player (camera and keyboard)
-        private Vector3 _currentMovement; // the movement to be applies to the player
-
+        private const float AirControlAcceleration = 8f; // in air movement smooth
+        
         // movement
+        private Vector3 _currentMovement; // the movement to be applies to the player
+        private Vector3 _currentVelocity;
         private Vector2 _currentMovementInput;
         private bool _isCrouching;
         private int _isCrouchingHash;
@@ -38,7 +40,7 @@ namespace Reconnect.Player
 
         // internal values
         private float _turnSmoothVelocity;
-        private float _velocityY; // the velocity on the Y axis (jumping and falling)
+       
 
         // imported components
         protected Animator
@@ -196,7 +198,7 @@ namespace Reconnect.Player
                 Animator.SetBool(_isGroundedHash, false);
 
                 // if not grounded, it's falling if it's on the descending part of the jump or if it fell from a height (with velocityY threshold of -2f)
-                if ((_velocityY < 0 && _isJumping) || _velocityY < -2f) Animator.SetBool(_isFallingHash, true);
+                if ((_currentVelocity.y < 0 && _isJumping) || _currentVelocity.y < -2f) _animator.SetBool(_isFallingHash, true);
             }
         }
 
@@ -269,6 +271,25 @@ namespace Reconnect.Player
             }
         }
 
+        private void HandleMidAirMovements(float speed)
+        {
+            Vector3 inputDirection = new Vector3(_currentMovement.x, 0, _currentMovement.z).normalized;
+            Vector3 desiredVelocity = inputDirection * speed;
+
+            if (!CharacterController.isGrounded)
+            {
+                // Smoothly accelerate toward desiredVelocity in air
+                _currentVelocity.x = Mathf.Lerp(_currentVelocity.x, desiredVelocity.x, AirControlAcceleration * Time.deltaTime);
+                _currentVelocity.z = Mathf.Lerp(_currentVelocity.z, desiredVelocity.z, AirControlAcceleration * Time.deltaTime);
+            }
+            else
+            {
+                // Grounded : directly set horizontal movement
+                _currentVelocity.x = desiredVelocity.x;
+                _currentVelocity.z = desiredVelocity.z;
+            }
+        }
+
         private void HandleMovements()
         {
             var speed = defaultSpeed;
@@ -276,18 +297,19 @@ namespace Reconnect.Player
                 speed *= sprintingFactor;
             else if (_isCrouching) speed *= crouchingFactor;
 
-            var move = new Vector3(_currentMovement.x * speed, _velocityY, _currentMovement.z * speed);
-            CharacterController.Move(move * Time.deltaTime);
+            HandleMidAirMovements(speed);
+            
+            CharacterController.Move(_currentVelocity * Time.deltaTime);
         }
 
         private void HandleGravityAndJump()
         {
             if (CharacterController.isGrounded && _isJumpingPressed) // jumping vertical velocity
-                _velocityY = Mathf.Sqrt(jumpHeight * -2f * Physics.Gravity);
+                _currentVelocity.y = Mathf.Sqrt(jumpHeight * -2f * Physics.Gravity);
             else if (CharacterController.isGrounded) // on ground vertical velocity
-                _velocityY = Physics.Gravity * Time.deltaTime;
+                _currentVelocity.y = Physics.Gravity;
             else
-                _velocityY += Physics.Gravity * Time.deltaTime;
+                _currentVelocity.y += Physics.Gravity * Time.deltaTime;
         }
 
         private void HandleLockedPlayer()
