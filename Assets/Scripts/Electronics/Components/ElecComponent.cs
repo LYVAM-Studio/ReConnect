@@ -31,7 +31,8 @@ namespace Reconnect.Electronics.Components
             return tension / Resistance;
         }
 
-        public abstract void Action();
-        public abstract void UndoAction();
+        public virtual void DoAction() { }
+
+        public virtual void UndoAction() { }
     }
 }
