@@ -1,6 +1,6 @@
 using System;
+using Reconnect.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -10,14 +10,16 @@ namespace Reconnect.Electronics.Breadboards
 
         public void OnIdleDown()
         {
-            if (bbSwitch != null)
-                bbSwitch.OnSwitchIdleDown();
+            if (bbSwitch is null)
+                throw new ArgumentException("Missing reference to the BbSwitch");
+            bbSwitch.OnSwitchIdleDown();
         }
 
         public void OnStartUp()
         {
-            if (bbSwitch != null)
-                bbSwitch.OnSwitchStartUp();
+            if (bbSwitch is null)
+                throw new ArgumentException("Missing reference to the BbSwitch");
+            bbSwitch.OnSwitchStartUp();
         }
     }
 }

@@ -7,7 +7,6 @@ using Reconnect.Electronics.Components;
 using UnityEngine;
 using YamlDotNet.Helpers;
 using YamlDotNet.RepresentationModel;
-using Object = UnityEngine.Object;
 
 namespace Reconnect.Electronics.CircuitLoading
 {
@@ -72,7 +71,7 @@ namespace Reconnect.Electronics.CircuitLoading
 
         private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
         {
-            GameObject wire = GameObject.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
+            GameObject wire = UnityEngine.Object.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
             wire.transform.localPosition = localPos;
             wire.transform.localScale = scale;
             wire.transform.localEulerAngles = eulerAngle;
