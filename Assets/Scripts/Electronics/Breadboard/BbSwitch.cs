@@ -70,7 +70,7 @@ public class BbSwitch : MonoBehaviour, ICursorHandle
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
         //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
         double intensity = circuitGraph.GetGlobalIntensity();
-        Debug.Log($"INTENSITY ::: {intensity} A");
+        // Debug.Log($"INTENSITY ::: {intensity} A");
         // Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetValue}");
 
         if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
