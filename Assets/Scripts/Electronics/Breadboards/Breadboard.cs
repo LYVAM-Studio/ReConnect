@@ -192,7 +192,9 @@ namespace Reconnect.Electronics.Breadboards
             lampGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             lampGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
             LightBulb lightBulb = lampGameObj.GetComponentInChildren<LightBulb>();
-            // TODO : add exception component not found
+            if (lightBulb is null)
+                throw new ComponentNotFoundException(
+                    "The lamp prefab does not contain LightBulb component in its children");
             var inner = new Lamp(name, resistance, lightBulb);
             if (!lampGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
