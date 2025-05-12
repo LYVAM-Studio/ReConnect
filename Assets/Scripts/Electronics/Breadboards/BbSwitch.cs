@@ -35,7 +35,7 @@ namespace Reconnect.Electronics.Breadboards
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component has been found on the switch.");
             _outline.enabled = false;
-            if (_animator.TryGetComponent(out BbSwitchAnimation childrenAnimationScript))
+            if (!_animator.TryGetComponent(out BbSwitchAnimation childrenAnimationScript))
                 throw new ComponentNotFoundException(
                     "no BbSwitchAnimation component has been found in the switch prefab children");
             childrenAnimationScript.bbSwitch = this;
