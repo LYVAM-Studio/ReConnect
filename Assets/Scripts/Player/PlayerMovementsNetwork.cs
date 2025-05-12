@@ -1,5 +1,6 @@
 using System;
 using Reconnect.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,14 +8,23 @@ namespace Reconnect.Player
 {
     public class PlayerMovementsNetwork : PlayerNetwork
     {
-        public float jumpHeight = 0.7f; // the height the player should jump
+        [Tooltip("The height the player should jump")]
+        public float jumpHeight = 0.7f;
 
-        [Header("Speed settings")] public float defaultSpeed = 2f; // the walking speed of the player
+        [Header("Speed settings")]
+        [Tooltip("The walking speed of the player")]
+        public float defaultSpeed = 1f;
 
-        public float sprintingFactor = 1.5f; // the sprinting speed modifier to be applied to the defaultSpeed
-        public float crouchingFactor = 0.7f; // the crouching speed modifier to be applied to the defaultSpeed
-        public float turnSmoothTime = 0.1f; // the time to smooth the rotation of the player (camera and keyboard)
-        private const float AirControlAcceleration = 8f; // in air movement smooth
+        [Tooltip("The sprinting speed modifier to be applied to the defaultSpeed")]
+        public float sprintingFactor = 1.2f;
+        [Tooltip("The crouching speed modifier to be applied to the defaultSpeed")]
+        public float crouchingFactor = 0.7f;
+        [Tooltip("The time to smooth the rotation of the player (camera and keyboard)")]
+        public float turnSmoothTime = 0.1f;
+        [Tooltip("The time tp smooth the rotation of the player while mid air")]
+        public float turnSmoothTimeMidAir = 0.5f;
+        [Tooltip("In air movement smooth")]
+        private const float AirControlAcceleration = 8f;
         
         // movement
         private Vector3 _currentMovement; // the movement to be applies to the player
@@ -43,10 +53,9 @@ namespace Reconnect.Player
        
 
         // imported components
-        private Animator
-            _animator; // the animator component on the 3D model of the Player inside the current GameObject
-
-        private Transform _cameraTransform; // the MainCamera 3rd person inside the current GameObject
+        
+        // the animator component on the 3D model of the Player inside the current GameObject
+        private Animator _animator;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public override void Awake()
@@ -64,10 +73,6 @@ namespace Reconnect.Player
 
             if (!TryGetComponent(out _animator))
                 throw new ComponentNotFoundException("No Animator component has been found on the player.");
-
-            if (Camera.main is null)
-                throw new GameObjectNotFoundException("No main camera has been found in the scene?");
-            _cameraTransform = Camera.main.transform;
 
             _isWalkingHash = Animator.StringToHash("isWalking");
             _isRunningHash = Animator.StringToHash("isRunning");
@@ -141,7 +146,7 @@ namespace Reconnect.Player
 
         public void OnSprint(InputAction.CallbackContext context)
         {
-            if (isLocked)
+            if (isLocked || !CharacterController.isGrounded)
                 return;
 
             if (context.started)
@@ -258,11 +263,11 @@ namespace Reconnect.Player
             {
                 // Calculate target rotation based on camera orientation
                 var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg +
-                                  _cameraTransform.eulerAngles.y;
+                                  FreeLookCamera.Transform.eulerAngles.y;
 
                 // Smooth the player's rotation
                 var smoothedAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle,
-                    ref _turnSmoothVelocity, turnSmoothTime);
+                    ref _turnSmoothVelocity, (CharacterController.isGrounded ? turnSmoothTime : turnSmoothTimeMidAir));
                 transform.rotation = Quaternion.Euler(0f, smoothedAngle, 0f);
 
                 // Calculate movement direction relative to the player's rotation
@@ -294,7 +299,8 @@ namespace Reconnect.Player
             var speed = defaultSpeed;
             if (_isRunning)
                 speed *= sprintingFactor;
-            else if (_isCrouching) speed *= crouchingFactor;
+            else if (_isCrouching)
+                speed *= crouchingFactor;
 
             HandleMidAirMovements(speed);
             
