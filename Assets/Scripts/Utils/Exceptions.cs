@@ -22,4 +22,11 @@ namespace Reconnect.Utils
         public UnreachableCaseException(string message) : base(message) { }
         public UnreachableCaseException(string message, Exception innerException) : base(message, innerException) { }
     }
+    
+    public class InventoryFullException: Exception
+    {
+        public InventoryFullException() { }
+        public InventoryFullException(string message) : base(message) { }
+        public InventoryFullException(string message, Exception innerException) : base(message, innerException) { }
+    }
 }
