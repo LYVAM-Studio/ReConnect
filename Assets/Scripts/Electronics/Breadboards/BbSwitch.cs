@@ -62,20 +62,11 @@ namespace Reconnect.Electronics.Breadboards
         private bool ExecuteCircuit()
         {
             Graph circuitGraph = GraphConverter.CreateGraph(Breadboard);
-            //Debug.Log($"STATE :::\n"+string.Join('\n', from v in circuitGraph.Vertices select $"{v.GetType().Name[..3]} {v.Name}: [{string.Join(", ", v.AdjacentComponents)}]"));
             circuitGraph.DefineBranches();
-            //Debug.Log($"VERTICES({circuitGraph.Vertices.Count}) :::\n"+string.Join('\n', circuitGraph.Vertices));
-            // string branchesDebug = "";
-            // foreach (Branch circuitGraphBranch in circuitGraph.Branches)
-            // {
-            //     branchesDebug += circuitGraphBranch.Display() + '\n';
-            // }
-            //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+branchesDebug);
-            //Debug.Log($"BRANCHES({circuitGraph.Branches.Count}) :::\n"+string.Join('\n', circuitGraph.Branches));
             double intensity = circuitGraph.GetGlobalIntensity();
-            // Debug.Log($"INTENSITY ::: {intensity} A");
-            // Debug.Log($"{Breadboard.Target.GetTension(intensity)} {Breadboard.CircuitInfo.TargetValue}");
-
+            
+            PrintReport(circuitGraph, intensity);
+            
             if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
             {
                 if (!CheckTension(Breadboard.Target, intensity, Breadboard.CircuitInfo.TargetValue))
@@ -112,5 +103,48 @@ namespace Reconnect.Electronics.Breadboards
                 OnFailedExercise();
         }
         
+        // Debug function
+        private void PrintReport(Graph circuitGraph, double intensity)
+        {
+            using System.IO.StreamWriter writer = new System.IO.StreamWriter("CircuitReport.md");
+            writer.WriteLine("## State");
+            writer.WriteLine();
+            foreach (Vertex v in circuitGraph.Vertices)
+            {
+                writer.WriteLine($"- {v.GetType().Name} {v.Name}:");
+                foreach (Vertex adj in v.AdjacentComponents)
+                    writer.WriteLine($"  - {adj}");
+            }
+
+            writer.WriteLine();
+            writer.WriteLine("## Vertices");
+            writer.WriteLine();
+            writer.WriteLine($"**Number: {circuitGraph.Vertices.Count}**");
+            writer.WriteLine();
+            foreach (Vertex v in circuitGraph.Vertices)
+                writer.WriteLine($"- {v}");
+            writer.WriteLine();
+            writer.WriteLine("## Branches");
+            writer.WriteLine();
+            writer.WriteLine($"**Number: {circuitGraph.Branches.Count}**");
+            writer.WriteLine();
+            foreach (Branch b in circuitGraph.Branches)
+            {
+                writer.WriteLine(
+                    $"- {b.Resistance:0.##} Ohms from {b.StartNode} to {b.EndNode}");
+                foreach (var c in b.Components)
+                    writer.WriteLine($"  - {c}");
+            }
+
+            writer.WriteLine();
+            writer.WriteLine("## Result");
+            writer.WriteLine();
+            writer.WriteLine($"- Actual intensity: {intensity:0.##} A");
+            writer.WriteLine($"- Actual tension: {Breadboard.Target.GetTension(intensity):0.##} V");
+            var tVal = Breadboard.CircuitInfo.TargetValue;
+            writer.WriteLine($"- Expected tension: {tVal:0.##} V");
+            writer.WriteLine($"- Actual percentage: {Math.Abs(Breadboard.Target.GetTension(intensity) - tVal) / tVal * 100:0.##}%");
+            writer.WriteLine($"- Tolerance: {Breadboard.CircuitInfo.TargetTolerance * 100:0.##}%");
+        }
     }
 }
