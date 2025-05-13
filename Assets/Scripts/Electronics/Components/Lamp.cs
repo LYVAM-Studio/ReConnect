@@ -5,14 +5,14 @@ namespace Reconnect.Electronics.Components
 {
     public class Lamp : Resistor
     {
-        public LightBulb LightBulb { get; set; }
+        private LightBulb LightBulb { get; set; }
 
-        public Lamp(string name, double resistance, LightBulb lightBulb) : base(name, resistance)
+        public Lamp(string name, uint resistance, LightBulb lightBulb) : base(name, resistance)
         {
             LightBulb = lightBulb;
         }
 
-        public Lamp(string name, List<Vertex> adjacentComponents, double resistance, LightBulb lightBulb) : base(name, adjacentComponents, resistance)
+        public Lamp(string name, List<Vertex> adjacentComponents, uint resistance, LightBulb lightBulb) : base(name, adjacentComponents, resistance)
         {
             LightBulb = lightBulb;
         }
