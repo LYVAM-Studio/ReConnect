@@ -65,7 +65,7 @@ namespace Reconnect.Electronics.Breadboards
             circuitGraph.DefineBranches();
             double intensity = circuitGraph.GetGlobalIntensity();
             
-            PrintReport(circuitGraph, intensity);
+            // WriteReport(circuitGraph, intensity);
             
             if (Breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
             {
@@ -104,9 +104,9 @@ namespace Reconnect.Electronics.Breadboards
         }
         
         // Debug function
-        private void PrintReport(Graph circuitGraph, double intensity)
+        private void WriteReport(Graph circuitGraph, double intensity, string path = "CircuitReport.md")
         {
-            using System.IO.StreamWriter writer = new System.IO.StreamWriter("CircuitReport.md");
+            using System.IO.StreamWriter writer = new System.IO.StreamWriter(path);
             writer.WriteLine("## State");
             writer.WriteLine();
             foreach (Vertex v in circuitGraph.Vertices)
