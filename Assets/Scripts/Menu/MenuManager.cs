@@ -14,7 +14,7 @@ namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause }
+        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons }
         public enum PlayMode { Single, MultiHost, MultiServer }
         
         public static MenuManager Instance;
@@ -28,6 +28,7 @@ namespace Reconnect.Menu
         public GameObject multiplayerMenu;
         public GameObject settingsMenu;
         public GameObject pauseMenu;
+        public GameObject lessonsMenu;
 
         public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
         public TextMeshProUGUI errorBannerText;        // Error message text mesh
@@ -52,6 +53,7 @@ namespace Reconnect.Menu
                 multiplayerMenu.SetActive(value is MenuState.Multiplayer);
                 settingsMenu.SetActive(value is MenuState.Settings);
                 pauseMenu.SetActive(value is MenuState.Pause);
+                lessonsMenu.SetActive(value is MenuState.Lessons);
                 _currentMenu = value;
             }
         }
@@ -67,7 +69,7 @@ namespace Reconnect.Menu
             
             _controls = new PlayerControls();
             _controls.Menu.Esc.performed += OnEscPressed;
-            
+            _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
             CurrentMenu = MenuState.Main;
         }
         
@@ -99,10 +101,27 @@ namespace Reconnect.Menu
                     CurrentMenu = MenuState.Pause;
                     break;
                 case MenuState.Pause:
-                    ClosePauseMenu();
+                    CloseMenu();
+                    break;
+                case MenuState.Lessons:
+                    CloseMenu();
                     break;
                 default:
                     CurrentMenu = MenuState.Pause;
+                    break;
+            }
+        }
+        
+        private void OnToggleLessonsMenu(InputAction.CallbackContext ctx)
+        {
+            switch (CurrentMenu)
+            {
+                case MenuState.None:
+                    SetLock(true);
+                    CurrentMenu = MenuState.Lessons;
+                    break;
+                case MenuState.Lessons:
+                    CloseMenu();
                     break;
             }
         }
@@ -158,7 +177,7 @@ namespace Reconnect.Menu
             CurrentMenu = MenuState.Settings;
         }
         
-        public void ClosePauseMenu()
+        public void CloseMenu()
         {
             SetLock(false);
             CurrentMenu = MenuState.None;
