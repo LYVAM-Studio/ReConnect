@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Reconnect.Utils;
@@ -9,25 +10,44 @@ namespace Reconnect.Pathfinding
 {
     public class AggressiveMob : MonoBehaviour
     {
+        [SerializeField] private float maxWaitingTime = 15f;
+        [SerializeField] private float minWaitingTime = 5f;
         private NavMeshAgent _agent;
         private List<Transform> _playersInRange = new List<Transform>();
-
+        private bool _isWaiting;
+        
         private void Start()
         {
             if (!TryGetComponent(out _agent))
                 throw new ComponentNotFoundException("No NavMeshAgent component has been found on this mob.");
+            SetDestination();
+        }
+        
+        private IEnumerator PauseForSeconds(float seconds)
+        {
+            _isWaiting = true;
+            yield return new WaitForSeconds(seconds);
+            _isWaiting = false;
+            SetDestination();
         }
 
+        private void SetDestination()
+        {
+            _agent.SetDestination(transform.position + new Vector3(Random.Range(-30, 30), 0, Random.Range(-30, 30)));
+        }
+        
         private void Update()
         {
             var closestPlayerTransform = GetClosestPlayerTransform();
             if (closestPlayerTransform is not null)
             {
-                _agent.SetDestination(closestPlayerTransform.position); 
+                _agent.SetDestination(closestPlayerTransform.position);
+                _agent.speed = 4f;
             }
-            else if (!_agent.hasPath || _agent.remainingDistance <= 3)
+            else if (_agent.remainingDistance <= 3 && !_isWaiting)
             {
-                _agent.SetDestination(transform.position + new Vector3(Random.Range(-30, 30), 0, Random.Range(-30, 30)));
+                _agent.speed = 2f;
+                StartCoroutine(PauseForSeconds(Random.Range(minWaitingTime, maxWaitingTime)));
             }
         }
         
@@ -35,6 +55,11 @@ namespace Reconnect.Pathfinding
         {
             if (other.CompareTag("Player"))
             {
+                if (_isWaiting)
+                {
+                    StopCoroutine(nameof(PauseForSeconds));
+                    _isWaiting = false;
+                }
                 _playersInRange.Add(other.transform);
                 _agent.SetDestination(GetClosestPlayerTransform().position);
             }
