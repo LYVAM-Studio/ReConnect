@@ -167,7 +167,7 @@ namespace Reconnect.Electronics.Breadboards
             if (!resistorGameObj.TryGetComponent(out ResistorColorManager resistorColor))
                 throw new ComponentNotFoundException(
                     "The resistor prefab clone does not contain any ResistorColorManager component.");
-            resistorColor.ResistanceValue =  resistance;
+            resistorColor.ResistanceValue = resistance;
             resistorColor.Tolerance = tolerance;
             resistorColor.UpdateBandColors();
             var inner = new Resistor(name, resistance);
