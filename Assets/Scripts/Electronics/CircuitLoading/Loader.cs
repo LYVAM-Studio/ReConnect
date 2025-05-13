@@ -187,7 +187,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 }
                 else if (type == "resistor")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
+                    uint resistance = uint.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     float tolerance = 5f;
                     if (YamlTryGetScalarValue(component.Children, "tolerance", out string toleranceValue)
                         && !float.TryParse(toleranceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out tolerance))
@@ -203,10 +203,9 @@ namespace Reconnect.Electronics.CircuitLoading
                 }
                 else if (type == "lamp")
                 {
-                    float resistance = float.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
-                    float nominalTension = float.Parse(YamlGetScalarValue(component.Children, "nominal-tension"), CultureInfo.InvariantCulture);
+                    uint resistance = uint.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
-                    Lamp lamp = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, nominalTension, isLocked);
+                    Lamp lamp = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
                     if (isTarget) 
                     {
                         if (breadboard.Target is not null)
