@@ -34,7 +34,8 @@ public class ItemSlot : MonoBehaviour, IPointerClickHandler
     {
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            MenuManager.Instance.OpenImageInViewer(itemSprite);
+            if (isFull)
+                MenuManager.Instance.OpenImageInViewer(itemSprite);
         }
     }
 }
