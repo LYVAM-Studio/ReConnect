@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Mirror;
+using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
 using TMPro;
@@ -14,7 +15,7 @@ namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons }
+        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons, ImageViewer }
         public enum PlayMode { Single, MultiHost, MultiServer }
         
         public static MenuManager Instance;
@@ -29,6 +30,7 @@ namespace Reconnect.Menu
         public GameObject settingsMenu;
         public GameObject pauseMenu;
         public GameObject lessonsMenu;
+        public GameObject imageViewerMenu;
 
         public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
         public TextMeshProUGUI errorBannerText;        // Error message text mesh
@@ -54,6 +56,7 @@ namespace Reconnect.Menu
                 settingsMenu.SetActive(value is MenuState.Settings);
                 pauseMenu.SetActive(value is MenuState.Pause);
                 lessonsMenu.SetActive(value is MenuState.Lessons);
+                imageViewerMenu.SetActive(value is MenuState.ImageViewer);
                 _currentMenu = value;
             }
         }
@@ -106,6 +109,9 @@ namespace Reconnect.Menu
                 case MenuState.Lessons:
                     CloseMenu();
                     break;
+                case MenuState.ImageViewer:
+                    CurrentMenu = MenuState.Lessons;
+                    break;
                 default:
                     CurrentMenu = MenuState.Pause;
                     break;
@@ -150,6 +156,18 @@ namespace Reconnect.Menu
                 movements.isLocked = false;
                 FreeLookCamera.InputAxisController.enabled = true;
             }
+        }
+
+        public void OpenImageInViewer(Sprite sprite)
+        {
+            CurrentMenu = MenuState.ImageViewer;
+            ImageViewerManager.Instance.LoadImage(sprite);
+        }
+        
+        public void CloseImageViewer()
+        {
+            CurrentMenu = MenuState.Lessons;
+            ImageViewerManager.Instance.CloseImage();
         }
         
         public void SetMenuToMain()
