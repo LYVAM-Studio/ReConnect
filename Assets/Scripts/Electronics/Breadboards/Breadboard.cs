@@ -157,7 +157,7 @@ namespace Reconnect.Electronics.Breadboards
             Wires.Add(wireScript);
         }
         
-        public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float tolerance, bool isLocked = false)
+        public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked = false)
         {
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/ResistorPrefab"), transform.parent, false);
             resistorGameObj.name = $"ResistorPrefab ({name})";
@@ -184,7 +184,7 @@ namespace Reconnect.Electronics.Breadboards
             return inner;
         }
         
-        public Lamp CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, float resistance, float nominalTension, bool isLocked = false)
+        public Lamp CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, bool isLocked = false)
         {
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";

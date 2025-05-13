@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Mirror;
+using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
 using TMPro;
@@ -14,7 +15,7 @@ namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause }
+        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons, ImageViewer }
         public enum PlayMode { Single, MultiHost, MultiServer }
         
         public static MenuManager Instance;
@@ -28,6 +29,8 @@ namespace Reconnect.Menu
         public GameObject multiplayerMenu;
         public GameObject settingsMenu;
         public GameObject pauseMenu;
+        public GameObject lessonsMenu;
+        public GameObject imageViewerMenu;
 
         public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
         public TextMeshProUGUI errorBannerText;        // Error message text mesh
@@ -52,6 +55,8 @@ namespace Reconnect.Menu
                 multiplayerMenu.SetActive(value is MenuState.Multiplayer);
                 settingsMenu.SetActive(value is MenuState.Settings);
                 pauseMenu.SetActive(value is MenuState.Pause);
+                lessonsMenu.SetActive(value is MenuState.Lessons);
+                imageViewerMenu.SetActive(value is MenuState.ImageViewer);
                 _currentMenu = value;
             }
         }
@@ -67,7 +72,7 @@ namespace Reconnect.Menu
             
             _controls = new PlayerControls();
             _controls.Menu.Esc.performed += OnEscPressed;
-            
+            _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
             CurrentMenu = MenuState.Main;
         }
         
@@ -99,10 +104,30 @@ namespace Reconnect.Menu
                     CurrentMenu = MenuState.Pause;
                     break;
                 case MenuState.Pause:
-                    ClosePauseMenu();
+                    CloseMenu();
+                    break;
+                case MenuState.Lessons:
+                    CloseMenu();
+                    break;
+                case MenuState.ImageViewer:
+                    CurrentMenu = MenuState.Lessons;
                     break;
                 default:
                     CurrentMenu = MenuState.Pause;
+                    break;
+            }
+        }
+        
+        private void OnToggleLessonsMenu(InputAction.CallbackContext ctx)
+        {
+            switch (CurrentMenu)
+            {
+                case MenuState.None:
+                    SetLock(true);
+                    CurrentMenu = MenuState.Lessons;
+                    break;
+                case MenuState.Lessons:
+                    CloseMenu();
                     break;
             }
         }
@@ -132,6 +157,18 @@ namespace Reconnect.Menu
                 FreeLookCamera.InputAxisController.enabled = true;
             }
         }
+
+        public void OpenImageInViewer(Sprite sprite)
+        {
+            CurrentMenu = MenuState.ImageViewer;
+            ImageViewerManager.Instance.LoadImage(sprite);
+        }
+        
+        public void CloseImageViewer()
+        {
+            CurrentMenu = MenuState.Lessons;
+            ImageViewerManager.Instance.CloseImage();
+        }
         
         public void SetMenuToMain()
         {
@@ -158,7 +195,7 @@ namespace Reconnect.Menu
             CurrentMenu = MenuState.Settings;
         }
         
-        public void ClosePauseMenu()
+        public void CloseMenu()
         {
             SetLock(false);
             CurrentMenu = MenuState.None;
