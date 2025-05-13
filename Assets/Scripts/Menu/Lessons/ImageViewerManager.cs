@@ -13,7 +13,7 @@ namespace Reconnect.Menu.Lessons
         private void Awake()
         {
             if (Instance is not null)
-                throw new Exception("A MenuController has already been instantiated.");
+                throw new Exception("A ImageViewerManager has already been instantiated.");
             Instance = this;
             
             if (image is null)
