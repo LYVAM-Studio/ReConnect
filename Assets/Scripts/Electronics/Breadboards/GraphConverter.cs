@@ -21,22 +21,50 @@ namespace Reconnect.Electronics.Breadboards
             Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
             var graph = new Graph("Main graph", input, output, breadboard.Target);
             foreach (Vertex v in grid)
-            {
                 if (v is not null)
+                    graph.AddVertex(v);
+
+            foreach (var d in breadboard.Dipoles)
+                graph.AddVertex(d.Inner);
+
+            Clean(grid, graph);
+            
+            foreach (Vertex v in grid)
+            {
+                if (v is Vertex node && node.AdjacentComponents.Count > 2)
                 {
-                    if (v.AdjacentComponents.Count > 2)
-                        graph.AddVertex(v.ToNode());
-                    else
-                        graph.AddVertex(v);
+                    graph.Vertices.Remove(v);
+                    graph.AddVertex(v.ToNode());
                 }
             }
 
-            foreach (var d in breadboard.Dipoles)
-            {
-                graph.AddVertex(d.Inner);
-            }
-
             return graph;
+        }
+
+        private static void Clean(Vertex[,] grid, Graph graph)
+        {
+            bool changed = true;
+            while (changed)
+            {
+                changed = false;
+                for (int y = 0; y < 8; y++)
+                for (int x = 0; x < 8; x++)
+                {
+                    Vertex v = grid[y, x];
+                    if (v is not null)
+                    {
+                        if (v.AdjacentComponents.Count <= 1)
+                        {
+                            if (v.AdjacentComponents.Count == 1)
+                                Vertex.RemoveReciprocalAdjacent(v, v.AdjacentComponents[0]);
+
+                            graph.Vertices.Remove(v);
+                            grid[y, x] = null;
+                            changed = true;
+                        }
+                    }
+                }
+            }
         }
 
         private static void ClearInnerAdjacences(List<Dipole> dipoles)
