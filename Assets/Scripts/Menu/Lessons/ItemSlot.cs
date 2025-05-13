@@ -1,10 +1,12 @@
 using System;
+using Reconnect.Menu;
 using Reconnect.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemSlot : MonoBehaviour
+public class ItemSlot : MonoBehaviour, IPointerClickHandler
 {
     // ===== ITEM DATA =====
     public string itemName;
@@ -16,6 +18,7 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] private TMP_Text lessonNameText;
     [SerializeField] private Image lessonImage;
 
+
     public void AddItem(string itemName, Sprite sprite)
     {
         this.itemName = itemName;
@@ -25,5 +28,13 @@ public class ItemSlot : MonoBehaviour
         lessonNameText.text = itemName;
         lessonNamePanel.SetActive(true);
         lessonImage.sprite = itemSprite;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            MenuManager.Instance.OpenImageInViewer(itemSprite);
+        }
     }
 }
