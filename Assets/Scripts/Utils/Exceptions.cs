@@ -29,4 +29,11 @@ namespace Reconnect.Utils
         public InventoryFullException(string message) : base(message) { }
         public InventoryFullException(string message, Exception innerException) : base(message, innerException) { }
     }
+    
+    public class MissingSerializedFieldException: Exception
+    {
+        public MissingSerializedFieldException() { }
+        public MissingSerializedFieldException(string paramName) : base($"The field {paramName} is not serialized but it should be.") { }
+        public MissingSerializedFieldException(string paramName, Exception innerException) : base($"The field {paramName} is not serialized but it should be.", innerException) { }
+    }
 }
