@@ -12,7 +12,6 @@ components:
     y-pos: 5
     direction: s
     resistance: 250
-    nominal-tension: 120
     target: true
     locked: true
   - resistor:
