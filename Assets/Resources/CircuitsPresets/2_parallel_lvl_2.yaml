@@ -12,7 +12,6 @@ components:
     y-pos: 5
     direction: s
     resistance: 76
-    nominal-tension: 182.4
     target: true
     locked: true
   - wire:

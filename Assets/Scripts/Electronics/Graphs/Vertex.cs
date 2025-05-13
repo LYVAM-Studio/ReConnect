@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Reconnect.Electronics.Components;
 
@@ -27,6 +26,11 @@ namespace Reconnect.Electronics.Graphs
         {
             v1.AddAdjacent(v2);
             v2.AddAdjacent(v1);
+        }
+        public static void RemoveReciprocalAdjacent(Vertex v1, Vertex v2)
+        {
+            v1.RemoveAdjacent(v2);
+            v2.RemoveAdjacent(v1);
         }
         public void AddAdjacent(IEnumerable<Vertex> adjacentsList) => AdjacentComponents.AddRange(adjacentsList);
         public virtual int AdjacentCount() => AdjacentComponents.Count;
