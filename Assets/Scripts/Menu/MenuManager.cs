@@ -37,7 +37,7 @@ namespace Reconnect.Menu
         public ReconnectNetworkManager networkManager;
         public TMP_InputField serverAddress;
         
-        public Menu CurrentMenu { get; private set; }
+        public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
         public bool IsPlayerLocked { get; private set; }
         public PlayMode GameMode { get; private set; }
@@ -57,7 +57,7 @@ namespace Reconnect.Menu
             
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
-            SetMenuTo(Menu.Main, CursorState.Shown, forceClearHistory:true);
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
         }
         
         private void OnEnable()
@@ -82,51 +82,51 @@ namespace Reconnect.Menu
             {
                 BackToPreviousMenu();
             }
-            else if (CurrentMenu is Menu.None)
+            else if (CurrentMenuState is MenuState.None)
             {
                 LockPlayer();
-                SetMenuTo(Menu.Pause, CursorState.Shown);
+                SetMenuTo(MenuState.Pause, CursorState.Shown);
             }
-            else if (CurrentMenu is Menu.Main)
+            else if (CurrentMenuState is MenuState.Main)
             {
-                SetMenuTo(Menu.Quit, CursorState.Shown);
+                SetMenuTo(MenuState.Quit, CursorState.Shown);
             }
         }
         
         private void OnToggleLessonsMenu(InputAction.CallbackContext ctx)
         {
-            if (CurrentMenu is Menu.None)
+            if (CurrentMenuState is MenuState.None)
             {
                 LockPlayer();
-                SetMenuTo(Menu.Lessons, CursorState.Shown);
+                SetMenuTo(MenuState.Lessons, CursorState.Shown);
             }
-            else if (CurrentMenu is Menu.Lessons)
+            else if (CurrentMenuState is MenuState.Lessons)
             {
                 UnLockPlayer();
                 BackToPreviousMenu();
             }
         }
         
-        private void SetMenuTo(Menu menu, CursorState cursorState, bool forceClearHistory = false)
+        public void SetMenuTo(MenuState menu, CursorState cursorState, bool forceClearHistory = false)
         {
             if (forceClearHistory)
                 _history.Clear();
             else
-                _history.Push(CurrentMenu, CurrentCursorState);
+                _history.Push(CurrentMenuState, CurrentCursorState);
                 
-            mainMenu.SetActive(menu is Menu.Main);
-            singleplayerMenu.SetActive(menu is Menu.Singleplayer);
-            multiplayerMenu.SetActive(menu is Menu.Multiplayer);
-            settingsMenu.SetActive(menu is Menu.Settings);
-            pauseMenu.SetActive(menu is Menu.Pause);
-            lessonsMenu.SetActive(menu is Menu.Lessons);
-            imageViewerMenu.SetActive(menu is Menu.ImageViewer);
-            knockOutMenu.SetActive(menu is Menu.KnockOut);
-            connectionFailed.SetActive(menu is Menu.ConnectionFailed);
-            quitMenu.SetActive(menu is Menu.Quit);
-            BreadBoardUI?.SetActive(menu is Menu.BreadBoard);
+            mainMenu.SetActive(menu is MenuState.Main);
+            singleplayerMenu.SetActive(menu is MenuState.Singleplayer);
+            multiplayerMenu.SetActive(menu is MenuState.Multiplayer);
+            settingsMenu.SetActive(menu is MenuState.Settings);
+            pauseMenu.SetActive(menu is MenuState.Pause);
+            lessonsMenu.SetActive(menu is MenuState.Lessons);
+            imageViewerMenu.SetActive(menu is MenuState.ImageViewer);
+            knockOutMenu.SetActive(menu is MenuState.KnockOut);
+            connectionFailed.SetActive(menu is MenuState.ConnectionFailed);
+            quitMenu.SetActive(menu is MenuState.Quit);
+            BreadBoardUI?.SetActive(menu is MenuState.BreadBoard);
             
-            CurrentMenu = menu;
+            CurrentMenuState = menu;
             
             if (cursorState is CursorState.Shown)
             {
@@ -147,19 +147,19 @@ namespace Reconnect.Menu
             if (_history.IsEmpty())
                 throw new ArgumentException("Cannot go back with an empty history");
 
-            (CurrentMenu, CurrentCursorState) = _history.Pop();
+            (CurrentMenuState, CurrentCursorState) = _history.Pop();
             
-            mainMenu.SetActive(CurrentMenu is Menu.Main);
-            singleplayerMenu.SetActive(CurrentMenu is Menu.Singleplayer);
-            multiplayerMenu.SetActive(CurrentMenu is Menu.Multiplayer);
-            settingsMenu.SetActive(CurrentMenu is Menu.Settings);
-            pauseMenu.SetActive(CurrentMenu is Menu.Pause);
-            lessonsMenu.SetActive(CurrentMenu is Menu.Lessons);
-            imageViewerMenu.SetActive(CurrentMenu is Menu.ImageViewer);
-            knockOutMenu.SetActive(CurrentMenu is Menu.KnockOut);
-            connectionFailed.SetActive(CurrentMenu is Menu.ConnectionFailed);
-            quitMenu.SetActive(CurrentMenu is Menu.Quit);
-            BreadBoardUI?.SetActive(CurrentMenu is Menu.BreadBoard);
+            mainMenu.SetActive(CurrentMenuState is MenuState.Main);
+            singleplayerMenu.SetActive(CurrentMenuState is MenuState.Singleplayer);
+            multiplayerMenu.SetActive(CurrentMenuState is MenuState.Multiplayer);
+            settingsMenu.SetActive(CurrentMenuState is MenuState.Settings);
+            pauseMenu.SetActive(CurrentMenuState is MenuState.Pause);
+            lessonsMenu.SetActive(CurrentMenuState is MenuState.Lessons);
+            imageViewerMenu.SetActive(CurrentMenuState is MenuState.ImageViewer);
+            knockOutMenu.SetActive(CurrentMenuState is MenuState.KnockOut);
+            connectionFailed.SetActive(CurrentMenuState is MenuState.ConnectionFailed);
+            quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
+            BreadBoardUI?.SetActive(CurrentMenuState is MenuState.BreadBoard);
             
             if (CurrentCursorState is CursorState.Shown)
             {
@@ -172,7 +172,7 @@ namespace Reconnect.Menu
                 Cursor.lockState = CursorLockMode.Locked;
             }
             
-            if (CurrentMenu is Menu.None)
+            if (CurrentMenuState is MenuState.None)
                 UnLockPlayer();
         }
 
@@ -199,7 +199,7 @@ namespace Reconnect.Menu
         
         public void OpenImageInViewer(Sprite sprite)
         {
-            SetMenuTo(Menu.ImageViewer, CursorState.Shown);
+            SetMenuTo(MenuState.ImageViewer, CursorState.Shown);
             ImageViewerManager.Instance.LoadImage(sprite);
         }
         
@@ -212,7 +212,7 @@ namespace Reconnect.Menu
         public IEnumerator KnockOutForSeconds(uint seconds)
         {
             // the player is locked from the call
-            SetMenuTo(Menu.KnockOut, CursorState.Locked);
+            SetMenuTo(MenuState.KnockOut, CursorState.Locked);
             for (uint i = seconds; i > 0; i--)
             {
                 timerText.text = i.ToString();
@@ -225,14 +225,14 @@ namespace Reconnect.Menu
 
         public void LockPlayer() => LockPlayer(true);
         public void UnLockPlayer() => LockPlayer(false);
-        public void SetMenuToSingleplayer() => SetMenuTo(Menu.Singleplayer, CursorState.Shown);
-        public void SetMenuToMultiplayer() => SetMenuTo(Menu.Multiplayer, CursorState.Shown);
-        public void SetMenuToSettings() => SetMenuTo(Menu.Settings, CursorState.Shown);
-        public void SetMenuToQuit() => SetMenuTo(Menu.Quit, CursorState.Shown);
+        public void SetMenuToSingleplayer() => SetMenuTo(MenuState.Singleplayer, CursorState.Shown);
+        public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
+        public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
+        public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
         
         public void RunSingleplayerMode()
         {
-            SetMenuTo(Menu.None, CursorState.Locked, forceClearHistory: true);
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.Single;
             IsInGame = true;
             networkManager.maxConnections = 1;
@@ -241,7 +241,7 @@ namespace Reconnect.Menu
         
         public void RunHostMode()
         {
-            SetMenuTo(Menu.None, CursorState.Locked, forceClearHistory: true);
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.MultiHost;
             IsInGame = true;
             networkManager.StartHost();
@@ -255,19 +255,19 @@ namespace Reconnect.Menu
                 bool success = await networkManager.StartClientAsync();
                 if (success)
                 {
-                    SetMenuTo(Menu.None, CursorState.Locked, forceClearHistory: true);
+                    SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
                     GameMode = PlayMode.MultiServer;
                     IsInGame = true;
                 }
                 else
                 {
-                    SetMenuTo(Menu.ConnectionFailed, CursorState.Shown);
+                    SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
                 }
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"An exception has been thrown while trying to connect:\n{e}");
-                SetMenuTo(Menu.ConnectionFailed, CursorState.Shown);
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
             }
         }
 
@@ -284,7 +284,7 @@ namespace Reconnect.Menu
                 currentCam.Priority = 0;
             FreeLookCamera.InputAxisController.enabled = true;
             
-            SetMenuTo(Menu.Main, CursorState.Shown, forceClearHistory:true);
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
             IsInGame = false;
         }
         

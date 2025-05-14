@@ -4,13 +4,13 @@ namespace Reconnect.Menu
 {
     public class History
     {
-        private readonly Stack<(Menu, CursorState)> _stack = new();
+        private readonly Stack<(MenuState, CursorState)> _stack = new();
 
         public bool IsEmpty() => _stack.Count == 0;
 
-        public (Menu, CursorState) Pop() => _stack.Pop();
+        public (MenuState, CursorState) Pop() => _stack.Pop();
         
-        public void Push(Menu menu, CursorState cursorState) => _stack.Push((menu, cursorState));
+        public void Push(MenuState menu, CursorState cursorState) => _stack.Push((menu, cursorState));
 
         public void Clear() => _stack.Clear();
     }
