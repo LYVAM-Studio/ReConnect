@@ -9,7 +9,6 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace Reconnect.Menu
 {
@@ -76,6 +75,9 @@ namespace Reconnect.Menu
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
             CurrentMenu = MenuState.Main;
+
+            _previousCursorVisibility = false;
+            _previousCursorLockMode = CursorLockMode.Locked;
         }
         
         private void OnEnable()
@@ -103,7 +105,8 @@ namespace Reconnect.Menu
             else switch (CurrentMenu)
             {
                 case MenuState.None:
-                    SetLock(true);
+                    SetLockPointer(false);
+                    SetLockMovement(true);
                     CurrentMenu = MenuState.Pause;
                     break;
                 case MenuState.Pause:
@@ -129,7 +132,8 @@ namespace Reconnect.Menu
             switch (CurrentMenu)
             {
                 case MenuState.None:
-                    SetLock(true);
+                    SetLockPointer(true);
+                    SetLockMovement(true);
                     CurrentMenu = MenuState.Lessons;
                     break;
                 case MenuState.Lessons:
@@ -138,7 +142,7 @@ namespace Reconnect.Menu
             }
         }
 
-        public void LockMovement(bool value)
+        public void SetLockMovement(bool value)
         {
             if (value)
             {
@@ -158,21 +162,20 @@ namespace Reconnect.Menu
             }
         }
         
-        private void SetLock(bool value)
+        private void SetLockPointer(bool value)
         {
             if (value)
+            {
+                Cursor.visible = _previousCursorVisibility;
+                Cursor.lockState = _previousCursorLockMode;
+            }
+            else
             {
                 _previousCursorVisibility = Cursor.visible;
                 _previousCursorLockMode = Cursor.lockState;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
             }
-            else
-            {
-                Cursor.visible = _previousCursorVisibility;
-                Cursor.lockState = _previousCursorLockMode;
-            }
-            LockMovement(value);
         }
 
         public void OpenImageInViewer(Sprite sprite)
@@ -190,11 +193,12 @@ namespace Reconnect.Menu
         public IEnumerator KnockOutForSeconds(uint seconds)
         {
             CurrentMenu = MenuState.KnockOut;
+            SetLockMovement(true);
+            SetLockPointer(true);
             yield return KnockOutMenuManager.Instance.KnockOutForSeconds(seconds, () =>
             {
-                CloseMenu();
-                LockMovement(true);
-                
+                CurrentMenu = MenuState.None;
+                SetLockPointer(false);
             });
         }
         
@@ -225,7 +229,8 @@ namespace Reconnect.Menu
         
         public void CloseMenu()
         {
-            SetLock(false);
+            SetLockPointer(false);
+            SetLockMovement(false);
             CurrentMenu = MenuState.None;
         }
 
