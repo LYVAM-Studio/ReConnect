@@ -1040,6 +1040,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "CheatCodes",
+            "id": "1a0c6638-b9d0-41c5-8755-47a7ab1844b9",
+            "actions": [
+                {
+                    "name": "KnockOut",
+                    "type": "Button",
+                    "id": "8fdb0d78-a447-478b-adb4-4d7dd86cad4f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PopulateLessons",
+                    "type": "Button",
+                    "id": "2a2a7936-958c-4f53-8b38-613560740853",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "790f57db-b2b2-4d65-850a-aab1e2e63bcf",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "KnockOut",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8c45f368-033e-40e4-acf9-b61852388ea1",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "PopulateLessons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

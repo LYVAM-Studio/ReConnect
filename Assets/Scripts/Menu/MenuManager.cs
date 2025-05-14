@@ -15,7 +15,7 @@ namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons, ImageViewer }
+        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons, ImageViewer, KnockOut }
         public enum PlayMode { Single, MultiHost, MultiServer }
         
         public static MenuManager Instance;
@@ -31,6 +31,7 @@ namespace Reconnect.Menu
         public GameObject pauseMenu;
         public GameObject lessonsMenu;
         public GameObject imageViewerMenu;
+        public GameObject knockOutMenu;
 
         public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
         public TextMeshProUGUI errorBannerText;        // Error message text mesh
@@ -57,6 +58,7 @@ namespace Reconnect.Menu
                 pauseMenu.SetActive(value is MenuState.Pause);
                 lessonsMenu.SetActive(value is MenuState.Lessons);
                 imageViewerMenu.SetActive(value is MenuState.ImageViewer);
+                knockOutMenu.SetActive(value is MenuState.KnockOut);
                 _currentMenu = value;
             }
         }
@@ -89,6 +91,7 @@ namespace Reconnect.Menu
         private void OnDestroy()
         {
             _controls.Menu.Esc.performed -= OnEscPressed;
+            _controls.Menu.Lessons.performed -= OnToggleLessonsMenu;
         }
 
         private void OnEscPressed(InputAction.CallbackContext ctx)
@@ -112,6 +115,9 @@ namespace Reconnect.Menu
                 case MenuState.ImageViewer:
                     CurrentMenu = MenuState.Lessons;
                     break;
+                case MenuState.KnockOut:
+                    // Do nothing
+                    break;
                 default:
                     CurrentMenu = MenuState.Pause;
                     break;
@@ -131,6 +137,26 @@ namespace Reconnect.Menu
                     break;
             }
         }
+
+        public void LockMovement(bool value)
+        {
+            if (value)
+            {
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
+                    throw new ComponentNotFoundException(
+                        "No PlayerMovementsNetwork component has been found on the local player.");
+                movements.isLocked = true;
+                FreeLookCamera.InputAxisController.enabled = false;
+            }
+            else
+            {
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
+                    throw new ComponentNotFoundException(
+                        "No PlayerMovementsNetwork component has been found on the local player.");
+                movements.isLocked = false;
+                FreeLookCamera.InputAxisController.enabled = true;
+            }
+        }
         
         private void SetLock(bool value)
         {
@@ -140,22 +166,13 @@ namespace Reconnect.Menu
                 _previousCursorLockMode = Cursor.lockState;
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
-                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
-                    throw new ComponentNotFoundException(
-                        "No PlayerMovementsNetwork component has been found on the local player.");
-                movements.isLocked = true;
-                FreeLookCamera.InputAxisController.enabled = false;
             }
             else
             {
                 Cursor.visible = _previousCursorVisibility;
                 Cursor.lockState = _previousCursorLockMode;
-                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
-                    throw new ComponentNotFoundException(
-                        "No PlayerMovementsNetwork component has been found on the local player.");
-                movements.isLocked = false;
-                FreeLookCamera.InputAxisController.enabled = true;
             }
+            LockMovement(value);
         }
 
         public void OpenImageInViewer(Sprite sprite)
@@ -168,6 +185,17 @@ namespace Reconnect.Menu
         {
             CurrentMenu = MenuState.Lessons;
             ImageViewerManager.Instance.CloseImage();
+        }
+
+        public IEnumerator KnockOutForSeconds(uint seconds)
+        {
+            CurrentMenu = MenuState.KnockOut;
+            yield return KnockOutMenuManager.Instance.KnockOutForSeconds(seconds, () =>
+            {
+                CloseMenu();
+                LockMovement(true);
+                
+            });
         }
         
         public void SetMenuToMain()
