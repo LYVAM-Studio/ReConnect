@@ -50,11 +50,10 @@ namespace Reconnect.Player
         // KO
         [NonSerialized] public bool IsKo;
         private int _isKoHash;
-        private Coroutine _coroutine;
         
         // internal values
         private float _turnSmoothVelocity;
-       
+        private bool _wasLockedBeforeKo;
 
         // imported components
         
@@ -333,9 +332,10 @@ namespace Reconnect.Player
 
         private IEnumerator KoDelay()
         {
+            IsKo = true;
+            _wasLockedBeforeKo = isLocked;
             isLocked = true;
             FreeLookCamera.InputAxisController.enabled = false;
-            IsKo = true;
             _animator.SetBool(_isKoHash, true);
             yield return MenuManager.Instance.KnockOutForSeconds(10);
             _animator.SetBool(_isKoHash, false);
@@ -343,14 +343,14 @@ namespace Reconnect.Player
 
         public void OnEndKo()
         {
-            MenuManager.Instance.SetLockMovement(false);
+            isLocked = _wasLockedBeforeKo;
+            FreeLookCamera.InputAxisController.enabled = !_wasLockedBeforeKo;
             IsKo = false;
         }
         public void KnockOut()
         {
-            if (_coroutine is not null)
-                StopCoroutine(_coroutine);
-            _coroutine = StartCoroutine(KoDelay());
+            if (!IsKo)
+                StartCoroutine(KoDelay());
         }
     }
 }
