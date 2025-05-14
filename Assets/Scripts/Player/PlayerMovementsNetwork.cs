@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Reconnect.Menu;
 using Reconnect.Utils;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -47,7 +49,7 @@ namespace Reconnect.Player
         private int _isRunningHash;
 
         // KO
-        public bool isKO;
+        [NonSerialized] public bool IsKo;
         private int _isKoHash;
         private Coroutine _coroutine;
         
@@ -334,7 +336,7 @@ namespace Reconnect.Player
         {
             isLocked = true;
             FreeLookCamera.InputAxisController.enabled = false;
-            isKO = true;
+            IsKo = true;
             _animator.SetBool(_isKoHash, true);
             yield return MenuManager.Instance.KnockOutForSeconds(10);
             _animator.SetBool(_isKoHash, false);
@@ -342,8 +344,8 @@ namespace Reconnect.Player
 
         public void OnEndKo()
         {
-            MenuManager.Instance.LockMovement(false);
-            isKO = false;
+            MenuManager.Instance.SetLockMovement(false);
+            IsKo = false;
         }
         public void KnockOut()
         {

@@ -1,6 +1,4 @@
 using Mirror;
-using Reconnect;
-using Reconnect.Menu;
 using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -9,7 +7,7 @@ using UnityEngine.InputSystem;
 
 namespace Reconnect.CheatCodes
 {
-    public class CheatCodes : MonoBehaviour
+    public class CheatCodesManager : MonoBehaviour
     {
 
         private PlayerControls _controls;
@@ -36,12 +34,12 @@ namespace Reconnect.CheatCodes
         private void OnDestroy()
         {
             _controls.CheatCodes.KnockOut.performed -= OnKnockOut;
-            _controls.CheatCodes.PopulateLessons.performed += OnPopulateLessons;
+            _controls.CheatCodes.PopulateLessons.performed -= OnPopulateLessons;
         }
 
         public void OnKnockOut(InputAction.CallbackContext ctx)
         {
-            if (!NetworkClient.localPlayer.gameObject.TryGetComponent<PlayerMovementsNetwork>(out PlayerMovementsNetwork playerMovements))
+            if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerMovementsNetwork playerMovements))
                 throw new ComponentNotFoundException(
                     "No PlayerMovementsNetwork found on the localPlayer gameObject");
             playerMovements.KnockOut();
