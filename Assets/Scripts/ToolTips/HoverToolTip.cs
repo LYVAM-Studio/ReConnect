@@ -8,13 +8,24 @@ namespace Reconnect.ToolTips
 {
     public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler
     {
+        [SerializeField]
         [TextArea(1, 3)]
-        public string text;
+        private string text;
 
         public Size toolTipSize;
 
         public float timeBeforeAppearing = 0.5f;
 
+        public string Text
+        {
+            get => text;
+            set
+            {
+                text = value;
+                ToolTipManager.Instance.SetText(GetHashCode(), value);
+            }
+        }
+        
         private Coroutine _coroutine;
         private bool _isShown;
         

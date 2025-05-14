@@ -185,7 +185,7 @@ namespace Reconnect.Electronics.Breadboards
             if (!resistorGameObj.TryGetComponent(out HoverToolTip tooltipScript))
                 throw new ComponentNotFoundException(
                     "The resistor prefab clone does not contain any TooltipScript component.");
-            tooltipScript.text = $"{resistance} Ω";
+            tooltipScript.Text = $"{resistance} Ω";
             return inner;
         }
         
