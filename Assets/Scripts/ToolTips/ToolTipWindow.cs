@@ -5,13 +5,10 @@ namespace Reconnect.ToolTips
 {
     public class ToolTipWindow : MonoBehaviour
     {
-        public GameObject canvas;
-        public RectTransform position;
+        [SerializeField]
+        private Size size;
         public TMP_Text text;
-
-        private void Awake()
-        {
-            canvas.SetActive(false);
-        }
+        
+        public Size Size => size;
     }
 }

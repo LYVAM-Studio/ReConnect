@@ -182,7 +182,7 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.IsLocked = isLocked;
             dipoleScript.Inner = inner;
             Dipoles.Add(dipoleScript);
-            if (!resistorGameObj.TryGetComponent(out ToolTip tooltipScript))
+            if (!resistorGameObj.TryGetComponent(out HoverToolTip tooltipScript))
                 throw new ComponentNotFoundException(
                     "The resistor prefab clone does not contain any TooltipScript component.");
             tooltipScript.text = $"{resistance} Ω";
