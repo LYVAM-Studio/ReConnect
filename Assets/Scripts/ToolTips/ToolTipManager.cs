@@ -80,12 +80,13 @@ namespace Reconnect.ToolTips
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
             
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvas.transform as RectTransform,
-                // Input.mousePosition,
-                Mouse.current.position.ReadValue(),
-                canvas.worldCamera,
-                out Vector2 mousePos);
+            // RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            //     canvas.transform as RectTransform,
+            //     Mouse.current.position.ReadValue(),
+            //     canvas.worldCamera,
+            //     out Vector2 mousePos);
+
+            Vector2 mousePos = Mouse.current.position.ReadValue();
 
             mousePos += tooltip.Size switch
             {
