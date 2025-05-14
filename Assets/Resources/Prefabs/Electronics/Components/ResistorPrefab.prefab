@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 3888570983474414586}
   - component: {fileID: -9155743620201611028}
   - component: {fileID: 7784146671310091854}
+  - component: {fileID: 6191513942975270796}
   m_Layer: 0
   m_Name: ResistorPrefab
   m_TagString: Untagged
@@ -144,6 +145,20 @@ MonoBehaviour:
   band2: {fileID: 1841871923851634568}
   band3: {fileID: 4083629235691250382}
   band4: {fileID: 5260158800369712920}
+--- !u!114 &6191513942975270796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530555684961982742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 913e76cb19b54c19849521f080600a36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 
+  timeBeforeAppearing: 0.5
 --- !u!1 &1841871923851634568
 GameObject:
   m_ObjectHideFlags: 0
