@@ -157,7 +157,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 913e76cb19b54c19849521f080600a36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: 
+  text: Will be replaced
+  toolTipSize: 0
   timeBeforeAppearing: 0.5
 --- !u!1 &1841871923851634568
 GameObject:
