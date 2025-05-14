@@ -13,5 +13,8 @@ namespace Reconnect.Menu
         public void Push(MenuState menu, CursorState cursorState) => _stack.Push((menu, cursorState));
 
         public void Clear() => _stack.Clear();
+
+        public override string ToString()
+            => string.Join("; ", _stack);
     }
 }

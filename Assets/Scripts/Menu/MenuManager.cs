@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Mirror;
+using Reconnect.Electronics.Breadboards;
 using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -30,7 +31,7 @@ namespace Reconnect.Menu
         [VolumeComponent.Indent] public TMP_Text timerText;
         public GameObject connectionFailed;
         public GameObject quitMenu;
-        [NonSerialized] public GameObject BreadBoardUI;
+        [NonSerialized] public BreadboardHolder BreadBoardHolder;
         
         [Header("Multiplayer parameters")]
         
@@ -59,7 +60,13 @@ namespace Reconnect.Menu
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
             SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
         }
-        
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+                Debug.Log($"{_history}");
+        }
+
         private void OnEnable()
         {
             _controls.Enable();
@@ -78,18 +85,31 @@ namespace Reconnect.Menu
 
         private void OnEscPressed(InputAction.CallbackContext ctx)
         {
+            if (CurrentMenuState is MenuState.KnockOut) return;
+            
             if (!_history.IsEmpty())
             {
+                if (CurrentMenuState is MenuState.BreadBoard)
+                    BreadBoardHolder?.Activate(false);
+                
                 BackToPreviousMenu();
             }
-            else if (CurrentMenuState is MenuState.None)
+            else
             {
-                LockPlayer();
-                SetMenuTo(MenuState.Pause, CursorState.Shown);
-            }
-            else if (CurrentMenuState is MenuState.Main)
-            {
-                SetMenuTo(MenuState.Quit, CursorState.Shown);
+                if (CurrentMenuState is MenuState.None)
+                {
+                    LockPlayer();
+                    SetMenuTo(MenuState.Pause, CursorState.Shown);
+                }
+                else if (CurrentMenuState is MenuState.Main)
+                {
+                    SetMenuTo(MenuState.Quit, CursorState.Shown);
+                }
+                else
+                {
+                    throw new UnreachableCaseException(
+                        $"Menu {CurrentMenuState} should not be active with an empty history.");
+                }
             }
         }
         
@@ -124,7 +144,7 @@ namespace Reconnect.Menu
             knockOutMenu.SetActive(menu is MenuState.KnockOut);
             connectionFailed.SetActive(menu is MenuState.ConnectionFailed);
             quitMenu.SetActive(menu is MenuState.Quit);
-            BreadBoardUI?.SetActive(menu is MenuState.BreadBoard);
+            BreadBoardHolder?.Activate(menu is MenuState.BreadBoard);
             
             CurrentMenuState = menu;
             
@@ -159,7 +179,7 @@ namespace Reconnect.Menu
             knockOutMenu.SetActive(CurrentMenuState is MenuState.KnockOut);
             connectionFailed.SetActive(CurrentMenuState is MenuState.ConnectionFailed);
             quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
-            BreadBoardUI?.SetActive(CurrentMenuState is MenuState.BreadBoard);
+            BreadBoardHolder?.Activate(CurrentMenuState is MenuState.BreadBoard);
             
             if (CurrentCursorState is CursorState.Shown)
             {

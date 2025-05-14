@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Mirror;
 using Reconnect.Electronics.Components;
+using Reconnect.Menu;
 using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
@@ -278,10 +279,15 @@ namespace Reconnect.Electronics.Graphs
 
             if (totalResistance == 0)
             {
-                if (!NetworkClient.localPlayer.gameObject.TryGetComponent<PlayerMovementsNetwork>(out PlayerMovementsNetwork playerMovements))
+                if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerMovementsNetwork playerMovements))
                     throw new ComponentNotFoundException(
                         "No PlayerMovementsNetwork found on the localPlayer gameObject");
+                
+                if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                    MenuManager.Instance.BackToPreviousMenu();
+                
                 playerMovements.KnockOut();
+                
                 return double.NegativeInfinity;
             }
             

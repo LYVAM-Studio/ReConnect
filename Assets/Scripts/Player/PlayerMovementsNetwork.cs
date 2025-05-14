@@ -53,7 +53,6 @@ namespace Reconnect.Player
         
         // internal values
         private float _turnSmoothVelocity;
-        private bool _wasLockedBeforeKo;
 
         // imported components
         
@@ -333,7 +332,6 @@ namespace Reconnect.Player
         private IEnumerator KoDelay()
         {
             IsKo = true;
-            _wasLockedBeforeKo = isLocked;
             isLocked = true;
             FreeLookCamera.InputAxisController.enabled = false;
             _animator.SetBool(_isKoHash, true);
@@ -343,8 +341,8 @@ namespace Reconnect.Player
 
         public void OnEndKo()
         {
-            isLocked = _wasLockedBeforeKo;
-            FreeLookCamera.InputAxisController.enabled = !_wasLockedBeforeKo;
+            FreeLookCamera.InputAxisController.enabled = true;
+            isLocked = false;
             IsKo = false;
         }
         public void KnockOut()
