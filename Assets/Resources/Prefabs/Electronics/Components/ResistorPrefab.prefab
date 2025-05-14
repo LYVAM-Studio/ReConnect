@@ -158,7 +158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: Will be replaced
-  toolTipSize: 0
+  width: 100
+  height: 30
   timeBeforeAppearing: 0.5
 --- !u!1 &1841871923851634568
 GameObject:

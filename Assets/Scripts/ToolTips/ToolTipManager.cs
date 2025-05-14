@@ -21,8 +21,8 @@ namespace Reconnect.ToolTips
                 throw new Exception("ToolTipManager singleton has already been initialised");
             Instance = this;
         }
-
-        public void CreateToolTip(int id, string content, Size size)
+        
+        public void CreateToolTip(int id)
         {
             if (_toolTips.TryGetValue(id, out var previous))
             {
@@ -30,12 +30,12 @@ namespace Reconnect.ToolTips
                 Destroy(previous);
             }
             
-            var toolTipGameObj = InstantiateToolTip(size);
+            var toolTipGameObj = InstantiateToolTip();
             if (!toolTipGameObj.TryGetComponent(out ToolTipWindow window))
                 throw new ComponentNotFoundException(
                     "No ToolTipWindow component has been found on the tooltip prefab.");
+            
             _toolTips[id] = window;
-            window.text.text = content;
             window.gameObject.SetActive(false);
         }
 
@@ -44,7 +44,7 @@ namespace Reconnect.ToolTips
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
             Destroy(tooltip.gameObject);
-            _toolTips[id] = null;
+            _toolTips.Remove(id);
         }
         
         public void ShowToolTip(int id)
@@ -80,37 +80,21 @@ namespace Reconnect.ToolTips
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
             
-            // RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            //     canvas.transform as RectTransform,
-            //     Mouse.current.position.ReadValue(),
-            //     canvas.worldCamera,
-            //     out Vector2 mousePos);
+            tooltip.transform.position =
+                Mouse.current.position.ReadValue() + tooltip.Size / 2 + new Vector2(1, 1);
+        }
+        
+        public void SetSize(int id, float width, float height)
+        {
+            if (!_toolTips.TryGetValue(id, out var tooltip))
+                throw new ArgumentException($"No tooltip with id {id} has been found.");
 
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-
-            mousePos += tooltip.Size switch
-            {
-                Size.Small => new Vector2(80, 15),
-                Size.Medium => new Vector2(80, 15),
-                Size.Large => new Vector2(80, 15),
-                _ => throw new ArgumentException($"Size {tooltip.Size} does not exist.")
-            };
-            
-            mousePos += new Vector2(1, 1);
-
-            tooltip.transform.position = mousePos;
+            tooltip.Size = new Vector2(width, height);
         }
 
-        private GameObject InstantiateToolTip(Size size)
+        private GameObject InstantiateToolTip()
         {
-            string sizeName = size switch
-            {
-                Size.Small => "Small",
-                Size.Medium => "Medium",
-                Size.Large => "Large",
-                _ => throw new ArgumentException($"Size {size} does not exist.")
-            };
-            return Instantiate(Resources.Load<GameObject>($"Prefabs/ToolTips/{sizeName}ToolTip"), canvas.transform);
+            return Instantiate(Resources.Load<GameObject>("Prefabs/ToolTipPrefab"), canvas.transform);
         }
     }
 }
