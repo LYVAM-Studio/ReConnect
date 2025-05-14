@@ -1,14 +1,30 @@
+using System;
+using Reconnect.Utils;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Reconnect.ToolTips
 {
     public class ToolTipWindow : MonoBehaviour
     {
-        [SerializeField]
-        private Size size;
-        public TMP_Text text;
+        [NonSerialized] public Image background;
+        [NonSerialized] public TMP_Text text;
         
-        public Size Size => size;
+        private void Awake()
+        {
+            if (!TryGetComponent(out background))
+                throw new ComponentNotFoundException("No Image component has been found on the ToolTip window prefab.");
+
+            text = GetComponentInChildren<TMP_Text>();
+            if (text is null)
+                throw new ComponentNotFoundException("No TMP_Text component has been found in the children of the tooltip window prefab.");
+        }
+
+        public Vector2 Size
+        {
+            get => background.rectTransform.sizeDelta;
+            set => background.rectTransform.sizeDelta = value;
+        }
     }
 }

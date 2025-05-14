@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 49699583343566780}
   - component: {fileID: 570957199026839859}
   m_Layer: 5
-  m_Name: MediumToolTip
+  m_Name: ToolTipPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,8 +36,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 160, y: 30}
-  m_SizeDelta: {x: 320, y: 60}
+  m_AnchoredPosition: {x: 80, y: 15}
+  m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2112853229913475751
 CanvasRenderer:
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0da79e26da4992985771b8bcde2917, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 0
+  background: {fileID: 49699583343566780}
   text: {fileID: 3408464131231593555}
 --- !u!1 &8473207054202277451
 GameObject:
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44.6
+  m_fontSize: 19.8
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

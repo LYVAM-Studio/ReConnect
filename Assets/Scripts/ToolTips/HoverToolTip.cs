@@ -12,7 +12,8 @@ namespace Reconnect.ToolTips
         [TextArea(1, 3)]
         private string text;
 
-        public Size toolTipSize;
+        public float width;
+        public float height;
 
         public float timeBeforeAppearing = 0.5f;
 
@@ -31,7 +32,9 @@ namespace Reconnect.ToolTips
         
        private void Awake()
        {
-           ToolTipManager.Instance.CreateToolTip(GetHashCode(), text, toolTipSize);
+           ToolTipManager.Instance.CreateToolTip(GetHashCode());
+           ToolTipManager.Instance.SetText(GetHashCode(), text);
+           ToolTipManager.Instance.SetSize(GetHashCode(), width, height);
        }
        
        private void Update()
