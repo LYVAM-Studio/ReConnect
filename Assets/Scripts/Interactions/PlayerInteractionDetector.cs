@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Reconnect.Menu;
+using Reconnect.Player;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,11 +34,16 @@ namespace Reconnect.Interactions
         
         private PlayerControls _controls;
 
+        private PlayerMovementsNetwork _playerMovements;
+
         private void Awake()
         {
             _controls = new PlayerControls();
-
             _controls.Player.Interact.performed += OnInteraction;
+
+            if (!player.TryGetComponent(out _playerMovements))
+                throw new ComponentNotFoundException(
+                    "No PlayerMovementsNetwork has been found on the player game object.");
         }
         
         private void OnEnable()
@@ -62,7 +70,9 @@ namespace Reconnect.Interactions
 
         private void OnInteraction(InputAction.CallbackContext context)
         {
-            if (_interactableInRange.Count > 0)
+            if (MenuManager.Instance.CurrentMenuState is not MenuState.Pause
+                && !_playerMovements.IsKo
+                && _interactableInRange.Count > 0)
                 GetNearestInteractable()!.Interact(player);
         }
 
