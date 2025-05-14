@@ -1,3 +1,5 @@
+using System.Collections;
+using Reconnect.Menu;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,6 +30,7 @@ namespace Reconnect.Player
         private Vector3 _currentMovement; // the movement to be applies to the player
         private Vector3 _currentVelocity;
         private Vector2 _currentMovementInput;
+        private int _isWalkingHash;
         private bool _isCrouching;
         private int _isCrouchingHash;
         private bool _isDancing;
@@ -43,9 +46,11 @@ namespace Reconnect.Player
         private bool _isRunning;
         private int _isRunningHash;
 
-        // animations states hashes
-        private int _isWalkingHash;
-
+        // KO
+        public bool isKO;
+        private int _isKoHash;
+        private Coroutine _coroutine;
+        
         // internal values
         private float _turnSmoothVelocity;
        
@@ -79,6 +84,7 @@ namespace Reconnect.Player
             _isFallingHash = Animator.StringToHash("isFalling");
             _isGroundedHash = Animator.StringToHash("isGrounded");
             _isDancingHash = Animator.StringToHash("isDancing");
+            _isKoHash = Animator.StringToHash("isKo");
         }
 
         // Update is called once per frame
@@ -322,6 +328,28 @@ namespace Reconnect.Player
             _currentMovement.z = 0;
             _isMovementPressed = false;
             _currentMovementInput = Vector2.zero;
+        }
+
+        private IEnumerator KoDelay()
+        {
+            isLocked = true;
+            FreeLookCamera.InputAxisController.enabled = false;
+            isKO = true;
+            _animator.SetBool(_isKoHash, true);
+            yield return MenuManager.Instance.KnockOutForSeconds(10);
+            _animator.SetBool(_isKoHash, false);
+        }
+
+        public void OnEndKo()
+        {
+            MenuManager.Instance.LockMovement(false);
+            isKO = false;
+        }
+        public void KnockOut()
+        {
+            if (_coroutine is not null)
+                StopCoroutine(_coroutine);
+            _coroutine = StartCoroutine(KoDelay());
         }
     }
 }
