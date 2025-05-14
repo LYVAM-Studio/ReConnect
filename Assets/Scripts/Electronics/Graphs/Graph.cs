@@ -214,9 +214,10 @@ namespace Reconnect.Electronics.Graphs
         /// <summary>
         /// Permits to get the Input intensity required by the circuit
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The current intensity going through the main branch of the circuit (the one of the target).</returns>
+        /// <returns><see cref="double.NegativeInfinity"/> if there is a destructive short circuit that KO the player</returns>
         /// <exception cref="ArgumentException">Thrown when <see cref="Branches"/> is empty</exception>
-        /// <exception cref="UnreachableException">Thrown when <see cref="Branches"/> becomes empty at the end of the precess</exception>
+        /// <exception cref="UnreachableCaseException">Thrown when <see cref="Branches"/> becomes empty at the end of the process</exception>
         /// <exception cref="GraphException">Thrown when the equivalent resistance of the circuit is 0</exception>
         public double GetGlobalIntensity()
         {
@@ -235,17 +236,19 @@ namespace Reconnect.Electronics.Graphs
                     Node node1 = parallelBranches[0].StartNode; // future nodes of the equivalent branch
                     Node node2 = parallelBranches[0].EndNode;
                     string name = "R_eq";
+                    bool shortCircuited = parallelBranches.Any(b => b.Resistance == 0);
+                        
                     foreach (Branch branch in parallelBranches)
                     {
                         // remove the components of the branch fron the adjacents of the nodes
                         RemoveAdjacentFromBranchComponents(branch, (node1, node2)); 
                         name += $"_{branch.GetHashCode()}"; // build unique new name for equivalent resistance
                         RemoveBranch(branch);
-                        if (branch.Resistance != 0)
-                            resistance += 1 / (double) branch.Resistance; // apply equivalent resistance in parallel computation
+                        if (!shortCircuited)
+                            resistance += 1 / branch.Resistance; // apply equivalent resistance in parallel computation
                     }
-
-                    Vertex equivalentResistance = new Resistor(name, 1 / resistance); // resistor representing the equivalent resistance 
+                    
+                    Vertex equivalentResistance = new Resistor(name, shortCircuited ? 0 : 1 / resistance); // resistor representing the equivalent resistance 
                     node1.AddAdjacent(equivalentResistance);
                     node2.AddAdjacent(equivalentResistance);
                     
@@ -269,9 +272,13 @@ namespace Reconnect.Electronics.Graphs
             {
                 totalResistance += branch.Resistance;
             }
-            
+
+
             if (totalResistance == 0)
-                throw new GraphException("No resistance in the circuit, maybe shortcut or empty ?");
+            {
+                // TODO : KO the player
+                return double.NegativeInfinity;
+            }
             
             // Ohm's law : I = U / R
             return EntryPoint.InputTension / totalResistance;
