@@ -1064,6 +1064,54 @@ namespace Reconnect
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CheatCodes"",
+            ""id"": ""1a0c6638-b9d0-41c5-8755-47a7ab1844b9"",
+            ""actions"": [
+                {
+                    ""name"": ""KnockOut"",
+                    ""type"": ""Button"",
+                    ""id"": ""8fdb0d78-a447-478b-adb4-4d7dd86cad4f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PopulateLessons"",
+                    ""type"": ""Button"",
+                    ""id"": ""2a2a7936-958c-4f53-8b38-613560740853"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""790f57db-b2b2-4d65-850a-aab1e2e63bcf"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""KnockOut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8c45f368-033e-40e4-acf9-b61852388ea1"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PopulateLessons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1161,6 +1209,10 @@ namespace Reconnect
             m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
             m_Menu_Esc = m_Menu.FindAction("Esc", throwIfNotFound: true);
             m_Menu_Lessons = m_Menu.FindAction("Lessons", throwIfNotFound: true);
+            // CheatCodes
+            m_CheatCodes = asset.FindActionMap("CheatCodes", throwIfNotFound: true);
+            m_CheatCodes_KnockOut = m_CheatCodes.FindAction("KnockOut", throwIfNotFound: true);
+            m_CheatCodes_PopulateLessons = m_CheatCodes.FindAction("PopulateLessons", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -1169,6 +1221,7 @@ namespace Reconnect
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerControls.UI.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Breadboard.enabled, "This will cause a leak and performance issues, PlayerControls.Breadboard.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Menu.enabled, "This will cause a leak and performance issues, PlayerControls.Menu.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_CheatCodes.enabled, "This will cause a leak and performance issues, PlayerControls.CheatCodes.Disable() has not been called.");
         }
 
         public void Dispose()
@@ -1570,6 +1623,60 @@ namespace Reconnect
             }
         }
         public MenuActions @Menu => new MenuActions(this);
+
+        // CheatCodes
+        private readonly InputActionMap m_CheatCodes;
+        private List<ICheatCodesActions> m_CheatCodesActionsCallbackInterfaces = new List<ICheatCodesActions>();
+        private readonly InputAction m_CheatCodes_KnockOut;
+        private readonly InputAction m_CheatCodes_PopulateLessons;
+        public struct CheatCodesActions
+        {
+            private @PlayerControls m_Wrapper;
+            public CheatCodesActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+            public InputAction @KnockOut => m_Wrapper.m_CheatCodes_KnockOut;
+            public InputAction @PopulateLessons => m_Wrapper.m_CheatCodes_PopulateLessons;
+            public InputActionMap Get() { return m_Wrapper.m_CheatCodes; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(CheatCodesActions set) { return set.Get(); }
+            public void AddCallbacks(ICheatCodesActions instance)
+            {
+                if (instance == null || m_Wrapper.m_CheatCodesActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_CheatCodesActionsCallbackInterfaces.Add(instance);
+                @KnockOut.started += instance.OnKnockOut;
+                @KnockOut.performed += instance.OnKnockOut;
+                @KnockOut.canceled += instance.OnKnockOut;
+                @PopulateLessons.started += instance.OnPopulateLessons;
+                @PopulateLessons.performed += instance.OnPopulateLessons;
+                @PopulateLessons.canceled += instance.OnPopulateLessons;
+            }
+
+            private void UnregisterCallbacks(ICheatCodesActions instance)
+            {
+                @KnockOut.started -= instance.OnKnockOut;
+                @KnockOut.performed -= instance.OnKnockOut;
+                @KnockOut.canceled -= instance.OnKnockOut;
+                @PopulateLessons.started -= instance.OnPopulateLessons;
+                @PopulateLessons.performed -= instance.OnPopulateLessons;
+                @PopulateLessons.canceled -= instance.OnPopulateLessons;
+            }
+
+            public void RemoveCallbacks(ICheatCodesActions instance)
+            {
+                if (m_Wrapper.m_CheatCodesActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            public void SetCallbacks(ICheatCodesActions instance)
+            {
+                foreach (var item in m_Wrapper.m_CheatCodesActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_CheatCodesActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        public CheatCodesActions @CheatCodes => new CheatCodesActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         public InputControlScheme KeyboardMouseScheme
         {
@@ -1650,6 +1757,11 @@ namespace Reconnect
         {
             void OnEsc(InputAction.CallbackContext context);
             void OnLessons(InputAction.CallbackContext context);
+        }
+        public interface ICheatCodesActions
+        {
+            void OnKnockOut(InputAction.CallbackContext context);
+            void OnPopulateLessons(InputAction.CallbackContext context);
         }
     }
 }
