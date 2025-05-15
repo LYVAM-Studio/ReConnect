@@ -95,8 +95,9 @@ namespace Reconnect.Electronics.Breadboards
         // Dragging status of the dipole
         private bool _isBeingDragged;
         
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component found on this Dipole.");
             
