@@ -42,8 +42,7 @@ namespace Reconnect.Menu
         public CursorState CurrentCursorState { get; private set; }
         public bool IsPlayerLocked { get; private set; }
         public PlayMode GameMode { get; private set; }
-        public bool IsInGame { get; private set; }
-        
+
         private readonly History _history = new();
         private PlayerControls _controls;
         
@@ -55,16 +54,10 @@ namespace Reconnect.Menu
             Instance = this;
 
             _controls = new PlayerControls();
-            
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
+            
             SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.G))
-                Debug.Log($"{_history}");
         }
 
         private void OnEnable()
@@ -233,6 +226,7 @@ namespace Reconnect.Menu
         {
             // the player is locked from the call
             SetMenuTo(MenuState.KnockOut, CursorState.Locked);
+            
             for (uint i = seconds; i > 0; i--)
             {
                 timerText.text = i.ToString();
@@ -254,7 +248,6 @@ namespace Reconnect.Menu
         {
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.Single;
-            IsInGame = true;
             networkManager.maxConnections = 1;
             networkManager.StartHost();
         }
@@ -263,7 +256,6 @@ namespace Reconnect.Menu
         {
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.MultiHost;
-            IsInGame = true;
             networkManager.StartHost();
         }
         
@@ -277,7 +269,6 @@ namespace Reconnect.Menu
                 {
                     SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
                     GameMode = PlayMode.MultiServer;
-                    IsInGame = true;
                 }
                 else
                 {
@@ -305,7 +296,6 @@ namespace Reconnect.Menu
             FreeLookCamera.InputAxisController.enabled = true;
             
             SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
-            IsInGame = false;
         }
         
         public void QuitGame()

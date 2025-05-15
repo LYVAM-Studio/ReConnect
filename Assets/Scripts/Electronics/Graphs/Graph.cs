@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Unity;
 using System.Linq;
-using System.Reflection;
 using Mirror;
 using Reconnect.Electronics.Components;
 using Reconnect.Menu;
 using Reconnect.Player;
 using Reconnect.Utils;
-using UnityEngine;
 
 namespace Reconnect.Electronics.Graphs
 {

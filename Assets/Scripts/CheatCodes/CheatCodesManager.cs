@@ -9,9 +9,9 @@ namespace Reconnect.CheatCodes
 {
     public class CheatCodesManager : MonoBehaviour
     {
-
         private PlayerControls _controls;
         private TestLessons _testLessons;
+        
         private void Awake()
         {
             if (!TryGetComponent(out _testLessons))
