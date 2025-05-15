@@ -14,7 +14,6 @@ namespace Reconnect.Menu
 
         public void Clear() => _stack.Clear();
 
-        public override string ToString()
-            => string.Join("; ", _stack);
+        public override string ToString() => string.Join("; ", _stack);
     }
 }
