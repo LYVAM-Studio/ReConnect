@@ -1,6 +1,5 @@
-using System;
+using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
-using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
 using Reconnect.Utils;
 using UnityEngine;
@@ -10,13 +9,43 @@ namespace Reconnect.Electronics.Breadboards
 {
     public class Dipole : ComponentSync, IDipole, ICursorHandle
     {
-        public Breadboard Breadboard { get; set; }
-        public Vector2Int Pole1 { get; set; }
-        public Vector2Int Pole2 { get; set; }
+        public Breadboard Breadboard => breadboardNetIdentity != null
+            ? breadboardNetIdentity.GetComponent<BreadboardHolder>().breadboard
+            : null;
+        
+        [SyncVar]
+        private Vector2Int _pole1;
+
+        [SyncVar]
+        private Vector2Int _pole2;
+
+        public Vector2Int Pole1
+        {
+            get => _pole1;
+            set
+            {
+                if (!isServer)
+                    throw new UnauthorizedActionFromClientException("Client cannot set Pole1");
+                _pole1 = value;
+            }
+        }
+
+        public Vector2Int Pole2
+        {
+            get => _pole2;
+            set
+            {
+                if (!isServer)
+                    throw new UnauthorizedActionFromClientException("Client cannot set Pole2");
+                _pole2 = value;
+            }
+        }
+
         bool ICursorHandle.IsPointerDown { get; set; }
         public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
-
+        
         // Whether this object is rotated or not
+        [SyncVar]
         private bool _isHorizontal;
         
         // Whether this object is rotated or not
@@ -25,6 +54,8 @@ namespace Reconnect.Electronics.Breadboards
             get => _isHorizontal;
             set
             {
+                if (!isServer)
+                    throw new UnauthorizedActionFromClientException("Client cannot set IsHorizontal");
                 transform.localEulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
                 _isHorizontal = value;
             }
@@ -42,18 +73,21 @@ namespace Reconnect.Electronics.Breadboards
         // The component responsible for the outlines
         private Outline _outline;
 
+        [SyncVar]
         private bool _isLocked = false;
         public bool IsLocked
         {
             get => _isLocked;
             set 
             {
+                if (!isServer)
+                    throw new UnauthorizedActionFromClientException("Client cannot set IsLocked");
                 _isLocked = value;
                 if (_isLocked) _outline.enabled = false;
             }
         }
         
-        public Vertex Inner { get; set; }
+        public int InnerID { get; set; }
         
         // Control map
         private PlayerControls _controls;
@@ -95,6 +129,7 @@ namespace Reconnect.Electronics.Breadboards
         
         void ICursorHandle.OnCursorEnter()
         {
+            Debug.Log(Breadboard);
             if (!_isLocked && !Breadboard.OnWireCreation)
                 _outline.enabled = true;
         }

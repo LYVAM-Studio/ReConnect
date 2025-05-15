@@ -14,6 +14,7 @@ namespace Reconnect.Electronics.Breadboards
     public class BreadboardHolder : Interactable
     {
         public Breadboard breadboard;
+        public BbSwitch breadboardSwitch;
         public CinemachineCamera cam;
         public GameObject ui;
         public TextAsset circuitYaml;

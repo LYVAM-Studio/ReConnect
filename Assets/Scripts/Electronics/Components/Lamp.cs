@@ -5,7 +5,7 @@ namespace Reconnect.Electronics.Components
 {
     public class Lamp : Resistor
     {
-        private LightBulb LightBulb { get; set; }
+        public LightBulb LightBulb { get; set; }
 
         public Lamp(string name, uint resistance, LightBulb lightBulb) : base(name, resistance)
         {
