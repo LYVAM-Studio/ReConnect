@@ -6,7 +6,7 @@ namespace Reconnect.Menu.Lessons
     {
         public Sprite[] lessonsSprites;
         public LessonsInventoryManager lessonsInventoryManager;
-        private void Start()
+        public void PopulateLessons()
         {
             foreach (Sprite lessonsSprite in lessonsSprites)
             {

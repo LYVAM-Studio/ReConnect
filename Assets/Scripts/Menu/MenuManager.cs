@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Mirror;
+using Reconnect.Electronics.Breadboards;
 using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -9,21 +10,16 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
 
 namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-        public enum MenuState { None, Main, Singleplayer, Multiplayer, Settings, Pause, Lessons, ImageViewer }
-        public enum PlayMode { Single, MultiHost, MultiServer }
-        
         public static MenuManager Instance;
         
-        [Header("Multiplayer parameters")]
-        public ReconnectNetworkManager networkManager;
-        public TMP_InputField serverAddress;
         [Header("Menu canvas")]
+        
         public GameObject mainMenu;
         public GameObject singleplayerMenu;
         public GameObject multiplayerMenu;
@@ -31,51 +27,39 @@ namespace Reconnect.Menu
         public GameObject pauseMenu;
         public GameObject lessonsMenu;
         public GameObject imageViewerMenu;
-
-        public GameObject errorBanner;             // UI panel or text background that represents the banner displayed in error case
-        public TextMeshProUGUI errorBannerText;        // Error message text mesh
-        public float errorDisplayDuration = 3f;    // How long the error bqnner stays visible
-
-        private Coroutine _currentBannerRoutine;
+        public GameObject knockOutMenu;
+        [VolumeComponent.Indent] public TMP_Text timerText;
+        public GameObject connectionFailed;
+        public GameObject quitMenu;
+        [NonSerialized] public BreadboardHolder BreadBoardHolder;
         
-        private PlayerControls _controls;
-
-        private CursorLockMode _previousCursorLockMode;
-        private bool _previousCursorVisibility;
+        [Header("Multiplayer parameters")]
         
-        // Should not be directly used
-        private MenuState _currentMenu;
-        public MenuState CurrentMenu
-        {
-            get => _currentMenu;
-            set
-            {
-                mainMenu.SetActive(value is MenuState.Main);
-                singleplayerMenu.SetActive(value is MenuState.Singleplayer);
-                multiplayerMenu.SetActive(value is MenuState.Multiplayer);
-                settingsMenu.SetActive(value is MenuState.Settings);
-                pauseMenu.SetActive(value is MenuState.Pause);
-                lessonsMenu.SetActive(value is MenuState.Lessons);
-                imageViewerMenu.SetActive(value is MenuState.ImageViewer);
-                _currentMenu = value;
-            }
-        }
-
-        public bool IsInGame { get; private set; }
+        public ReconnectNetworkManager networkManager;
+        public TMP_InputField serverAddress;
+        
+        public MenuState CurrentMenuState { get; private set; }
+        public CursorState CurrentCursorState { get; private set; }
+        public bool IsPlayerLocked { get; private set; }
         public PlayMode GameMode { get; private set; }
 
+        private readonly History _history = new();
+        private PlayerControls _controls;
+        
         private void Awake()
         {
             if (Instance is not null)
                 throw new Exception("A MenuController has already been instantiated.");
-            Instance = this;
             
+            Instance = this;
+
             _controls = new PlayerControls();
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
-            CurrentMenu = MenuState.Main;
+            
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
         }
-        
+
         private void OnEnable()
         {
             _controls.Enable();
@@ -89,194 +73,229 @@ namespace Reconnect.Menu
         private void OnDestroy()
         {
             _controls.Menu.Esc.performed -= OnEscPressed;
+            _controls.Menu.Lessons.performed -= OnToggleLessonsMenu;
         }
 
         private void OnEscPressed(InputAction.CallbackContext ctx)
         {
-            if (!IsInGame)
+            if (CurrentMenuState is MenuState.KnockOut) return;
+            
+            if (!_history.IsEmpty())
             {
-                SetMenuToMain();
+                if (CurrentMenuState is MenuState.BreadBoard)
+                    BreadBoardHolder?.Activate(false);
+                
+                BackToPreviousMenu();
             }
-            else switch (CurrentMenu)
+            else
             {
-                case MenuState.None:
-                    SetLock(true);
-                    CurrentMenu = MenuState.Pause;
-                    break;
-                case MenuState.Pause:
-                    CloseMenu();
-                    break;
-                case MenuState.Lessons:
-                    CloseMenu();
-                    break;
-                case MenuState.ImageViewer:
-                    CurrentMenu = MenuState.Lessons;
-                    break;
-                default:
-                    CurrentMenu = MenuState.Pause;
-                    break;
+                if (CurrentMenuState is MenuState.None)
+                {
+                    LockPlayer();
+                    SetMenuTo(MenuState.Pause, CursorState.Shown);
+                }
+                else if (CurrentMenuState is MenuState.Main)
+                {
+                    SetMenuTo(MenuState.Quit, CursorState.Shown);
+                }
+                else
+                {
+                    throw new UnreachableCaseException(
+                        $"Menu {CurrentMenuState} should not be active with an empty history.");
+                }
             }
         }
         
         private void OnToggleLessonsMenu(InputAction.CallbackContext ctx)
         {
-            switch (CurrentMenu)
+            if (CurrentMenuState is MenuState.None)
             {
-                case MenuState.None:
-                    SetLock(true);
-                    CurrentMenu = MenuState.Lessons;
-                    break;
-                case MenuState.Lessons:
-                    CloseMenu();
-                    break;
+                LockPlayer();
+                SetMenuTo(MenuState.Lessons, CursorState.Shown);
+            }
+            else if (CurrentMenuState is MenuState.Lessons)
+            {
+                UnLockPlayer();
+                BackToPreviousMenu();
             }
         }
         
-        private void SetLock(bool value)
+        public void SetMenuTo(MenuState menu, CursorState cursorState, bool forceClearHistory = false)
         {
-            if (value)
+            if (forceClearHistory)
+                _history.Clear();
+            else
+                _history.Push(CurrentMenuState, CurrentCursorState);
+                
+            mainMenu.SetActive(menu is MenuState.Main);
+            singleplayerMenu.SetActive(menu is MenuState.Singleplayer);
+            multiplayerMenu.SetActive(menu is MenuState.Multiplayer);
+            settingsMenu.SetActive(menu is MenuState.Settings);
+            pauseMenu.SetActive(menu is MenuState.Pause);
+            lessonsMenu.SetActive(menu is MenuState.Lessons);
+            imageViewerMenu.SetActive(menu is MenuState.ImageViewer);
+            knockOutMenu.SetActive(menu is MenuState.KnockOut);
+            connectionFailed.SetActive(menu is MenuState.ConnectionFailed);
+            quitMenu.SetActive(menu is MenuState.Quit);
+            BreadBoardHolder?.Activate(menu is MenuState.BreadBoard);
+            
+            CurrentMenuState = menu;
+            
+            if (cursorState is CursorState.Shown)
             {
-                _previousCursorVisibility = Cursor.visible;
-                _previousCursorLockMode = Cursor.lockState;
                 Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
-                    throw new ComponentNotFoundException(
-                        "No PlayerMovementsNetwork component has been found on the local player.");
-                movements.isLocked = true;
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+
+            CurrentCursorState = cursorState;
+        }
+
+        public void BackToPreviousMenu()
+        {
+            if (_history.IsEmpty())
+                throw new ArgumentException("Cannot go back with an empty history");
+
+            (CurrentMenuState, CurrentCursorState) = _history.Pop();
+            
+            mainMenu.SetActive(CurrentMenuState is MenuState.Main);
+            singleplayerMenu.SetActive(CurrentMenuState is MenuState.Singleplayer);
+            multiplayerMenu.SetActive(CurrentMenuState is MenuState.Multiplayer);
+            settingsMenu.SetActive(CurrentMenuState is MenuState.Settings);
+            pauseMenu.SetActive(CurrentMenuState is MenuState.Pause);
+            lessonsMenu.SetActive(CurrentMenuState is MenuState.Lessons);
+            imageViewerMenu.SetActive(CurrentMenuState is MenuState.ImageViewer);
+            knockOutMenu.SetActive(CurrentMenuState is MenuState.KnockOut);
+            connectionFailed.SetActive(CurrentMenuState is MenuState.ConnectionFailed);
+            quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
+            BreadBoardHolder?.Activate(CurrentMenuState is MenuState.BreadBoard);
+            
+            if (CurrentCursorState is CursorState.Shown)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Confined;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            
+            if (CurrentMenuState is MenuState.None)
+                UnLockPlayer();
+        }
+
+        public void LockPlayer(bool locked)
+        {
+            if (IsPlayerLocked == locked) return;
+
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork player))
+                throw new ComponentNotFoundException("No PlayerMovementsNetwork has been found on the local player.");
+
+            if (locked)
+            {
+                player.isLocked = true;
                 FreeLookCamera.InputAxisController.enabled = false;
             }
             else
             {
-                Cursor.visible = _previousCursorVisibility;
-                Cursor.lockState = _previousCursorLockMode;
-                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerMovementsNetwork movements))
-                    throw new ComponentNotFoundException(
-                        "No PlayerMovementsNetwork component has been found on the local player.");
-                movements.isLocked = false;
+                player.isLocked = false;
                 FreeLookCamera.InputAxisController.enabled = true;
             }
-        }
 
+            IsPlayerLocked = locked;
+        }
+        
         public void OpenImageInViewer(Sprite sprite)
         {
-            CurrentMenu = MenuState.ImageViewer;
+            SetMenuTo(MenuState.ImageViewer, CursorState.Shown);
             ImageViewerManager.Instance.LoadImage(sprite);
         }
         
         public void CloseImageViewer()
         {
-            CurrentMenu = MenuState.Lessons;
+            BackToPreviousMenu();
             ImageViewerManager.Instance.CloseImage();
         }
-        
-        public void SetMenuToMain()
+
+        public IEnumerator KnockOutForSeconds(uint seconds)
         {
-            CurrentMenu = MenuState.Main;
-        }
-        
-        public void SetMenuToPrevious()
-        {
-            CurrentMenu = IsInGame ? MenuState.Pause : MenuState.Main;
-        }
-        
-        public void SetMenuToSingleplayer() 
-        {
-            CurrentMenu = MenuState.Singleplayer;
-        }
-        
-        public void SetMenuToMultiplayer() 
-        {
-            CurrentMenu = MenuState.Multiplayer;
-        }
-        
-        public void SetMenuToSettings() 
-        {
-            CurrentMenu = MenuState.Settings;
-        }
-        
-        public void CloseMenu()
-        {
-            SetLock(false);
-            CurrentMenu = MenuState.None;
+            // the player is locked from the call
+            SetMenuTo(MenuState.KnockOut, CursorState.Locked);
+            
+            for (uint i = seconds; i > 0; i--)
+            {
+                timerText.text = i.ToString();
+                yield return new WaitForSeconds(1);
+            }
+            
+            BackToPreviousMenu();
+            // the player is unlocked after the call
         }
 
+        public void LockPlayer() => LockPlayer(true);
+        public void UnLockPlayer() => LockPlayer(false);
+        public void SetMenuToSingleplayer() => SetMenuTo(MenuState.Singleplayer, CursorState.Shown);
+        public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
+        public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
+        public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
+        
         public void RunSingleplayerMode()
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.Single;
-            CurrentMenu = MenuState.None;
-            IsInGame = true;
             networkManager.maxConnections = 1;
             networkManager.StartHost();
         }
         
         public void RunHostMode()
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.MultiHost;
-            CurrentMenu = MenuState.None;
-            IsInGame = true;
             networkManager.StartHost();
         }
         
         public async void RunMultiplayerMode()
         {
-            networkManager.networkAddress = serverAddress.text;
-            bool success = await networkManager.StartClientAsync();
-            if (success)
+            try
             {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-                IsInGame = true;
-                GameMode = PlayMode.MultiServer;
-                CurrentMenu = MenuState.None;
+                networkManager.networkAddress = serverAddress.text;
+                bool success = await networkManager.StartClientAsync();
+                if (success)
+                {
+                    SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
+                    GameMode = PlayMode.MultiServer;
+                }
+                else
+                {
+                    SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                }
             }
-            else
+            catch (Exception e)
             {
-                ShowConnectionError("Connection failed. Please try again.");
+                Debug.LogWarning($"An exception has been thrown while trying to connect:\n{e}");
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
             }
         }
 
         public void StopRunning()
         {
-            switch (GameMode)
-            {
-                case PlayMode.MultiServer:
-                    networkManager.StopClient();
-                    break;
-                default:
-                    networkManager.StopHost();
-                    break;
-            }
+            if (GameMode is PlayMode.MultiServer)
+                networkManager.StopClient();
+            else
+                networkManager.StopHost();
 
             // if a temporary cam (bb holder cam), then reset it
             var currentCam = CinemachineCore.GetVirtualCamera(0);
             if (currentCam.Priority == 2)
                 currentCam.Priority = 0;
             FreeLookCamera.InputAxisController.enabled = true;
-            CurrentMenu = MenuState.Main;
-            IsInGame = false;
-        }
-        
-        public void ShowConnectionError(string message)
-        {
-            if (_currentBannerRoutine is not null)
-                StopCoroutine(_currentBannerRoutine);
-
-            _currentBannerRoutine = StartCoroutine(ShowBannerRoutine(message));
-        }
-
-        private IEnumerator ShowBannerRoutine(string message)
-        {
-            errorBannerText.text = message;
-            errorBanner.SetActive(true);
-
-            yield return new WaitForSeconds(errorDisplayDuration);
-
-            errorBanner.SetActive(false);
+            
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
         }
         
         public void QuitGame()
