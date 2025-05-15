@@ -1,19 +1,20 @@
+using Mirror;
 using Reconnect.Utils;
 using UnityEngine;
 
 namespace Reconnect.Player
 {
-    public class PlayerGetter : MonoBehaviour
+    public class PlayerGetter : NetworkBehaviour
     {
         public PlayerMovementsNetwork MovementsNetwork;
         public GameObject DummyModel;
 
-        private void Awake()
+        public override void OnStartClient()
         {
             if (!TryGetComponent(out MovementsNetwork))
                 throw new ComponentNotFoundException("MovementNetwork not found");
 
-            DummyModel = transform.GetChild(0).gameObject;
+            DummyModel = netIdentity.transform.GetChild(0).gameObject;
         }
     }
 }

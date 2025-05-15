@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 
@@ -19,13 +20,13 @@ namespace Reconnect.Electronics.Breadboards
             Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
             var output = new CircuitOutput("output");
             Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
-            var graph = new Graph("Main graph", input, output, breadboard.Target);
+            var graph = new Graph("Main graph", input, output, UniqueIdDictionary.Instance.Get<ElecComponent>(breadboard.TargetID));
             foreach (Vertex v in grid)
                 if (v is not null)
                     graph.AddVertex(v);
 
             foreach (var d in breadboard.Dipoles)
-                graph.AddVertex(d.Inner);
+                graph.AddVertex(UniqueIdDictionary.Instance.Get<Vertex>(d.InnerID));
 
             Clean(grid, graph);
             
@@ -70,7 +71,7 @@ namespace Reconnect.Electronics.Breadboards
         private static void ClearInnerAdjacences(List<Dipole> dipoles)
         {
             foreach (var d in dipoles)
-                d.Inner.ClearAdjacent();
+                UniqueIdDictionary.Instance.Get<Vertex>(d.InnerID).ClearAdjacent();
         }
 
         private static Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
@@ -99,8 +100,8 @@ namespace Reconnect.Electronics.Breadboards
             {
                 Vertex v1 = GetVertexOrNewAt(grid, d.Pole1.y, d.Pole1.x);
                 Vertex v2 = GetVertexOrNewAt(grid, d.Pole2.y, d.Pole2.x);
-                Vertex.AddReciprocalAdjacent(v1, d.Inner);
-                Vertex.AddReciprocalAdjacent(d.Inner, v2);
+                Vertex.AddReciprocalAdjacent(v1, UniqueIdDictionary.Instance.Get<Vertex>(d.InnerID));
+                Vertex.AddReciprocalAdjacent(UniqueIdDictionary.Instance.Get<Vertex>(d.InnerID), v2);
             }
         }
     }

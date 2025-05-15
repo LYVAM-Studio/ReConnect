@@ -1,5 +1,9 @@
 using System;
+using Electronics.Breadboards;
 using Mirror;
+using Reconnect.Electronics.Breadboards;
+using Reconnect.Electronics.Breadboards.NetworkSync;
+using Reconnect.Electronics.Components;
 using Reconnect.Physics;
 using Reconnect.Utils;
 using Unity.Cinemachine;
@@ -37,6 +41,37 @@ namespace Reconnect.Player
         {
             FreeLookCamera.VirtualCamera.Follow = transform;
             FreeLookCamera.VirtualCamera.LookAt = lookAtObject;
+        }
+        
+        [Command]
+        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity)
+        {
+            Debug.Log($"Command received by server");
+            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
+            RpcHandleCircuitResult(BbSolver.Instance.ExecuteCircuit(breadboardHolder.breadboard), bbHolderIdentity);
+        }
+        
+        [Command]
+        public void CmdExecuteTargetAction(int targetId)
+        {
+            Debug.Log($"Command do action received by server");
+            Lamp target = UniqueIdDictionary.Instance.Get<Lamp>(targetId);
+            Debug.Log($"before lamp is On : {target.LightBulb.isOn}");
+            target.DoAction();
+            Debug.Log($"after lamp is On : {target.LightBulb.isOn}");
+        }
+        
+        [ClientRpc]
+        private void RpcHandleCircuitResult(bool succeeded, NetworkIdentity bbHolderIdentity)
+        {
+            Debug.Log($"RPC received | execution {succeeded}");
+            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
+            if (succeeded)
+                CmdExecuteTargetAction(breadboardHolder.breadboard.TargetID);
+            else
+                breadboardHolder.breadboardSwitch.OnFailedExercise();
         }
     }
 }
