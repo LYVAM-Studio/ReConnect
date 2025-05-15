@@ -30,8 +30,9 @@ namespace Reconnect.Electronics.Components
             }
         }
         
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component found on this WireScript.");
             
