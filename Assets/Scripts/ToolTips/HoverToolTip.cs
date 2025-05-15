@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 namespace Reconnect.ToolTips
 {
-    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IEndDragHandler
+    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField]
         [TextArea(1, 3)]
@@ -21,24 +21,26 @@ namespace Reconnect.ToolTips
             set
             {
                 text = value;
-                ToolTipManager.Instance.SetText(GetHashCode(), value);
+                ToolTipManager.Instance.SetText(_id, value);
             }
         }
-        
+
+        private int _id;
         private Coroutine _coroutine;
         private bool _isShown;
         
        private void Awake()
        {
-           ToolTipManager.Instance.CreateToolTip(GetHashCode());
-           ToolTipManager.Instance.SetText(GetHashCode(), text);
-           ToolTipManager.Instance.SetSize(GetHashCode(), width, height);
+           _id = GetHashCode();
+           ToolTipManager.Instance.CreateToolTip(_id);
+           ToolTipManager.Instance.SetText(_id, text);
+           ToolTipManager.Instance.SetSize(_id, width, height);
        }
        
        private void Update()
        {
            if (_isShown)
-               ToolTipManager.Instance.SetPositionToMouse(GetHashCode());
+               ToolTipManager.Instance.SetPositionToMouse(_id);
        }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -50,8 +52,8 @@ namespace Reconnect.ToolTips
         {
             Hide();
         }
-        
-        public void OnBeginDrag(PointerEventData eventData)
+
+        public void OnDrag(PointerEventData eventData)
         {
             Hide();
         }
@@ -78,7 +80,7 @@ namespace Reconnect.ToolTips
             
             if (_isShown)
             {
-                ToolTipManager.Instance.HideToolTip(GetHashCode());
+                ToolTipManager.Instance.HideToolTip(_id);
             }
             
             _isShown = false;
@@ -87,8 +89,8 @@ namespace Reconnect.ToolTips
         private IEnumerator ShowCoroutine()
         {
             yield return new WaitForSeconds(timeBeforeAppearing);
-            ToolTipManager.Instance.ShowToolTip(GetHashCode());
-            ToolTipManager.Instance.SetPositionToMouse(GetHashCode());
+            ToolTipManager.Instance.ShowToolTip(_id);
+            ToolTipManager.Instance.SetPositionToMouse(_id);
             _isShown = true;
         }
     }
