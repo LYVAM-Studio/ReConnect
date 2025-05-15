@@ -7,7 +7,6 @@ using Reconnect.Electronics.ResistorComponent;
 using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {

@@ -65,7 +65,7 @@ namespace Reconnect.ToolTips
         {
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
-            tooltip.text.text = text;
+            tooltip.Text = text;
         }
         
         public void SetPosition(int id, Vector2 position)
@@ -80,14 +80,16 @@ namespace Reconnect.ToolTips
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
             
-            tooltip.transform.position =
-                Mouse.current.position.ReadValue() + tooltip.Size / 2 + new Vector2(1, 1);
+            tooltip.transform.position = Mouse.current.position.ReadValue() + tooltip.Size / 2;
         }
         
         public void SetSize(int id, float width, float height)
         {
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
+
+            if (width <= 0 || height <= 0)
+                throw new ArgumentException("Width and height arguments must be non zero positive numbers.");
 
             tooltip.Size = new Vector2(width, height);
         }
