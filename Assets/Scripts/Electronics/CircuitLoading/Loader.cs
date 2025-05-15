@@ -2,8 +2,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Mirror;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Utils;
 using UnityEngine;
 using YamlDotNet.Helpers;
 using YamlDotNet.RepresentationModel;
@@ -68,13 +71,18 @@ namespace Reconnect.Electronics.CircuitLoading
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
             };
         }
-
+        
         private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
         {
             GameObject wire = UnityEngine.Object.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
             wire.transform.localPosition = localPos;
             wire.transform.localScale = scale;
             wire.transform.localEulerAngles = eulerAngle;
+            if (!wire.TryGetComponent(out ComponentSync wireSync))
+                throw new ComponentNotFoundException(
+                    "The Switch wire prefab clone does not contain any ComponentSync script.");
+            wireSync.breadboardNetIdentity = breadboard.netIdentity;
+            NetworkServer.Spawn(wire);
         }
         private static void DrawSwitchWires(Breadboard breadboard)
         {

@@ -18598,6 +18598,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreadboardHolder
       objectReference: {fileID: 0}
+    - target: {fileID: 5707095582670252470, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 2897939698
+      objectReference: {fileID: 0}
+    - target: {fileID: 6414755396423296166, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 156293353
+      objectReference: {fileID: 0}
+    - target: {fileID: 6871752662741350777, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 1342484164
+      objectReference: {fileID: 0}
+    - target: {fileID: 7500909790262912589, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 1110135004
+      objectReference: {fileID: 0}
+    - target: {fileID: 7944350974783568786, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 3007527359
+      objectReference: {fileID: 0}
+    - target: {fileID: 9024356575356791981, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+      propertyPath: sceneId
+      value: 741402305
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22094,7 +22118,13 @@ MonoBehaviour:
   playerPrefab: {fileID: 6700679459460615958, guid: 9362e6bf067f4f64198412042ba322d4, type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 5028337126911305549, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
+  - {fileID: 2559706539940741362, guid: b34cc4b011af3644cbb6d78e58ceee2d, type: 3}
+  - {fileID: 1057546899488382299, guid: d58698d45149d56bf90aa42f18132080, type: 3}
+  - {fileID: 1530555684961982742, guid: 513b1f9650affa64898fa1e26e036335, type: 3}
+  - {fileID: 8146397133818690620, guid: 936c73db1b1d98b41a7b20dc1801e7e2, type: 3}
+  - {fileID: 8146397133818690620, guid: 59e9e36bb78ed61beb99a8fb104987d4, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2

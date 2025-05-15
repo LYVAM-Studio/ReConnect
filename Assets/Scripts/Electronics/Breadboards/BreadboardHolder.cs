@@ -31,8 +31,9 @@ namespace Reconnect.Electronics.Breadboards
         private Vector3 _lastRaycast;
         private int _lastFrame;
 
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             _mainCam = Camera.main;
             _raycastPlane = new Plane(
                 transform.forward,

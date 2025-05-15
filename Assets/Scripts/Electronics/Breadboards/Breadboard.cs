@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.ResistorComponent;
@@ -10,7 +11,7 @@ using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Breadboard : MonoBehaviour
+    public class Breadboard : NetworkBehaviour
     {
         public BreadboardHolder breadboardHolder;
 
@@ -78,18 +79,31 @@ namespace Reconnect.Electronics.Breadboards
         public Vector3 WorldToLocal(Vector3 worldPos)
             => Quaternion.Inverse(transform.rotation) * (worldPos - transform.position) / transform.lossyScale.x;
 
-        private void Start()
+        private bool _isInitialized; 
+        public override void OnStartServer()
         {
+            Debug.Log("Server started");
+            OnWireCreation = false;
+            Loader.LoadCircuit(this, circuitToLoad);
+        }
+        
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            Debug.Log("Client started");
             OnWireCreation = false;
             _wireBeingCreated =
                 Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
             _wireBeingCreated.GetComponent<WireScript>().enabled = false;
             _wireBeingCreated.name = "WirePrefab (wireBeingCreated)";
-            Loader.LoadCircuit(this, circuitToLoad);
+            _isInitialized = true;
         }
+
         
         private void Update()
         {
+            if (isServerOnly || !_isInitialized)
+                return;
             if (breadboardHolder.IsActive)
             {
                 if (OnWireCreation)
@@ -125,11 +139,11 @@ namespace Reconnect.Electronics.Breadboards
         {
             foreach (WireScript wireScript in Wires)
             {
-                Destroy(wireScript.gameObject);
+                NetworkServer.Destroy(wireScript.gameObject);
             }
             foreach (Dipole dipole in Dipoles)
             {
-                Destroy(dipole.gameObject);
+                NetworkServer.Destroy(dipole.gameObject);
             }
 
             Wires.Clear();
@@ -137,9 +151,23 @@ namespace Reconnect.Electronics.Breadboards
             Target = null;
         }
         
+        [ClientRpc]
+        void RpcSetParent(NetworkIdentity child)
+        {
+            child.transform.SetParent(transform, worldPositionStays: false);
+            Debug.Log($"{child.gameObject.name} is set to parent {name}");
+        }
+        
+        [Command]
+        public void CmdRequestCreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked)
+        {
+            CreateWire(sourcePoint, destinationPoint, name, isLocked);
+        }
+        
         public void CreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked = false)
         {
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
+
             wireGameObj.name = $"WirePrefab ({name})";
             wireGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             wireGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
@@ -147,6 +175,7 @@ namespace Reconnect.Electronics.Breadboards
             var scale = wireGameObj.transform.localScale;
             scale[1] /* y component */ = (PointToLocalPos(sourcePoint) - PointToLocalPos(destinationPoint)).magnitude / 2f;
             wireGameObj.transform.localScale = scale;
+            
             if (!wireGameObj.TryGetComponent(out WireScript wireScript))
                 throw new ComponentNotFoundException(
                     "The wire prefab clone does not contain any WireScript component.");
@@ -154,16 +183,26 @@ namespace Reconnect.Electronics.Breadboards
             wireScript.Pole1 = sourcePoint;
             wireScript.Pole2 = destinationPoint;
             wireScript.IsLocked = isLocked;
+            wireScript.breadboardNetIdentity = netIdentity;
             Wires.Add(wireScript);
+            NetworkServer.Spawn(wireGameObj);
+        }
+        
+        [Command]
+        public void CmdRequestCreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked)
+        {
+            CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
         }
         
         public Resistor CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked = false)
         {
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/ResistorPrefab"), transform.parent, false);
+            
             resistorGameObj.name = $"ResistorPrefab ({name})";
             resistorGameObj.transform.localPosition = (PointToLocalPos(sourcePoint) + PointToLocalPos(destinationPoint)) / 2;
             resistorGameObj.transform.LookAt(LocalToWorld(PointToLocalPos(destinationPoint)));
             resistorGameObj.transform.eulerAngles += new Vector3(90, 0, 0);
+            
             if (!resistorGameObj.TryGetComponent(out ResistorColorManager resistorColor))
                 throw new ComponentNotFoundException(
                     "The resistor prefab clone does not contain any ResistorColorManager component.");
@@ -180,8 +219,18 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Breadboard = this;
             dipoleScript.IsLocked = isLocked;
             dipoleScript.Inner = inner;
+            dipoleScript.breadboardNetIdentity = netIdentity;
             Dipoles.Add(dipoleScript);
+            
+            NetworkServer.Spawn(resistorGameObj);
+            
             return inner;
+        }
+        
+        [Command]
+        public void CmdRequestCreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked)
+        {
+            CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
         }
         
         public Lamp CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, bool isLocked = false)
@@ -205,7 +254,11 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Breadboard = this;
             dipoleScript.IsLocked = isLocked;
             dipoleScript.Inner = inner;
+            dipoleScript.breadboardNetIdentity = netIdentity;
             Dipoles.Add(dipoleScript);
+            
+            NetworkServer.Spawn(lampGameObj);
+            
             return inner;
         }
         
@@ -222,10 +275,18 @@ namespace Reconnect.Electronics.Breadboards
             _wireBeingCreated.SetActive(false);
         }
         
+        [Command]
+        public void CmdRequestDeleteWire(NetworkIdentity wireIdentity)
+        {
+            if (!wireIdentity.TryGetComponent(out WireScript wire))
+                throw new ComponentNotFoundException("No wireScript has been found on the network identity");
+            DeleteWire(wire);
+        }
+        
         public void DeleteWire(WireScript wire)
         {
             Wires.Remove(wire);
-            Destroy(wire.gameObject);
+            NetworkServer.Destroy(wire.gameObject);
         }
 
         // This function is called by a breadboard node when the mouse collides it
@@ -247,7 +308,7 @@ namespace Reconnect.Electronics.Breadboards
                     (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
                     (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
                 if (wireAtPos == null && dipoleAtPos == null)
-                    CreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}");
+                    CmdRequestCreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}", false);
 
                 // Set the start to the current end
                 _lastNodePoint = nodePoint;

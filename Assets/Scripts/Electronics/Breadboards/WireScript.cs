@@ -1,11 +1,14 @@
+using System;
+using Mirror;
 using UnityEngine;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
 using Reconnect.Utils;
 
 namespace Reconnect.Electronics.Components
 {
-    public class WireScript : MonoBehaviour, IDipole, ICursorHandle
+    public class WireScript : ComponentSync, IDipole, ICursorHandle
     {
         bool ICursorHandle.IsPointerDown { get; set; }
         
@@ -26,13 +29,14 @@ namespace Reconnect.Electronics.Components
                 if (_isLocked) _outline.enabled = false;
             }
         }
-
+        
         private void Awake()
         {
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component found on this WireScript.");
             
             _outline.enabled = false;
+            
         }
 
         void ICursorHandle.OnCursorEnter()
@@ -48,7 +52,7 @@ namespace Reconnect.Electronics.Components
         void ICursorHandle.OnCursorClick()
         {
             if (!_isLocked)
-                Breadboard.DeleteWire(this);
+                Breadboard.CmdRequestDeleteWire(NetworkIdentity);
         }
     }
 }
