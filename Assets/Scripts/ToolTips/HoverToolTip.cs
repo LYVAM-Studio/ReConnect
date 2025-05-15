@@ -1,12 +1,10 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 namespace Reconnect.ToolTips
 {
-    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler
+    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IBeginDragHandler, IEndDragHandler
     {
         [SerializeField]
         [TextArea(1, 3)]
@@ -53,9 +51,14 @@ namespace Reconnect.ToolTips
             Hide();
         }
         
-        public void OnDrag(PointerEventData eventData)
+        public void OnBeginDrag(PointerEventData eventData)
         {
             Hide();
+        }
+        
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            Show();
         }
 
         private void Show()
