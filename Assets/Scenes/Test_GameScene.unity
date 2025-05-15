@@ -7591,6 +7591,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1459006375159629128, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1675939243410789214, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.911
+      objectReference: {fileID: 0}
+    - target: {fileID: 1675939243410789214, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.852
+      objectReference: {fileID: 0}
     - target: {fileID: 1803801907905588610, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
       propertyPath: m_LocalPosition.x
       value: -312.4471
@@ -7630,6 +7642,10 @@ PrefabInstance:
     - target: {fileID: 1803801907905588610, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4841114322167617337, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7589146162346918539, guid: 7b7f1905b86ee60419bf8af976b47cdb, type: 3}
       propertyPath: m_Name
