@@ -374,6 +374,7 @@ MonoBehaviour:
   sprintingFactor: 1.8
   crouchingFactor: 0.7
   turnSmoothTime: 0.1
+  turnSmoothTimeMidAir: 0.5
 --- !u!114 &8557946643257415027
 MonoBehaviour:
   m_ObjectHideFlags: 0

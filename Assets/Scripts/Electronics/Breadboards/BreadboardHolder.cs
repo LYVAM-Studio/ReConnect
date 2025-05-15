@@ -1,5 +1,7 @@
 using System;
+using Mirror;
 using Reconnect.Interactions;
+using Reconnect.Menu;
 using Reconnect.Player;
 using Reconnect.Utils;
 using Unity.Cinemachine;
@@ -13,14 +15,13 @@ namespace Reconnect.Electronics.Breadboards
     /// </summary>
     public class BreadboardHolder : Interactable
     {
+        public static Vector3 SwitchWireInputCorner = new Vector3(4, 4, -0.5f);
+        public static Vector3 SwitchWireOutputCorner = new Vector3(4, -4, -0.5f);
+        
         public Breadboard breadboard;
         public CinemachineCamera cam;
         public GameObject ui;
         public TextAsset circuitYaml;
-
-        public static Vector3 SwitchWireInputCorner = new Vector3(4, 4, -0.5f);
-
-        public static Vector3 SwitchWireOutputCorner = new Vector3(4, -4, -0.5f);
         
         [NonSerialized] public bool IsActive = false;
 
@@ -42,37 +43,48 @@ namespace Reconnect.Electronics.Breadboards
 
         public override void Interact(GameObject player)
         {
-            if (!player.TryGetComponent(out PlayerGetter p))
-                throw new ComponentNotFoundException("No PlayerGetter component found on the player.");
-            
             if (IsActive)
             {
                 // quit the interface
-                breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-                Outline.enabled = true;
-                p.MovementsNetwork.isLocked = false;
-                p.DummyModel.SetActive(true);
-                FreeLookCamera.InputAxisController.enabled = true;
-                cam.gameObject.SetActive(false);
-                cam.Priority = 0;
-                ui.SetActive(false);
-                IsActive = false;
+                MenuManager.Instance.BackToPreviousMenu();
+                MenuManager.Instance.BreadBoardHolder = null;
             }
             else
             {
                 // enter the interface
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.Confined;
+                MenuManager.Instance.BreadBoardHolder = this;
+                MenuManager.Instance.SetMenuTo(MenuState.BreadBoard, CursorState.Shown);
+            }
+        }
+
+        public void Activate(bool active)
+        {
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerGetter p))
+                throw new ComponentNotFoundException("No PlayerGetter component found on the player.");
+            
+            if (active)
+            {
+                // enter the interface
                 Outline.enabled = false;
                 p.MovementsNetwork.isLocked = true;
                 p.DummyModel.SetActive(false);
                 FreeLookCamera.InputAxisController.enabled = false;
-                cam.gameObject.SetActive(true);
                 cam.Priority = 2;
                 ui.SetActive(true);
                 IsActive = true;
+            }
+            else
+            {
+                // quit the interface
+                breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
+                Outline.enabled = true;
+                p.MovementsNetwork.isLocked = false;
+                p.DummyModel.SetActive(true);
+                FreeLookCamera.InputAxisController.enabled = true;
+                cam.Priority = 0;
+                ui.SetActive(false);
+                IsActive = false;
+                MenuManager.Instance.BreadBoardHolder = null;
             }
         }
 
