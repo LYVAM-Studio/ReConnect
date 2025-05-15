@@ -1086,30 +1086,116 @@ namespace Reconnect
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CancelKnockOut"",
+                    ""type"": ""Button"",
+                    ""id"": ""d133ebf4-7f5c-4e5a-8d2e-41996da834f4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
-                    ""name"": """",
-                    ""id"": ""790f57db-b2b2-4d65-850a-aab1e2e63bcf"",
-                    ""path"": ""<Keyboard>/k"",
+                    ""name"": ""One Modifier"",
+                    ""id"": ""62ea56eb-a69e-4746-8a2f-d99134ed1ee8"",
+                    ""path"": ""OneModifier"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": """",
                     ""action"": ""KnockOut"",
-                    ""isComposite"": false,
+                    ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""8c45f368-033e-40e4-acf9-b61852388ea1"",
-                    ""path"": ""<Keyboard>/1"",
+                    ""name"": ""modifier"",
+                    ""id"": ""c592adff-f74f-4654-8140-0e3e9a952318"",
+                    ""path"": ""<Keyboard>/ctrl"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Keyboard&Mouse"",
+                    ""groups"": """",
+                    ""action"": ""KnockOut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""4af9bd07-fa57-4753-af47-0793d756ce92"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""KnockOut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""4d9a448d-d4ab-46b1-a840-98efb2a0e75f"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PopulateLessons"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""b39bc8af-777e-47c4-8fd7-91dc3d5a7971"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""PopulateLessons"",
                     ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""e9fef43b-983f-4ebb-b7b8-be05d6cce60e"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PopulateLessons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""381532af-1639-440e-b602-fdb9f57888a1"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelKnockOut"",
+                    ""isComposite"": true,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""da988d11-0939-4b61-960d-d5c898be711e"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelKnockOut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""b0ddfe26-4888-4977-acab-61559bc026ad"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CancelKnockOut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -1213,6 +1299,7 @@ namespace Reconnect
             m_CheatCodes = asset.FindActionMap("CheatCodes", throwIfNotFound: true);
             m_CheatCodes_KnockOut = m_CheatCodes.FindAction("KnockOut", throwIfNotFound: true);
             m_CheatCodes_PopulateLessons = m_CheatCodes.FindAction("PopulateLessons", throwIfNotFound: true);
+            m_CheatCodes_CancelKnockOut = m_CheatCodes.FindAction("CancelKnockOut", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -1629,12 +1716,14 @@ namespace Reconnect
         private List<ICheatCodesActions> m_CheatCodesActionsCallbackInterfaces = new List<ICheatCodesActions>();
         private readonly InputAction m_CheatCodes_KnockOut;
         private readonly InputAction m_CheatCodes_PopulateLessons;
+        private readonly InputAction m_CheatCodes_CancelKnockOut;
         public struct CheatCodesActions
         {
             private @PlayerControls m_Wrapper;
             public CheatCodesActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @KnockOut => m_Wrapper.m_CheatCodes_KnockOut;
             public InputAction @PopulateLessons => m_Wrapper.m_CheatCodes_PopulateLessons;
+            public InputAction @CancelKnockOut => m_Wrapper.m_CheatCodes_CancelKnockOut;
             public InputActionMap Get() { return m_Wrapper.m_CheatCodes; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1650,6 +1739,9 @@ namespace Reconnect
                 @PopulateLessons.started += instance.OnPopulateLessons;
                 @PopulateLessons.performed += instance.OnPopulateLessons;
                 @PopulateLessons.canceled += instance.OnPopulateLessons;
+                @CancelKnockOut.started += instance.OnCancelKnockOut;
+                @CancelKnockOut.performed += instance.OnCancelKnockOut;
+                @CancelKnockOut.canceled += instance.OnCancelKnockOut;
             }
 
             private void UnregisterCallbacks(ICheatCodesActions instance)
@@ -1660,6 +1752,9 @@ namespace Reconnect
                 @PopulateLessons.started -= instance.OnPopulateLessons;
                 @PopulateLessons.performed -= instance.OnPopulateLessons;
                 @PopulateLessons.canceled -= instance.OnPopulateLessons;
+                @CancelKnockOut.started -= instance.OnCancelKnockOut;
+                @CancelKnockOut.performed -= instance.OnCancelKnockOut;
+                @CancelKnockOut.canceled -= instance.OnCancelKnockOut;
             }
 
             public void RemoveCallbacks(ICheatCodesActions instance)
@@ -1762,6 +1857,7 @@ namespace Reconnect
         {
             void OnKnockOut(InputAction.CallbackContext context);
             void OnPopulateLessons(InputAction.CallbackContext context);
+            void OnCancelKnockOut(InputAction.CallbackContext context);
         }
     }
 }
