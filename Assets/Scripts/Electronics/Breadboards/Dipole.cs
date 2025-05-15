@@ -1,4 +1,5 @@
 using System;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
 using Reconnect.Utils;
@@ -7,7 +8,7 @@ using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Dipole : MonoBehaviour, IDipole, ICursorHandle
+    public class Dipole : ComponentSync, IDipole, ICursorHandle
     {
         public Breadboard Breadboard { get; set; }
         public Vector2Int Pole1 { get; set; }
@@ -71,8 +72,9 @@ namespace Reconnect.Electronics.Breadboards
             _controls.Breadboard.Rotate.performed += OnRotate;
         }
 
-        private void Start()
+        private new void Start()
         {
+            base.Start();
             _lastLocalPosition = transform.localPosition;
         }
 
