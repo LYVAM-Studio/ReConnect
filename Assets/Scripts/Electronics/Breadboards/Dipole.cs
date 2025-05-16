@@ -202,7 +202,11 @@ namespace Reconnect.Electronics.Breadboards
         private void OnRotate(InputAction.CallbackContext context)
         {
             if (_isBeingDragged)
-                IsHorizontal ^= true; // Toggles the rotation
+            {
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                    throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+                playerNetwork.CmdRotateDipole(netIdentity);
+            }
         }
 
         // Returns to last pos when the player exists the breadboard holder
