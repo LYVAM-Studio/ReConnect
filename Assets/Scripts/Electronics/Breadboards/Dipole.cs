@@ -1,6 +1,7 @@
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
+using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -170,8 +171,10 @@ namespace Reconnect.Electronics.Breadboards
             if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
                 transform.localPosition = closest;
-                Pole1 = newPole1;
-                Pole2 = newPole2;
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                    throw new ComponentNotFoundException(
+                        "No PlayerNetwork component has been found on the local player");
+                playerNetwork.CmdRequestSetPoles(netIdentity, newPole1, newPole2);
             }
             else
             {

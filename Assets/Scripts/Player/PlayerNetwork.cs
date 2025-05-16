@@ -73,5 +73,14 @@ namespace Reconnect.Player
             else
                 breadboardHolder.breadboardSwitch.OnFailedExercise();
         }
+
+        [Command]
+        public void CmdRequestSetPoles(NetworkIdentity dipoleIdentity, Vector2Int pole1, Vector2Int pole2)
+        {
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            dipole.Pole1 = pole1;
+            dipole.Pole2 = pole2;
+        }
     }
 }
