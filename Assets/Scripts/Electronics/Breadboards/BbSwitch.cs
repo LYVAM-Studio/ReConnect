@@ -61,7 +61,7 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
-            playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetID);
+            playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetUid);
         }
 
         public void OnFailedExercise()

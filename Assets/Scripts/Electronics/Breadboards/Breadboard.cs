@@ -44,7 +44,7 @@ namespace Reconnect.Electronics.Breadboards
         /// <summary>
         /// The target of the currently loaded circuit. ElecComponent
         /// </summary>
-        [SyncVar] public int TargetID;
+        [SyncVar] [NonSerialized] public Uid TargetUid;
 
         /// <summary>
         /// The title of the circuit that has been loaded on this breadboard.
@@ -149,7 +149,7 @@ namespace Reconnect.Electronics.Breadboards
 
             Wires.Clear();
             Dipoles.Clear();
-            TargetID = -1;
+            TargetUid = null;
         }
         
         [Command]
@@ -187,7 +187,7 @@ namespace Reconnect.Electronics.Breadboards
             CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
         }
         
-        public int CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked = false)
+        public Uid CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked = false)
         {
             var resistorGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/ResistorPrefab"), transform.parent, false);
             
@@ -202,7 +202,7 @@ namespace Reconnect.Electronics.Breadboards
             resistorColor.ResistanceValue = resistance;
             resistorColor.Tolerance = tolerance;
             resistorColor.UpdateBandColors();
-            var innerID = UniqueIdDictionary.Instance.Add(new Resistor(name, resistance));
+            var innerUid = UidDictionary.Add(new Resistor(name, resistance));
             if (!resistorGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
                     "The resistor prefab clone does not contain any Dipole component.");
@@ -212,10 +212,10 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;
             dipoleScript.IsLocked = isLocked;
-            dipoleScript.InnerID = innerID;
+            dipoleScript.InnerUid = innerUid;
             Dipoles.Add(dipoleScript);
             
-            return innerID;
+            return innerUid;
         }
         
         [Command]
@@ -224,7 +224,7 @@ namespace Reconnect.Electronics.Breadboards
             CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
         }
         
-        public int CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, bool isLocked = false)
+        public Uid CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, bool isLocked = false)
         {
             var lampGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/LampPrefab"), transform.parent, false);
             lampGameObj.name = $"LampPrefab ({name})";
@@ -235,7 +235,7 @@ namespace Reconnect.Electronics.Breadboards
             if (lightBulb is null)
                 throw new ComponentNotFoundException(
                     "The lamp prefab does not contain LightBulb component in its children");
-            var innerID = UniqueIdDictionary.Instance.Add(new Lamp(name, resistance, lightBulb));
+            var innerUid = UidDictionary.Add(new Lamp(name, resistance, lightBulb));
             if (!lampGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
                     "The lamp prefab clone does not contain any Dipole component.");
@@ -246,10 +246,10 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;
             dipoleScript.IsLocked = isLocked;
-            dipoleScript.InnerID = innerID;
+            dipoleScript.InnerUid = innerUid;
             Dipoles.Add(dipoleScript);
             
-            return innerID;
+            return innerUid;
         }
         
         public void StartWire(Vector2Int nodePoint)
@@ -297,7 +297,7 @@ namespace Reconnect.Electronics.Breadboards
                 var dipoleAtPos = Dipoles.Find(d =>
                     (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
                     (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
-                if (wireAtPos == null && dipoleAtPos == null)
+                if (wireAtPos is null && dipoleAtPos is null)
                     CmdRequestCreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}", false);
 
                 // Set the start to the current end

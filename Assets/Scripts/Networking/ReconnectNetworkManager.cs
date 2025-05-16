@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Threading.Tasks;
 using Mirror;
-using UnityEngine;
-using UnityEngine.UI;
 
 public class ReconnectNetworkManager : NetworkManager
 {

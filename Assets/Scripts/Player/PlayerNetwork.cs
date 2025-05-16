@@ -44,11 +44,11 @@ namespace Reconnect.Player
             Debug.Log($"Command received by server");
             if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
-            bool succeeded = BbSolver.Instance.ExecuteCircuit(breadboardHolder.breadboard);
+            bool succeeded = BbSolver.ExecuteCircuit(breadboardHolder.breadboard);
             if (succeeded)
             {
                 Debug.Log("Success : DoAction");
-                ElecComponent target = UniqueIdDictionary.Instance.Get<ElecComponent>(breadboardHolder.breadboard.TargetID);
+                ElecComponent target = UidDictionary.Get<ElecComponent>(breadboardHolder.breadboard.TargetUid);
                 target.DoAction();
             }
             else
@@ -59,10 +59,10 @@ namespace Reconnect.Player
         }
         
         [Command]
-        public void CmdRequestUndoTargetAction(int targetId)
+        public void CmdRequestUndoTargetAction(Uid targetId)
         {
-            Debug.Log($"Command undo action received by server");
-            ElecComponent target = UniqueIdDictionary.Instance.Get<ElecComponent>(targetId);
+            Debug.Log("Command undo action received by server");
+            ElecComponent target = UidDictionary.Get<ElecComponent>(targetId);
             target.UndoAction();
         }
 
