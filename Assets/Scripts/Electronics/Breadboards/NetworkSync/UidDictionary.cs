@@ -10,14 +10,17 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
 
         public static Uid Add(object item)
         {
-            Uid id = new Uid(_nextId);
-            _nextId++;
+            AssertIsServer();
+            
+            Uid id = new Uid(_nextId++);
             Dictionary[id] = item;
             return id;
         }
 
         public static T Get<T>(Uid id)
         {
+            AssertIsServer();
+            
             if (!Dictionary.TryGetValue(id, out var obj))
                 throw new KeyNotFoundException($"Item with ID {id} does not exist");
             if (!(obj is T tValue))
@@ -27,7 +30,17 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
 
         public static bool Remove(Uid id)
         {
+            AssertIsServer();
+            
             return Dictionary.Remove(id);
+        }
+
+        private static void AssertIsServer()
+        {
+            // todo: fix
+            
+            // if (!NetworkBehaviour.)
+                // throw new Exception();
         }
     }
 }
