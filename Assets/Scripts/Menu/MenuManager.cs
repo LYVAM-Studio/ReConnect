@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using kcp2k;
 using Mirror;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Menu.Lessons;
@@ -263,7 +264,20 @@ namespace Reconnect.Menu
         {
             try
             {
-                networkManager.networkAddress = serverAddress.text;
+                string[] args = serverAddress.text.Split(':', 2);
+                
+                // set the server address
+                networkManager.networkAddress = args[0];
+                // set the server port
+                if (Transport.active is not KcpTransport transport)
+                    throw new UnreachableCaseException("The transport is not a KcpTransport.");
+                else if (string.IsNullOrEmpty(args[1]))
+                    transport.port = 7777;
+                else if (ushort.TryParse(args[1], out ushort port))
+                    transport.port = port;
+                else
+                    throw new ArgumentException("The port could not be parsed.");
+                
                 bool success = await networkManager.StartClientAsync();
                 if (success)
                 {
