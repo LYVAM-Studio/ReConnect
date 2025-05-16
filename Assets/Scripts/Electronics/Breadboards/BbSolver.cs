@@ -9,6 +9,12 @@ using Reconnect.Player;
 
 namespace Electronics.Breadboards
 {
+    public enum BreadboardResult
+    {
+        Success,
+        Failure,
+        ShortCircuit
+    }
     public static class BbSolver
     {
         private static bool CheckTension(ElecComponent target, double intensity, double expectedTension, float tolerance)
@@ -17,7 +23,7 @@ namespace Electronics.Breadboards
         private static bool CheckIntensity(double intensity, double expectedIntensity, float tolerance)
             => Math.Abs(intensity - expectedIntensity) / expectedIntensity < tolerance;
 
-        public static bool ExecuteCircuit(Breadboard breadboard, PlayerMovementsNetwork playerMovements)
+        public static BreadboardResult ExecuteCircuit(Breadboard breadboard)
         {
             Graph circuitGraph = GraphConverter.CreateGraph(breadboard);
             circuitGraph.DefineBranches();
@@ -25,10 +31,7 @@ namespace Electronics.Breadboards
 
             if (double.IsPositiveInfinity(intensity))
             {
-                if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
-                    MenuManager.Instance.BackToPreviousMenu();
-                
-                playerMovements.KnockOut();
+                return BreadboardResult.ShortCircuit;
             }
             
             // WriteReport(circuitGraph, breadboard, intensity);
@@ -38,7 +41,7 @@ namespace Electronics.Breadboards
                 if (!CheckTension(UidDictionary.Get<ElecComponent>(breadboard.TargetUid), intensity,
                         breadboard.CircuitInfo.TargetValue, breadboard.CircuitInfo.TargetTolerance))
                 {
-                    return false;
+                    return BreadboardResult.Failure;
                 }
             }
             else
@@ -46,12 +49,12 @@ namespace Electronics.Breadboards
                 if (!CheckIntensity(intensity, breadboard.CircuitInfo.TargetValue,
                         breadboard.CircuitInfo.TargetTolerance))
                 {
-                    return false;
+                    return BreadboardResult.Failure;
                 }
             }
 
             UidDictionary.Get<ElecComponent>(breadboard.TargetUid).DoAction();
-            return true;
+            return BreadboardResult.Success;
         }
         
         // Debug function
