@@ -78,11 +78,11 @@ namespace Reconnect.Player
         }
         
         [Command]
-        public void CmdRotateDipole(NetworkIdentity dipoleIdentity)
+        public void CmdSetHorizontalDipole(NetworkIdentity dipoleIdentity, bool value)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
                 throw new ComponentNotFoundException("No component Dipole found on the identity provided");
-            dipole.IsHorizontal = !dipole.IsHorizontal;
+            dipole.IsHorizontal = value;
         }
         
         [Command]
