@@ -6,6 +6,7 @@ using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.ResistorComponent;
+using Reconnect.Player;
 using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
@@ -151,12 +152,6 @@ namespace Reconnect.Electronics.Breadboards
             TargetUid = null;
         }
         
-        [Command]
-        public void CmdRequestCreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked)
-        {
-            CreateWire(sourcePoint, destinationPoint, name, isLocked);
-        }
-        
         public void CreateWire(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, bool isLocked = false)
         {
             var wireGameObj = Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
@@ -178,12 +173,6 @@ namespace Reconnect.Electronics.Breadboards
             wireScript.IsLocked = isLocked;
             wireScript.breadboardNetIdentity = netIdentity;
             Wires.Add(wireScript);
-        }
-        
-        [Command]
-        public void CmdRequestCreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked)
-        {
-            CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
         }
         
         public Uid CreateResistor(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked = false)
@@ -220,12 +209,6 @@ namespace Reconnect.Electronics.Breadboards
             tooltipScript.Text = $"{resistance} Ω";
             
             return innerUid;
-        }
-        
-        [Command]
-        public void CmdRequestCreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, float tolerance, bool isLocked)
-        {
-            CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
         }
         
         public Uid CreateLamp(Vector2Int sourcePoint, Vector2Int destinationPoint, string name, uint resistance, bool isLocked = false)
@@ -268,20 +251,6 @@ namespace Reconnect.Electronics.Breadboards
             OnWireCreation = false;
             _wireBeingCreated.SetActive(false);
         }
-        
-        [Command]
-        public void CmdRequestDeleteWire(NetworkIdentity wireIdentity)
-        {
-            if (!wireIdentity.TryGetComponent(out WireScript wire))
-                throw new ComponentNotFoundException("No wireScript has been found on the network identity");
-            DeleteWire(wire);
-        }
-        
-        public void DeleteWire(WireScript wire)
-        {
-            Wires.Remove(wire);
-            NetworkServer.Destroy(wire.gameObject);
-        }
 
         // This function is called by a breadboard node when the mouse collides it
         public void OnMouseNodeCollision(Vector2Int nodePoint)
@@ -302,7 +271,12 @@ namespace Reconnect.Electronics.Breadboards
                     (d.Pole1 == _lastNodePoint && d.Pole2 == nodePoint) ||
                     (d.Pole2 == _lastNodePoint && d.Pole1 == nodePoint));
                 if (wireAtPos is null && dipoleAtPos is null)
-                    CmdRequestCreateWire(_lastNodePoint, nodePoint, $"_: {_lastNodePoint} <-> {nodePoint}", false);
+                {
+                    if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                        throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+                    playerNetwork.CmdRequestCreateWire(netIdentity, _lastNodePoint, nodePoint, 
+                        $"_: {_lastNodePoint} <-> {nodePoint}", false);
+                }
 
                 // Set the start to the current end
                 _lastNodePoint = nodePoint;
