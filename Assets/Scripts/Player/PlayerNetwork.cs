@@ -82,5 +82,17 @@ namespace Reconnect.Player
             dipole.Pole1 = pole1;
             dipole.Pole2 = pole2;
         }
+        
+        [Command]
+        public void CmdSetDipolePosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
+        {
+            dipoleIdentity.transform.position = targetPos;
+        }
+        
+        [Command]
+        public void CmdSetDipoleLocalPosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
+        {
+            dipoleIdentity.transform.localPosition = targetPos;
+        }
     }
 }
