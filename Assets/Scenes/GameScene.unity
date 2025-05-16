@@ -10829,36 +10829,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1203828233315497295, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 1203828233315497295, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 1203828233315497295, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 7281239185946322518, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_Speed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7281239185946322518, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_AgentTypeID
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7281239185946322518, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
-      propertyPath: m_Acceleration
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 7617482579342380664, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
       propertyPath: m_Name
       value: Mob_Agressive
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 7751996094562080609, guid: a8ebf1ea9d29042369565864135f5d55, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
