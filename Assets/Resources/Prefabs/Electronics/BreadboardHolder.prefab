@@ -758,7 +758,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d45a15b9fd354d43aad54e671511bef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Breadboard: {fileID: 5224413377975774177}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  breadboard: {fileID: 5224413377975774177}
 --- !u!114 &5242564207384748912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6273,6 +6276,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   breadboard: {fileID: 5224413377975774177}
+  breadboardSwitch: {fileID: 8209738594505463407}
   cam: {fileID: 7986682997813188295}
   ui: {fileID: 4585693281908051152}
   circuitYaml: {fileID: 4900000, guid: a0659226f11b4b87a4990b56e7320b94, type: 3}
@@ -10481,6 +10485,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   breadboardHolder: {fileID: 1377389696476252726}
+  TargetID: 0
   circuitToLoad: {fileID: 0}
   switchHolder: {fileID: 4127045037153396875}
 --- !u!1 &8636401580092664516

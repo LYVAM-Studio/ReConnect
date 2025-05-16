@@ -9215,7 +9215,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Connection failed. Please try again.
+  m_text: Connection failed. Please try again
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: fc6cfd323b73b0f489418d15ac4b3f65, type: 2}
   m_sharedMaterial: {fileID: -3461479067009336572, guid: fc6cfd323b73b0f489418d15ac4b3f65, type: 2}
@@ -18598,30 +18598,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreadboardHolder
       objectReference: {fileID: 0}
-    - target: {fileID: 5707095582670252470, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: sceneId
-      value: 2897939698
-      objectReference: {fileID: 0}
-    - target: {fileID: 6414755396423296166, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: sceneId
-      value: 156293353
-      objectReference: {fileID: 0}
-    - target: {fileID: 6871752662741350777, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: sceneId
-      value: 1342484164
-      objectReference: {fileID: 0}
-    - target: {fileID: 7500909790262912589, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: sceneId
-      value: 1110135004
-      objectReference: {fileID: 0}
-    - target: {fileID: 7944350974783568786, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: sceneId
-      value: 3007527359
-      objectReference: {fileID: 0}
-    - target: {fileID: 8209738594505463407, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-      propertyPath: breadboard
-      value: 
-      objectReference: {fileID: 1778245662}
     - target: {fileID: 9024356575356791981, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: sceneId
       value: 741402305
@@ -22687,17 +22663,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1772926369}
   m_Mesh: {fileID: 4300000, guid: 932518e1472904244afe21e844fd83ab, type: 3}
---- !u!114 &1778245662 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5224413377975774177, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
-  m_PrefabInstance: {fileID: 1505635007}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1747695b3909d7106b481f09ae5ab5b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1782765184
 GameObject:
   m_ObjectHideFlags: 0
