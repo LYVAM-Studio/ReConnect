@@ -20032,7 +20032,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2933684633409266154, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: clientAuthority
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5008100586115424281, guid: 31cdc339f2025024b800c766c2c16da5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23929,7 +23929,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  port: 7777
+  port: 7778
   DualMode: 1
   NoDelay: 1
   Interval: 10

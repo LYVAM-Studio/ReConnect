@@ -57,16 +57,16 @@ namespace Reconnect.Player
             else
             {
                 Debug.Log("Failure : OnFailedExercise");
-                RpcHandleCircuitFailure(bbHolderIdentity);
+                breadboardHolder.breadboardSwitch.IsOn = false;
             }
         }
-
-        [ClientRpc]
-        private void RpcHandleCircuitFailure(NetworkIdentity bbHolderIdentity)
+        
+        [Command]
+        public void CmdSetSwitchAnimation(NetworkIdentity bbHolderIdentity, bool value)
         {
             if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
-            breadboardHolder.breadboardSwitch.OnFailedExercise();
+            breadboardHolder.breadboardSwitch.IsOn = value;
         }
         
         [Command]
