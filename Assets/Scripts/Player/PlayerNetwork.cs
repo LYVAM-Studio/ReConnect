@@ -86,5 +86,13 @@ namespace Reconnect.Player
         {
             dipoleIdentity.transform.localPosition = targetPos;
         }
+        
+        [Command]
+        public void CmdRotateDipole(NetworkIdentity dipoleIdentity)
+        {
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            dipole.IsHorizontal = !dipole.IsHorizontal;
+        }
     }
 }
