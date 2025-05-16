@@ -25,8 +25,8 @@ namespace Reconnect.Electronics.Breadboards
             get => _animator.GetBool(_isOnHash);
             set => _animator.SetBool(_isOnHash, value);
         }
-
-        private NetworkIdentity _lastPlayerExecuting;
+        [SyncVar]
+        public NetworkIdentity lastPlayerExecuting;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         private void Start()
@@ -60,7 +60,6 @@ namespace Reconnect.Electronics.Breadboards
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
-            _lastPlayerExecuting = NetworkClient.localPlayer;
         }
 
         public void OnSwitchStartUp()
@@ -81,9 +80,9 @@ namespace Reconnect.Electronics.Breadboards
         private void ExecuteCircuit()
         {
             Debug.Log($"Command received by server");
-            if (_lastPlayerExecuting is null)
+            if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
-            if (!_lastPlayerExecuting.TryGetComponent(out PlayerMovementsNetwork playerMovements))
+            if (!lastPlayerExecuting.TryGetComponent(out PlayerMovementsNetwork playerMovements))
                 throw new ComponentNotFoundException(
                     "No PlayerMovementsNetwork found on the localPlayer gameObject");
             bool succeeded = BbSolver.ExecuteCircuit(breadboard, playerMovements);

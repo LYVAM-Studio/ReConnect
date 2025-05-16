@@ -44,6 +44,7 @@ namespace Reconnect.Player
             if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
             breadboardHolder.breadboardSwitch.IsOn = value;
+            breadboardHolder.breadboardSwitch.lastPlayerExecuting = connectionToClient.identity; // the player who sent the command
         }
         
         [Command]
