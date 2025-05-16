@@ -1,4 +1,3 @@
-using Electronics.Breadboards;
 using Mirror;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Breadboards.NetworkSync;
@@ -38,28 +37,6 @@ namespace Reconnect.Player
             FreeLookCamera.VirtualCamera.LookAt = lookAtObject;
         }
         
-        [Command]
-        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity, NetworkIdentity playerIdentity)
-        {
-            Debug.Log($"Command received by server");
-            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
-            if (!playerIdentity.TryGetComponent(out PlayerMovementsNetwork playerMovements))
-                throw new ComponentNotFoundException(
-                    "No PlayerMovementsNetwork found on the localPlayer gameObject");
-            bool succeeded = BbSolver.ExecuteCircuit(breadboardHolder.breadboard, playerMovements);
-            if (succeeded)
-            {
-                Debug.Log("Success : DoAction");
-                ElecComponent target = UidDictionary.Get<ElecComponent>(breadboardHolder.breadboard.TargetUid);
-                target.DoAction();
-            }
-            else
-            {
-                Debug.Log("Failure : OnFailedExercise");
-                breadboardHolder.breadboardSwitch.IsOn = false;
-            }
-        }
         
         [Command]
         public void CmdSetSwitchAnimation(NetworkIdentity bbHolderIdentity, bool value)

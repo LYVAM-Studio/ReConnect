@@ -1,4 +1,8 @@
+using System;
+using Electronics.Breadboards;
 using Mirror;
+using Reconnect.Electronics.Breadboards.NetworkSync;
+using Reconnect.Electronics.Components;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -16,12 +20,13 @@ namespace Reconnect.Electronics.Breadboards
         private Outline _outline;
 
         private int _isOnHash;
-
         public bool IsOn
         {
             get => _animator.GetBool(_isOnHash);
             set => _animator.SetBool(_isOnHash, value);
         }
+
+        private NetworkIdentity _lastPlayerExecuting;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         private void Start()
@@ -55,6 +60,7 @@ namespace Reconnect.Electronics.Breadboards
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
+            _lastPlayerExecuting = NetworkClient.localPlayer;
         }
 
         public void OnSwitchStartUp()
@@ -67,9 +73,31 @@ namespace Reconnect.Electronics.Breadboards
         public void OnSwitchIdleDown()
         {
             Debug.Log("End of animation");
-            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
-                throw new ComponentNotFoundException("No PlayerNetwork found on the local player");
-            playerNetwork.CmdExecuteCircuit(netIdentity, NetworkClient.localPlayer);
+            if (!isServer)
+                return;
+            ExecuteCircuit();
+        }
+        
+        private void ExecuteCircuit()
+        {
+            Debug.Log($"Command received by server");
+            if (_lastPlayerExecuting is null)
+                throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
+            if (!_lastPlayerExecuting.TryGetComponent(out PlayerMovementsNetwork playerMovements))
+                throw new ComponentNotFoundException(
+                    "No PlayerMovementsNetwork found on the localPlayer gameObject");
+            bool succeeded = BbSolver.ExecuteCircuit(breadboard, playerMovements);
+            if (succeeded)
+            {
+                Debug.Log("Success : DoAction");
+                ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
+                target.DoAction();
+            }
+            else
+            {
+                Debug.Log("Failure : OnFailedExercise");
+                IsOn = false;
+            }
         }
     }
 }
