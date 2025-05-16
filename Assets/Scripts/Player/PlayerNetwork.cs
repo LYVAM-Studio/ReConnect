@@ -2,6 +2,7 @@ using Mirror;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Menu;
 using Reconnect.Physics;
 using Reconnect.Utils;
 using UnityEngine;
@@ -117,6 +118,16 @@ namespace Reconnect.Player
             if (!wireIdentity.TryGetComponent(out WireScript wire))
                 throw new ComponentNotFoundException("No wireScript has been found on the network identity");
             wire.DeleteWire();
+        }
+
+        [TargetRpc]
+        public void TargetKnockOut()
+        {
+            if (!TryGetComponent(out PlayerMovementsNetwork playerMovements))
+                throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                MenuManager.Instance.BackToPreviousMenu();
+            playerMovements.KnockOut();
         }
     }
 }

@@ -3,6 +3,7 @@ using Electronics.Breadboards;
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Menu;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -82,20 +83,25 @@ namespace Reconnect.Electronics.Breadboards
             Debug.Log($"Command received by server");
             if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
-            if (!lastPlayerExecuting.TryGetComponent(out PlayerMovementsNetwork playerMovements))
+            if (!lastPlayerExecuting.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException(
-                    "No PlayerMovementsNetwork found on the localPlayer gameObject");
-            bool succeeded = BbSolver.ExecuteCircuit(breadboard, playerMovements);
-            if (succeeded)
+                    "No PlayerNetwork found on the localPlayer gameObject");
+            
+            BreadboardResult result = BbSolver.ExecuteCircuit(breadboard);
+            switch (result)
             {
-                Debug.Log("Success : DoAction");
-                ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
-                target.DoAction();
-            }
-            else
-            {
-                Debug.Log("Failure : OnFailedExercise");
-                IsOn = false;
+                case BreadboardResult.ShortCircuit:
+                    playerNetwork.TargetKnockOut();
+                    break;
+                case BreadboardResult.Success :
+                    Debug.Log("Success : DoAction");
+                    ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
+                    target.DoAction();
+                    break;
+                case BreadboardResult.Failure :
+                    Debug.Log("Failure : OnFailedExercise");
+                    IsOn = false;
+                    break;
             }
         }
     }
