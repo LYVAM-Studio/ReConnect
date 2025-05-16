@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using Reconnect.Menu;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -8,7 +9,7 @@ using UnityEngine.InputSystem;
 
 namespace Reconnect.Interactions
 {
-    public class InteractionDetector : MonoBehaviour
+    public class InteractionDetector : NetworkBehaviour
     {
         [Header("Display of the interaction range")]
         [SerializeField]
@@ -63,6 +64,7 @@ namespace Reconnect.Interactions
         
         public void Start()
         {
+            enabled = isLocalPlayer;
             _showRange = isShownByDefault;
             _currentNearest = null;
             visualRange.enabled = _showRange;
@@ -79,7 +81,9 @@ namespace Reconnect.Interactions
         // Update is called once per frame
         private void Update()
         {
-
+            if (!isLocalPlayer)
+                return;
+            
             // Make the nearest interactable glow more
             if (_currentNearest is not null) _currentNearest.ResetNearest();
             var newNearest = GetNearestInteractable();
@@ -104,6 +108,8 @@ namespace Reconnect.Interactions
         // This method is called when a trigger enters the player interaction range.
         public void OnTriggerEnter(Collider other)
         {
+            if (!isLocalPlayer)
+                return;
             if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
@@ -115,6 +121,8 @@ namespace Reconnect.Interactions
         // This method is called when a trigger leaves the player interaction range.
         public void OnTriggerExit(Collider other)
         {
+            if (!isLocalPlayer)
+                return;
             if (other.TryGetComponent(out Interactable interactable) &&
                 _interactableInRange.Any(e => e.interactable.Equals(interactable)))
             {
