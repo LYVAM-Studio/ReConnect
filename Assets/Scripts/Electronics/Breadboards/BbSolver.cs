@@ -4,6 +4,8 @@ using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
+using Reconnect.Menu;
+using Reconnect.Player;
 
 namespace Electronics.Breadboards
 {
@@ -15,12 +17,20 @@ namespace Electronics.Breadboards
         private static bool CheckIntensity(double intensity, double expectedIntensity, float tolerance)
             => Math.Abs(intensity - expectedIntensity) / expectedIntensity < tolerance;
 
-        public static bool ExecuteCircuit(Breadboard breadboard)
+        public static bool ExecuteCircuit(Breadboard breadboard, PlayerMovementsNetwork playerMovements)
         {
             Graph circuitGraph = GraphConverter.CreateGraph(breadboard);
             circuitGraph.DefineBranches();
             double intensity = circuitGraph.GetGlobalIntensity();
 
+            if (double.IsPositiveInfinity(intensity))
+            {
+                if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                    MenuManager.Instance.BackToPreviousMenu();
+                
+                playerMovements.KnockOut();
+            }
+            
             // WriteReport(circuitGraph, breadboard, intensity);
 
             if (breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
