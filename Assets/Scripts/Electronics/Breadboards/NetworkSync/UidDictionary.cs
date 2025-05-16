@@ -6,7 +6,7 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
     public static class UidDictionary
     {
         private static readonly Dictionary<Uid, object> Dictionary = new();
-        private static int _nextId = 0;
+        private static uint _nextId = 0;
 
         public static Uid Add(object item)
         {

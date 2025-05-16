@@ -6,12 +6,12 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
     {
         public static void WriteUid(this NetworkWriter writer, Uid uid)
         {
-            writer.WriteInt(uid.Value);
+            writer.WriteUInt(uid.Value);
         }
 
         public static Uid ReadUid(this NetworkReader reader)
         {
-            return new Uid(reader.ReadInt());
+            return new Uid(reader.ReadUInt());
         }
     }
 }

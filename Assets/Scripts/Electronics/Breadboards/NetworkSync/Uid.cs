@@ -5,9 +5,9 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
     [Serializable]
     public class Uid : IEquatable<Uid>
     {
-        public readonly int Value;
+        public readonly uint Value;
 
-        public Uid(int value)
+        public Uid(uint value)
         {
             Value = value;
         }
@@ -18,11 +18,11 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
         public override bool Equals(object obj)
             => obj is Uid other && Equals(other);
 
-        public override int GetHashCode() => Value;
+        public override int GetHashCode() => (int)Value;
 
         public override string ToString() => Value.ToString();
 
-        public static implicit operator int (Uid uid) => uid.Value;
-        public static implicit operator Uid (int uid) => new Uid(uid);
+        public static implicit operator uint (Uid uid) => uid.Value;
+        public static implicit operator Uid (uint uid) => new Uid(uid);
     }
 }
