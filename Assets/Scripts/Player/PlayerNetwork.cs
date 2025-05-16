@@ -39,12 +39,15 @@ namespace Reconnect.Player
         }
         
         [Command]
-        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity)
+        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity, NetworkIdentity playerIdentity)
         {
             Debug.Log($"Command received by server");
             if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
-            bool succeeded = BbSolver.ExecuteCircuit(breadboardHolder.breadboard);
+            if (!playerIdentity.TryGetComponent(out PlayerMovementsNetwork playerMovements))
+                throw new ComponentNotFoundException(
+                    "No PlayerMovementsNetwork found on the localPlayer gameObject");
+            bool succeeded = BbSolver.ExecuteCircuit(breadboardHolder.breadboard, playerMovements);
             if (succeeded)
             {
                 Debug.Log("Success : DoAction");
@@ -54,8 +57,16 @@ namespace Reconnect.Player
             else
             {
                 Debug.Log("Failure : OnFailedExercise");
-                breadboardHolder.breadboardSwitch.OnFailedExercise();
+                RpcHandleCircuitFailure(bbHolderIdentity);
             }
+        }
+
+        [ClientRpc]
+        private void RpcHandleCircuitFailure(NetworkIdentity bbHolderIdentity)
+        {
+            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
+            breadboardHolder.breadboardSwitch.OnFailedExercise();
         }
         
         [Command]

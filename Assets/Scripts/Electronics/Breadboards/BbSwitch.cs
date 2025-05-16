@@ -74,7 +74,7 @@ namespace Reconnect.Electronics.Breadboards
             Debug.Log("End of animation");
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No PlayerNetwork found on the local player");
-            playerNetwork.CmdExecuteCircuit(netIdentity);
+            playerNetwork.CmdExecuteCircuit(netIdentity, NetworkClient.localPlayer);
         }
     }
 }
