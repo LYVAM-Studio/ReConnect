@@ -17,7 +17,7 @@ namespace Reconnect.Electronics.Breadboards
 
         private int _isOnHash;
 
-        private bool IsOn
+        public bool IsOn
         {
             get => _animator.GetBool(_isOnHash);
             set => _animator.SetBool(_isOnHash, value);
@@ -50,11 +50,11 @@ namespace Reconnect.Electronics.Breadboards
             _outline.enabled = false;
         }
 
-        private void ToggleAnimation() => IsOn = !IsOn;
-        
         void ICursorHandle.OnCursorClick()
         {
-            ToggleAnimation();
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
         }
 
         public void OnSwitchStartUp()
@@ -62,11 +62,6 @@ namespace Reconnect.Electronics.Breadboards
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetUid);
-        }
-
-        public void OnFailedExercise()
-        {
-            ToggleAnimation(); // automatic shutdown of the switch
         }
         
         public void OnSwitchIdleDown()
