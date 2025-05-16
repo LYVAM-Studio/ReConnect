@@ -92,6 +92,7 @@ namespace Reconnect.Electronics.Breadboards
             {
                 case BreadboardResult.ShortCircuit:
                     playerNetwork.TargetKnockOut();
+                    IsOn = false;
                     break;
                 case BreadboardResult.Success :
                     Debug.Log("Success : DoAction");
