@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 7784146671310091854}
   - component: {fileID: 7137399028953839288}
   - component: {fileID: 3101510059853168640}
+  - component: {fileID: 5367277151875822167}
   m_Layer: 0
   m_Name: ResistorPrefab
   m_TagString: Untagged
@@ -111,6 +112,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dff1c1c56bb7cbbeabdf69e1783d399, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  breadboardNetIdentity: {fileID: 0}
 --- !u!114 &-9155743620201611028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,6 +201,22 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &5367277151875822167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530555684961982742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 913e76cb19b54c19849521f080600a36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: Will Be Replaced
+  width: 100
+  height: 30
+  timeBeforeAppearing: 0.5
 --- !u!1 &1841871923851634568
 GameObject:
   m_ObjectHideFlags: 0
