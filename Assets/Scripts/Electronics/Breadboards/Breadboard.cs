@@ -189,7 +189,7 @@ namespace Reconnect.Electronics.Breadboards
                     "The resistor prefab clone does not contain any ResistorColorManager component.");
             resistorColor.ResistanceValue = resistance;
             resistorColor.Tolerance = tolerance;
-            resistorColor.UpdateBandColors();
+
             var innerUid = UidDictionary.Add(new Resistor(name, resistance));
             if (!resistorGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
