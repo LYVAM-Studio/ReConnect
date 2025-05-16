@@ -23,7 +23,7 @@ namespace Reconnect.Electronics.Breadboards.NetworkSync
             
             if (!Dictionary.TryGetValue(id, out var obj))
                 throw new KeyNotFoundException($"Item with ID {id} does not exist");
-            if (!(obj is T tValue))
+            if (obj is not T tValue)
                 throw new InvalidCastException($"Item with ID {id} is not of type {typeof(T).Name}.");
             return tValue;
         }

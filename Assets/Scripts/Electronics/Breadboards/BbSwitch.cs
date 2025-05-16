@@ -67,7 +67,6 @@ namespace Reconnect.Electronics.Breadboards
         public void OnFailedExercise()
         {
             ToggleAnimation(); // automatic shutdown of the switch
-            // TODO: handle KO of the player
         }
         
         public void OnSwitchIdleDown()
