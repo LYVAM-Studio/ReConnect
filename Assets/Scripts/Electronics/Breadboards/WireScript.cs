@@ -13,7 +13,9 @@ namespace Reconnect.Electronics.Components
     {
         bool ICursorHandle.IsPointerDown { get; set; }
         
-        public Breadboard Breadboard { get; set; }
+        public Breadboard Breadboard => breadboardNetIdentity != null
+            ? breadboardNetIdentity.GetComponent<BreadboardHolder>().breadboard
+            : null;
 
         public Vector2Int Pole1 { get; set; }
         public Vector2Int Pole2 { get; set; }
