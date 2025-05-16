@@ -164,7 +164,7 @@ namespace Reconnect.Electronics.Breadboards
                     "No PlayerNetwork component has been found on the local player");
             // Restore the last valid position and rotation
             playerNetwork.CmdSetDipoleLocalPosition(netIdentity, _lastLocalPosition);
-            IsHorizontal = _wasHorizontal;
+            playerNetwork.CmdSetHorizontalDipole(netIdentity, _wasHorizontal);
         }
 
         private void EndDrag()
@@ -205,7 +205,7 @@ namespace Reconnect.Electronics.Breadboards
             {
                 if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                     throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
-                playerNetwork.CmdRotateDipole(netIdentity);
+                playerNetwork.CmdSetHorizontalDipole(netIdentity, !IsHorizontal);
             }
         }
 
