@@ -4,6 +4,7 @@ using UnityEngine;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
+using Reconnect.Player;
 using Reconnect.Utils;
 
 namespace Reconnect.Electronics.Components
@@ -53,7 +54,17 @@ namespace Reconnect.Electronics.Components
         void ICursorHandle.OnCursorClick()
         {
             if (!_isLocked)
-                Breadboard.CmdRequestDeleteWire(NetworkIdentity);
+            {
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                    throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+                playerNetwork.CmdRequestDeleteWire(netIdentity);
+            }
+        }
+        
+        public void DeleteWire()
+        {
+            Breadboard.Wires.Remove(this);
+            NetworkServer.Destroy(gameObject);
         }
     }
 }

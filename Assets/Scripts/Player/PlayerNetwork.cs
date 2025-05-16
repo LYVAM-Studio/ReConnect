@@ -94,5 +94,40 @@ namespace Reconnect.Player
                 throw new ComponentNotFoundException("No component Dipole found on the identity provided");
             dipole.IsHorizontal = !dipole.IsHorizontal;
         }
+        
+        [Command]
+        public void CmdRequestCreateWire(NetworkIdentity breadboardHolderIdentity, Vector2Int sourcePoint, 
+            Vector2Int destinationPoint, string wireName, bool isWireLocked)
+        {
+            if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            breadboardHolder.breadboard.CreateWire(sourcePoint, destinationPoint, wireName, isWireLocked);
+        }
+        
+        [Command]
+        public void CmdRequestCreateResistor(NetworkIdentity breadboardHolderIdentity, Vector2Int sourcePoint, 
+            Vector2Int destinationPoint, string resistorName, uint resistance, float tolerance, bool isResistorLocked)
+        {
+            if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            breadboardHolder.breadboard.CreateResistor(sourcePoint, destinationPoint, resistorName, resistance, tolerance, isResistorLocked);
+        }
+        
+        [Command]
+        public void CmdRequestCreateLamp(NetworkIdentity breadboardHolderIdentity, Vector2Int sourcePoint, 
+            Vector2Int destinationPoint, string lampName, uint resistance, bool isLampLocked)
+        {
+            if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            breadboardHolder.breadboard.CreateLamp(sourcePoint, destinationPoint, lampName, resistance, isLampLocked);
+        }
+        
+        [Command]
+        public void CmdRequestDeleteWire(NetworkIdentity wireIdentity)
+        {
+            if (!wireIdentity.TryGetComponent(out WireScript wire))
+                throw new ComponentNotFoundException("No wireScript has been found on the network identity");
+            wire.DeleteWire();
+        }
     }
 }
