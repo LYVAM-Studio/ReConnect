@@ -1,15 +1,8 @@
-using System;
-using Electronics.Breadboards;
 using Mirror;
-using Reconnect.Electronics.Breadboards.NetworkSync;
-using Reconnect.Electronics.CircuitLoading;
-using Reconnect.Electronics.Components;
-using Reconnect.Electronics.Graphs;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -66,7 +59,9 @@ namespace Reconnect.Electronics.Breadboards
 
         public void OnSwitchStartUp()
         {
-            UniqueIdDictionary.Instance.Get<ElecComponent>(breadboard.TargetID).UndoAction();
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetID);
         }
 
         public void OnFailedExercise()
@@ -77,8 +72,6 @@ namespace Reconnect.Electronics.Breadboards
         
         public void OnSwitchIdleDown()
         {
-            /*if (!ExecuteCircuit())
-                OnFailedExercise();*/
             Debug.Log("End of animation");
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No PlayerNetwork found on the local player");
