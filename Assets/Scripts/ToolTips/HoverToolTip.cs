@@ -1,13 +1,15 @@
 using System.Collections;
+using Mirror;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Reconnect.ToolTips
 {
-    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
+    public class HoverToolTip : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
     {
         [SerializeField]
         [TextArea(1, 3)]
+        [SyncVar(hook = nameof(OnTextChanged))]
         private string text;
 
         public float width;
@@ -23,6 +25,11 @@ namespace Reconnect.ToolTips
                 text = value;
                 ToolTipManager.Instance.SetText(_id, value);
             }
+        }
+
+        private void OnTextChanged(string _, string newValue)
+        {
+            ToolTipManager.Instance.SetText(_id, newValue); // update text clients
         }
 
         private int _id;
