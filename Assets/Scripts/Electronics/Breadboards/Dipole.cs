@@ -88,7 +88,7 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
         
-        public int InnerID { get; set; }
+        public Uid InnerUid { get; set; }
         
         // Control map
         private PlayerControls _controls;

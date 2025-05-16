@@ -201,24 +201,24 @@ namespace Reconnect.Electronics.CircuitLoading
                         && !float.TryParse(toleranceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out tolerance))
                         throw new InvalidDataException($"Yaml key 'tolerance' expect a floating point numeric value but got {toleranceValue}.");
                     
-                    int resistorID = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
+                    Uid resistorUid = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.TargetID != -1)
+                        if (breadboard.TargetUid is not null)
                             throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        breadboard.TargetID = resistorID;
+                        breadboard.TargetUid = resistorUid;
                     }
                 }
                 else if (type == "lamp")
                 {
                     uint resistance = uint.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
-                    int lampID = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
+                    Uid lampUid = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.TargetID != -1)
+                        if (breadboard.TargetUid is not null)
                             throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        breadboard.TargetID = lampID;
+                        breadboard.TargetUid = lampUid;
                     }
                 }
                 else
@@ -229,7 +229,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 componentId++;
             }
 
-            if (breadboard.TargetID == -1)
+            if (breadboard.TargetUid is null)
                 throw new FormatException("The loaded circuit does not contain any target.");
         }
     }
