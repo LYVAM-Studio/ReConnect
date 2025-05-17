@@ -19,6 +19,7 @@ namespace Reconnect.CheatCodes
                 throw new ComponentNotFoundException("No TestLessons component has been found on the CheatCodeManager");
             _controls = new PlayerControls();
             _controls.CheatCodes.KnockOut.performed += OnKnockOut;
+            _controls.CheatCodes.CancelKnockOut.performed += OnCancelKnockOut;
             _controls.CheatCodes.PopulateLessons.performed += OnPopulateLessons;
         }
         
@@ -35,6 +36,7 @@ namespace Reconnect.CheatCodes
         private void OnDestroy()
         {
             _controls.CheatCodes.KnockOut.performed -= OnKnockOut;
+            _controls.CheatCodes.CancelKnockOut.performed -= OnCancelKnockOut;
             _controls.CheatCodes.PopulateLessons.performed -= OnPopulateLessons;
         }
 
@@ -50,6 +52,16 @@ namespace Reconnect.CheatCodes
         public void OnPopulateLessons(InputAction.CallbackContext ctx)
         {
             _testLessons.PopulateLessons();
+        }
+
+        public void OnCancelKnockOut(InputAction.CallbackContext ctx)
+        {
+            if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerMovementsNetwork playerMovements))
+                throw new ComponentNotFoundException(
+                    "No PlayerMovementsNetwork found on the localPlayer gameObject");
+
+            playerMovements.CancelKnockOut();
+            MenuManager.Instance.CancelKnockOut();
         }
     }
 }

@@ -246,6 +246,12 @@ namespace Reconnect.Menu
             // the player is unlocked after the call
         }
 
+        public void CancelKnockOut()
+        {
+            StopCoroutine(nameof(KnockOutForSeconds));
+            BackToPreviousMenu();
+        }
+
         public void LockPlayer() => LockPlayer(true);
         public void UnLockPlayer() => LockPlayer(false);
         public void SetMenuToSingleplayer() => SetMenuTo(MenuState.Singleplayer, CursorState.Shown);

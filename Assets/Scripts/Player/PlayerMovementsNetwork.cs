@@ -350,5 +350,12 @@ namespace Reconnect.Player
             if (!IsKo)
                 StartCoroutine(KoDelay());
         }
+
+        public void CancelKnockOut()
+        {
+            if (!IsKo) return;
+            StopCoroutine(nameof(KoDelay));
+            _animator.SetBool(_isKoHash, false);
+        }
     }
 }
