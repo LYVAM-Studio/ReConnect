@@ -1,11 +1,21 @@
 using System;
 using System.Threading.Tasks;
+using kcp2k;
 using Mirror;
+using Reconnect.Utils;
+using UnityEngine;
 
 public class ReconnectNetworkManager : NetworkManager
 {
     public static event Action OnClientConnectedEvent;
     public static event Action OnClientDisconnectedEvent;
+    
+    public static void SetConnectionPort(ushort port)
+    {
+        if (Transport.active is not KcpTransport transport)
+            throw new UnreachableCaseException("The transport is not a KcpTransport.");
+        transport.port = port;
+    }
     
     public override void OnClientConnect()
     {
