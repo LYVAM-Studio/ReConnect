@@ -19,6 +19,7 @@ namespace Reconnect.Electronics.Breadboards
         public static Vector3 SwitchWireOutputCorner = new Vector3(4, -4, -0.5f);
         
         public Breadboard breadboard;
+        public BbSwitch breadboardSwitch;
         public CinemachineCamera cam;
         public GameObject ui;
         public TextAsset circuitYaml;
@@ -32,8 +33,9 @@ namespace Reconnect.Electronics.Breadboards
         private Vector3 _lastRaycast;
         private int _lastFrame;
 
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             _mainCam = Camera.main;
             _raycastPlane = new Plane(
                 transform.forward,
@@ -76,7 +78,7 @@ namespace Reconnect.Electronics.Breadboards
             else
             {
                 // quit the interface
-                breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
+                p.PlayerNetwork.CmdOnBreadboardExit(netIdentity);
                 Outline.enabled = true;
                 p.MovementsNetwork.isLocked = false;
                 p.DummyModel.SetActive(true);
