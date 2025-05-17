@@ -28,42 +28,42 @@ namespace Reconnect.Electronics.Breadboards
             foreach (var d in breadboard.Dipoles)
                 graph.AddVertex(UidDictionary.Get<Vertex>(d.InnerUid));
 
-            Clean(grid, graph);
-            
-            foreach (Vertex v in grid)
-            {
-                if (v is Vertex node && node.AdjacentComponents.Count > 2)
-                {
-                    graph.Vertices.Remove(v);
-                    graph.AddVertex(v.ToNode());
-                }
-            }
+            Clean(graph);
+            MakeNodes(graph);
 
             return graph;
         }
 
-        private static void Clean(Vertex[,] grid, Graph graph)
+        private static void Clean(Graph graph)
         {
             bool changed = true;
             while (changed)
             {
                 changed = false;
-                for (int y = 0; y < 8; y++)
-                for (int x = 0; x < 8; x++)
+                for (int i = graph.Vertices.Count - 1; i >= 0; i--)
                 {
-                    Vertex v = grid[y, x];
-                    if (v is not null)
+                    Vertex vertex = graph.Vertices[i];
+                    if (vertex.AdjacentComponents.Count <= 1)
                     {
-                        if (v.AdjacentComponents.Count <= 1)
-                        {
-                            if (v.AdjacentComponents.Count == 1)
-                                Vertex.RemoveReciprocalAdjacent(v, v.AdjacentComponents[0]);
+                        if (vertex.AdjacentComponents.Count == 1)
+                            Vertex.RemoveReciprocalAdjacent(vertex, vertex.AdjacentComponents[0]);
 
-                            graph.Vertices.Remove(v);
-                            grid[y, x] = null;
-                            changed = true;
-                        }
+                        graph.Vertices.RemoveAt(i);
+                        changed = true;
                     }
+                }
+            }
+        }
+
+        private static void MakeNodes(Graph graph)
+        {
+            for (int i = graph.Vertices.Count - 1; i >= 0; i--)
+            {
+                Vertex vertex = graph.Vertices[i];
+                if (vertex is Vertex node && node.AdjacentComponents.Count > 2)
+                {
+                    graph.Vertices.Remove(vertex);
+                    graph.AddVertex(vertex.ToNode());
                 }
             }
         }
