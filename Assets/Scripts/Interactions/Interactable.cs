@@ -1,6 +1,8 @@
 using Mirror;
+using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Interactions
 {
@@ -8,6 +10,9 @@ namespace Reconnect.Interactions
     public abstract class Interactable : NetworkBehaviour
     {
         protected Outline Outline;
+
+        [SyncVar]
+        public uint level;
         protected void Awake()
         {
             if (!TryGetComponent(out Outline))
@@ -18,7 +23,7 @@ namespace Reconnect.Interactions
         }
 
         public abstract void Interact(GameObject player);
-        public abstract bool CanInteract();
+        public abstract bool CanInteract(PlayerGetter playerGetter);
 
         // This method is called by the player when this interactable enters its range.
         public void OnEnterPlayerRange()

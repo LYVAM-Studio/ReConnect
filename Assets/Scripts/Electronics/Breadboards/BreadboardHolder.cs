@@ -68,7 +68,7 @@ namespace Reconnect.Electronics.Breadboards
             {
                 // enter the interface
                 Outline.enabled = false;
-                p.MovementsNetwork.isLocked = true;
+                p.Movements.isLocked = true;
                 p.DummyModel.SetActive(false);
                 FreeLookCamera.InputAxisController.enabled = false;
                 cam.Priority = 2;
@@ -78,9 +78,9 @@ namespace Reconnect.Electronics.Breadboards
             else
             {
                 // quit the interface
-                p.PlayerNetwork.CmdOnBreadboardExit(netIdentity);
+                p.Network.CmdOnBreadboardExit(netIdentity);
                 Outline.enabled = true;
-                p.MovementsNetwork.isLocked = false;
+                p.Movements.isLocked = false;
                 p.DummyModel.SetActive(true);
                 FreeLookCamera.InputAxisController.enabled = true;
                 cam.Priority = 0;
@@ -90,10 +90,7 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        public override bool CanInteract()
-        {
-            return true;
-        }
+        public override bool CanInteract(PlayerGetter playerGetter) => playerGetter.Level.value == level;
         
         public Vector3 GetFlattenedCursorPos()
         {
