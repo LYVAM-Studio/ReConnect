@@ -20274,11 +20274,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4071722615116725760, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 67332364570029529, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1508777890}
   m_SourcePrefab: {fileID: 100100000, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
+--- !u!1 &1508777889 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 67332364570029529, guid: 6ad1ff84fec894bf9955e1076dc575f6, type: 3}
+  m_PrefabInstance: {fileID: 1508777888}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1508777890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508777889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a5d07f4ed74477c8a85dc54dfa7f1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWaitingTime: 15
+  minWaitingTime: 5
 --- !u!1 &1510347117
 GameObject:
   m_ObjectHideFlags: 0

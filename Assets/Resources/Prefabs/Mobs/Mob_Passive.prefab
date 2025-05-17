@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3154407928399342950}
-  - component: {fileID: 4071722615116725760}
   - component: {fileID: 688580133545553952}
   - component: {fileID: 5342334627063386836}
+  - component: {fileID: 8316485831835015847}
   m_Layer: 0
   m_Name: Mob_Passive
   m_TagString: Untagged
@@ -35,20 +35,6 @@ Transform:
   - {fileID: 7715449464687806266}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4071722615116725760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67332364570029529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a5d07f4ed74477c8a85dc54dfa7f1e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxWaitingTime: 15
-  minWaitingTime: 5
 --- !u!95 &688580133545553952
 Animator:
   serializedVersion: 7
@@ -93,6 +79,20 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &8316485831835015847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67332364570029529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a5d07f4ed74477c8a85dc54dfa7f1e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWaitingTime: 15
+  minWaitingTime: 5
 --- !u!1001 &7825128689972846801
 PrefabInstance:
   m_ObjectHideFlags: 0
