@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5342334627063386836}
   - component: {fileID: 8316485831835015847}
   m_Layer: 0
-  m_Name: Mob_Passive
+  m_Name: PassiveMob
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7970608517176039830}
   - component: {fileID: 7838027080997554054}
   m_Layer: 0
-  m_Name: Mob_Agressive
+  m_Name: AggressiveMob
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
