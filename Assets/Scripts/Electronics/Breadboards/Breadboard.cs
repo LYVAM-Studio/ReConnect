@@ -163,8 +163,11 @@ namespace Reconnect.Electronics.Breadboards
             wireGameObj.transform.localScale = scale;
             
             if (!wireGameObj.TryGetComponent(out WireScript wireScript))
-                throw new ComponentNotFoundException(
-                    "The wire prefab clone does not contain any WireScript component.");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("The wire prefab clone does not contain any WireScript component."));
+                return;
+            }
             NetworkServer.Spawn(wireGameObj);
             wireScript.Pole1 = sourcePoint;
             wireScript.Pole2 = destinationPoint;
