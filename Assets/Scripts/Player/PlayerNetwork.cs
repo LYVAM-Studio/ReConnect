@@ -134,12 +134,13 @@ namespace Reconnect.Player
         }
 
         [TargetRpc]
-        public void TargetKnockOut()
+        public void TargetKnockOut(string reason)
         {
             if (!TryGetComponent(out PlayerMovementsNetwork playerMovements))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
                 MenuManager.Instance.BackToPreviousMenu();
+            MenuManager.Instance.SetKnockOutReason(reason);
             playerMovements.KnockOut();
         }
     }

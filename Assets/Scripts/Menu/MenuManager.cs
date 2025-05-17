@@ -34,7 +34,7 @@ namespace Reconnect.Menu
         public GameObject lessonsMenu;
         public GameObject imageViewerMenu;
         public GameObject knockOutMenu;
-        public TMP_Text knockOutReason;
+        [SerializeField] private TMP_Text knockOutReason;
         public TMP_Text timerText;
         public GameObject connectionFailed;
         public TMP_Text errorMsg;
@@ -246,6 +246,11 @@ namespace Reconnect.Menu
         public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
         public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
         public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
+
+        public void SetKnockOutReason(string reason)
+        {
+            knockOutReason.text = $"{reason}\nWait until your regain consciousness...";
+        }
         
         public void RunSingleplayerMode()
         {
