@@ -13,7 +13,7 @@
 *.prefab merge=unityyamlmerge eol=lf
 *.physicsMaterial2D merge=unityyamlmerge eol=lf
 *.physicMaterial merge=unityyamlmerge eol=lf
-*.asset merge=unityyamlmerge eol=lf
+*.asset merge=unityyamlmerge eol=lf text eol=lf
 +*TerrainData.asset    -text
 +LightingData.asset    -text
 +NavMesh*.asset        -text
