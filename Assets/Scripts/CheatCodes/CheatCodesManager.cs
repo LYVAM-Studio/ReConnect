@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using Reconnect.Menu;
 using Reconnect.Menu.Lessons;
@@ -12,7 +13,7 @@ namespace Reconnect.CheatCodes
     {
         private PlayerControls _controls;
         private TestLessons _testLessons;
-        
+        private PlayerGetter _localPlayerGetter;
         private void Awake()
         {
             if (!TryGetComponent(out _testLessons))
@@ -21,6 +22,7 @@ namespace Reconnect.CheatCodes
             _controls.CheatCodes.KnockOut.performed += OnKnockOut;
             _controls.CheatCodes.CancelKnockOut.performed += OnCancelKnockOut;
             _controls.CheatCodes.PopulateLessons.performed += OnPopulateLessons;
+            _controls.CheatCodes.SetLevel.performed += OnSetLevel;
         }
         
         private void OnEnable()
@@ -38,6 +40,7 @@ namespace Reconnect.CheatCodes
             _controls.CheatCodes.KnockOut.performed -= OnKnockOut;
             _controls.CheatCodes.CancelKnockOut.performed -= OnCancelKnockOut;
             _controls.CheatCodes.PopulateLessons.performed -= OnPopulateLessons;
+            _controls.CheatCodes.SetLevel.performed -= OnSetLevel;
         }
 
         public void OnKnockOut(InputAction.CallbackContext ctx)
@@ -70,5 +73,19 @@ namespace Reconnect.CheatCodes
             playerMovements.CancelKnockOut();
             MenuManager.Instance.BackToPreviousMenu();
         }
+        
+        void OnSetLevel(InputAction.CallbackContext ctx)
+        {
+            int levelRaw = Mathf.RoundToInt(ctx.ReadValue<float>());
+            if (levelRaw < 0)
+                throw new InvalidCastException("Input level cheat code got negative value, cannot cast into uint");
+            uint level = (uint)levelRaw;
+            if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerGetter playerGetter))
+                throw new ComponentNotFoundException(
+                    "No PlayerGetter found on the localPlayer gameObject");
+            
+            playerGetter.Network.CmdSetPlayersLevel(level);
+        }
+        
     }
 }

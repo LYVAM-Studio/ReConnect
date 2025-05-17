@@ -40,6 +40,7 @@ namespace Reconnect.Menu
         public GameObject connectionFailed;
         public TMP_Text errorMsg;
         public GameObject quitMenu;
+        public GameObject hudMenu;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
         
         public MenuState CurrentMenuState { get; private set; }

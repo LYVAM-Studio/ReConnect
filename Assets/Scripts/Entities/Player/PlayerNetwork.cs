@@ -217,5 +217,24 @@ namespace Reconnect.Player
             MenuManager.Instance.SetKnockOutReason(reason);
             playerMovements.KnockOut();
         }
+
+        [Command]
+        public void CmdSetPlayersLevel(uint level)
+        {
+            RpcSetPlayerLevel(level);
+        }
+
+        [ClientRpc]
+        public void RpcSetPlayerLevel(uint level)
+        {
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerGetter playerGetter))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component PlayerGetter has been found on the local player"));
+                return;
+            }
+            playerGetter.Level.value = level;
+            Debug.Log($"RPC Level set on: {gameObject.name} to {level}");
+        }
     }
 }
