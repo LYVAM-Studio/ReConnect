@@ -99,6 +99,8 @@ namespace Reconnect.Electronics.Breadboards
         // Dragging status of the dipole
         [SyncVar]
         private bool _isBeingDragged;
+
+        public bool IsCircuitOn => Breadboard.breadboardHolder.breadboardSwitch.IsOn;
         
         private new void Awake()
         {
@@ -148,6 +150,12 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorDown()
         {
             if (_isLocked) return;
+            if (IsCircuitOn)
+            {
+                KnockOutOnEdit();
+                return;
+            }
+
             _isBeingDragged = true;
             
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
@@ -221,6 +229,14 @@ namespace Reconnect.Electronics.Breadboards
             if (!clientConnection.identity.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No PlayerNetwork component has been found on the client player");
             playerNetwork.TargetForceHideTooltip(netIdentity);
+        }
+
+        private void KnockOutOnEdit()
+        {
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException(
+                    "No PlayerNetwork component has been found on the local player");
+            playerNetwork.TargetKnockOut("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
         }
     }
 }

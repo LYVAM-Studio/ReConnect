@@ -103,7 +103,15 @@ namespace Reconnect.Player
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No component Dipole found on the identity provided");
-            breadboardHolder.breadboard.CreateWire(sourcePoint, destinationPoint, wireName, isWireLocked);
+            if (breadboardHolder.breadboardSwitch.IsOn)
+            {
+                TargetKnockOut(
+                    "You have been electrocuted because you tried to edit the circuit while it was still powered on.");
+            }
+            else
+            {
+                breadboardHolder.breadboard.CreateWire(sourcePoint, destinationPoint, wireName, isWireLocked);
+            }
         }
         
         [Command]
@@ -129,7 +137,15 @@ namespace Reconnect.Player
         {
             if (!wireIdentity.TryGetComponent(out WireScript wire))
                 throw new ComponentNotFoundException("No wireScript has been found on the network identity");
-            wire.DeleteWire();
+            if (wire.Breadboard.breadboardHolder.breadboardSwitch.IsOn)
+            {
+                TargetKnockOut(
+                    "You have been electrocuted because you tried to edit the circuit while it was still powered on.");
+            }
+            else
+            {
+                wire.DeleteWire();
+            }
         }
 
         [Command]
