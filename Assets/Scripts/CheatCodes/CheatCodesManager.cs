@@ -68,7 +68,7 @@ namespace Reconnect.CheatCodes
                     "No PlayerMovementsNetwork found on the localPlayer gameObject");
 
             playerMovements.CancelKnockOut();
-            MenuManager.Instance.CancelKnockOut();
+            MenuManager.Instance.BackToPreviousMenu();
         }
     }
 }
