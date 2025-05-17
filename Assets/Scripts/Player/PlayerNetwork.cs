@@ -68,13 +68,18 @@ namespace Reconnect.Player
         [Command]
         public void CmdSetDipolePosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
         {
-            dipoleIdentity.transform.position = targetPos;
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            dipole.SetPosition(targetPos);
         }
         
         [Command]
         public void CmdSetDipoleLocalPosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
         {
-            dipoleIdentity.transform.localPosition = targetPos;
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            dipole.SetLocalPosition(targetPos);
+            dipole.LastLocalPosition = targetPos;
         }
         
         [Command]
@@ -118,6 +123,14 @@ namespace Reconnect.Player
             if (!wireIdentity.TryGetComponent(out WireScript wire))
                 throw new ComponentNotFoundException("No wireScript has been found on the network identity");
             wire.DeleteWire();
+        }
+
+        [Command]
+        public void CmdOnBreadboardExit(NetworkIdentity breadboardHolderIdentity)
+        {
+            if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            breadboardHolder.breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
         }
 
         [TargetRpc]
