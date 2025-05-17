@@ -84,7 +84,6 @@ namespace Reconnect.Electronics.Breadboards
         private bool _isInitialized; 
         public override void OnStartServer()
         {
-            Debug.Log("Server started");
             OnWireCreation = false;
             Loader.LoadCircuit(this, circuitToLoad);
         }
@@ -92,7 +91,6 @@ namespace Reconnect.Electronics.Breadboards
         public override void OnStartClient()
         {
             base.OnStartClient();
-            Debug.Log("Client started");
             OnWireCreation = false;
             _wireBeingCreated =
                 Instantiate(Resources.Load<GameObject>("Prefabs/Electronics/Components/WirePrefab"), transform.parent, false);
@@ -226,7 +224,6 @@ namespace Reconnect.Electronics.Breadboards
             if (!lampGameObj.TryGetComponent(out Dipole dipoleScript))
                 throw new ComponentNotFoundException(
                     "The lamp prefab clone does not contain any Dipole component.");
-            Debug.Log($"When spawn lamp : isServer {isServer}");
             dipoleScript.breadboardNetIdentity = netIdentity;
             NetworkServer.Spawn(lampGameObj);
             dipoleScript.Pole1 = sourcePoint;

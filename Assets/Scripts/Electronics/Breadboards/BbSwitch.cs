@@ -43,7 +43,6 @@ namespace Reconnect.Electronics.Breadboards
                 throw new ComponentNotFoundException(
                     "no BbSwitchAnimation component has been found in the switch prefab children");
             childrenAnimationScript.bbSwitch = this;
-            Debug.Log($"BB switch bb is {breadboard}");
         }
 
         void ICursorHandle.OnCursorEnter()
@@ -72,7 +71,6 @@ namespace Reconnect.Electronics.Breadboards
         
         public void OnSwitchIdleDown()
         {
-            Debug.Log("End of animation");
             if (!isServer)
                 return;
             ExecuteCircuit();
@@ -80,7 +78,6 @@ namespace Reconnect.Electronics.Breadboards
         
         private void ExecuteCircuit()
         {
-            Debug.Log("Command received by server");
             if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
             if (!lastPlayerExecuting.TryGetComponent(out PlayerNetwork playerNetwork))
@@ -95,12 +92,10 @@ namespace Reconnect.Electronics.Breadboards
                     IsOn = false;
                     break;
                 case BreadboardResult.Success :
-                    Debug.Log("Success : DoAction");
                     ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
                     target.DoAction();
                     break;
                 case BreadboardResult.Failure :
-                    Debug.Log("Failure : OnFailedExercise");
                     IsOn = false;
                     break;
             }

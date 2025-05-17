@@ -52,7 +52,6 @@ namespace Reconnect.Player
         [Command]
         public void CmdRequestUndoTargetAction(Uid targetId)
         {
-            Debug.Log("Command undo action received by server");
             ElecComponent target = UidDictionary.Get<ElecComponent>(targetId);
             target.UndoAction();
         }

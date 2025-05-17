@@ -53,25 +53,21 @@ namespace Reconnect.ToolTips
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            Debug.LogError("Pointer enter");
             Show();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            Debug.LogError("Pointer Exit");
             Hide();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            Debug.LogError("Pointer drag");
             Hide();
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
-            Debug.LogWarning($"EndDragCallback hide={_forceHide}");
             if (!_forceHide)
                 Show();
             _forceHide = false;
