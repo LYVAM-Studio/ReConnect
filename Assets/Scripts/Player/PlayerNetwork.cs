@@ -60,19 +60,6 @@ namespace Reconnect.Player
             ElecComponent target = UidDictionary.Get<ElecComponent>(targetId);
             target.UndoAction();
         }
-
-        [Command]
-        public void CmdRequestSetPoles(NetworkIdentity dipoleIdentity, Vector2Int pole1, Vector2Int pole2)
-        {
-            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-            {
-                Debug.LogException(
-                    new ComponentNotFoundException("No Dipole component has been found on the identity provided"));
-                return;
-            }
-            dipole.Pole1 = pole1;
-            dipole.Pole2 = pole2;
-        }
         
         [Command]
         public void CmdSetDipolePosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
@@ -87,19 +74,6 @@ namespace Reconnect.Player
         }
         
         [Command]
-        public void CmdSetDipoleLocalPosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
-        {
-            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-            {
-                Debug.LogException(
-                    new ComponentNotFoundException("No Dipole component has been found on the identity provided"));
-                return;
-            }
-            dipole.SetLocalPosition(targetPos);
-            dipole.LastLocalPosition = targetPos;
-        }
-        
-        [Command]
         public void CmdSetHorizontalDipole(NetworkIdentity dipoleIdentity, bool value)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
@@ -109,6 +83,30 @@ namespace Reconnect.Player
                 return;
             }
             dipole.IsHorizontal = value;
+        }
+
+        [Command]
+        public void CmdDipoleEndDrag(NetworkIdentity dipoleIdentity)
+        {
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
+            if (dipole.Breadboard.TryGetClosestValidPos(dipole, out var closest, out var newPole1, out var newPole2))
+            {
+                dipole.SetLocalPosition(closest);
+                dipole.LastLocalPosition = closest;
+                dipole.Pole1 = newPole1;
+                dipole.Pole2 = newPole2;
+                dipole.wasHorizontal = dipole.IsHorizontal;
+            }
+            else
+            {
+                dipole.SetLocalPosition(dipole.LastLocalPosition);
+                dipole.IsHorizontal = dipole.wasHorizontal;
+            }
         }
         
         [TargetRpc]
@@ -195,6 +193,19 @@ namespace Reconnect.Player
                 return;
             }
             breadboardHolder.breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit(connectionToClient));
+        }
+        
+        [TargetRpc]
+        public void TargetStopDragging(NetworkIdentity dipoleIdentity)
+        {
+            if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
+
+            dipole.isBeingDragged = false;
         }
 
         [TargetRpc]
