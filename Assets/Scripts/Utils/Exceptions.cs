@@ -36,4 +36,20 @@ namespace Reconnect.Utils
         public MissingSerializedFieldException(string paramName) : base($"The field {paramName} is not serialized but it should be.") { }
         public MissingSerializedFieldException(string paramName, Exception innerException) : base($"The field {paramName} is not serialized but it should be.", innerException) { }
     }
+
+    public class UnauthorizedActionFromClientException : Exception
+    {
+        public UnauthorizedActionFromClientException()
+        {
+        }
+
+        public UnauthorizedActionFromClientException(string message) : base(message)
+        {
+        }
+
+        public UnauthorizedActionFromClientException(string message, Exception innerException) : base(message,
+            innerException)
+        {
+        }
+    }
 }

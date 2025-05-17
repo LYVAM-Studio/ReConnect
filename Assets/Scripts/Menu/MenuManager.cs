@@ -10,7 +10,6 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 namespace Reconnect.Menu
 {
@@ -18,25 +17,30 @@ namespace Reconnect.Menu
     {
         public static MenuManager Instance;
         
+        [Header("Multiplayer parameters")]
+        
+        public ReconnectNetworkManager networkManager;
+        
         [Header("Menu canvas")]
         
         public GameObject mainMenu;
         public GameObject singleplayerMenu;
         public GameObject multiplayerMenu;
+        public TMP_InputField hostPort;
+        public TMP_InputField serverAddress;
+        public TMP_InputField serverPort;
         public GameObject settingsMenu;
         public GameObject pauseMenu;
         public GameObject lessonsMenu;
         public GameObject imageViewerMenu;
         public GameObject knockOutMenu;
-        [VolumeComponent.Indent] public TMP_Text timerText;
+        [SerializeField] private TMP_Text knockOutReason;
+        public TMP_Text timerText;
+        public GameObject connectionMenu;
         public GameObject connectionFailed;
+        public TMP_Text errorMsg;
         public GameObject quitMenu;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
-        
-        [Header("Multiplayer parameters")]
-        
-        public ReconnectNetworkManager networkManager;
-        public TMP_InputField serverAddress;
         
         public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
@@ -135,6 +139,7 @@ namespace Reconnect.Menu
             lessonsMenu.SetActive(menu is MenuState.Lessons);
             imageViewerMenu.SetActive(menu is MenuState.ImageViewer);
             knockOutMenu.SetActive(menu is MenuState.KnockOut);
+            connectionMenu.SetActive(menu is MenuState.Connection);
             connectionFailed.SetActive(menu is MenuState.ConnectionFailed);
             quitMenu.SetActive(menu is MenuState.Quit);
             BreadBoardHolder?.Activate(menu is MenuState.BreadBoard);
@@ -158,7 +163,10 @@ namespace Reconnect.Menu
         public void BackToPreviousMenu()
         {
             if (_history.IsEmpty())
-                throw new ArgumentException("Cannot go back with an empty history");
+            {
+                Debug.LogWarning("Cannot go back with an empty history");
+                return;
+            }
 
             (CurrentMenuState, CurrentCursorState) = _history.Pop();
             
@@ -170,6 +178,7 @@ namespace Reconnect.Menu
             lessonsMenu.SetActive(CurrentMenuState is MenuState.Lessons);
             imageViewerMenu.SetActive(CurrentMenuState is MenuState.ImageViewer);
             knockOutMenu.SetActive(CurrentMenuState is MenuState.KnockOut);
+            connectionMenu.SetActive(CurrentMenuState is MenuState.Connection);
             connectionFailed.SetActive(CurrentMenuState is MenuState.ConnectionFailed);
             quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
             BreadBoardHolder?.Activate(CurrentMenuState is MenuState.BreadBoard);
@@ -237,39 +246,60 @@ namespace Reconnect.Menu
             // the player is unlocked after the call
         }
 
-        public void CancelKnockOut()
-        {
-            StopCoroutine(nameof(KnockOutForSeconds));
-            BackToPreviousMenu();
-        }
-
         public void LockPlayer() => LockPlayer(true);
         public void UnLockPlayer() => LockPlayer(false);
         public void SetMenuToSingleplayer() => SetMenuTo(MenuState.Singleplayer, CursorState.Shown);
         public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
         public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
         public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
+
+        public void SetKnockOutReason(string reason)
+        {
+            knockOutReason.text = $"{reason}\nWait until your regain consciousness...";
+        }
         
         public void RunSingleplayerMode()
         {
-            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
+            SetMenuTo(MenuState.Connection, CursorState.Shown);
             GameMode = PlayMode.Single;
             networkManager.maxConnections = 1;
+            ReconnectNetworkManager.SetConnectionPort(7777);
             networkManager.StartHost();
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
         }
         
-        public void RunHostMode()
+        public void RunHostMode()   
         {
-            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
+            if (!ushort.TryParse(hostPort.text, out ushort port))
+            {
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Invalid port\n\nTry again with a valid port";
+                return;
+            }
+            
+            SetMenuTo(MenuState.Connection, CursorState.Shown);
             GameMode = PlayMode.MultiHost;
+            ReconnectNetworkManager.SetConnectionPort(port);
             networkManager.StartHost();
+            SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
         }
         
         public async void RunMultiplayerMode()
         {
+            if (!ushort.TryParse(serverPort.text, out ushort port))
+            {
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Invalid port\n\nTry again with a valid port";
+                return;
+            }
+            
             try
             {
+                SetMenuTo(MenuState.Connection, CursorState.Shown);
+                
                 networkManager.networkAddress = serverAddress.text;
+                ReconnectNetworkManager.SetConnectionPort(port);
+                
                 bool success = await networkManager.StartClientAsync();
                 if (success)
                 {
@@ -278,13 +308,17 @@ namespace Reconnect.Menu
                 }
                 else
                 {
+                    BackToPreviousMenu();
                     SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                    errorMsg.text = "Connection failed\n\nPlease try again";
                 }
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"An exception has been thrown while trying to connect:\n{e}");
+                BackToPreviousMenu();
                 SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Connection failed\n\nPlease try again";
             }
         }
 

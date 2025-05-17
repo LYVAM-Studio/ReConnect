@@ -42,9 +42,14 @@ namespace Reconnect.CheatCodes
 
         public void OnKnockOut(InputAction.CallbackContext ctx)
         {
+            if (MenuManager.Instance.CurrentMenuState is not MenuState.None)
+                return;
+            
             if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerMovementsNetwork playerMovements))
                 throw new ComponentNotFoundException(
                     "No PlayerMovementsNetwork found on the localPlayer gameObject");
+            
+            MenuManager.Instance.SetKnockOutReason("This knock-out is triggered by a cheat code");
             playerMovements.KnockOut();
         }
         
@@ -55,12 +60,15 @@ namespace Reconnect.CheatCodes
 
         public void OnCancelKnockOut(InputAction.CallbackContext ctx)
         {
+            if (MenuManager.Instance.CurrentMenuState is not MenuState.KnockOut)
+                return;
+            
             if (!NetworkClient.localPlayer.gameObject.TryGetComponent(out PlayerMovementsNetwork playerMovements))
                 throw new ComponentNotFoundException(
                     "No PlayerMovementsNetwork found on the localPlayer gameObject");
 
             playerMovements.CancelKnockOut();
-            MenuManager.Instance.CancelKnockOut();
+            MenuManager.Instance.BackToPreviousMenu();
         }
     }
 }

@@ -1,20 +1,27 @@
+using System;
 using System.Collections;
+using Mirror;
+using Reconnect.MouseEvents;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Reconnect.ToolTips
 {
-    public class HoverToolTip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
+    public class HoverToolTip : NetworkBehaviour, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
+
         [SerializeField]
         [TextArea(1, 3)]
+        [SyncVar(hook = nameof(OnTextChanged))]
         private string text;
 
         public float width;
         public float height;
 
         public float timeBeforeAppearing = 0.5f;
-
+        
         public string Text
         {
             get => text;
@@ -25,11 +32,17 @@ namespace Reconnect.ToolTips
             }
         }
 
+        private void OnTextChanged(string _, string newValue)
+        {
+            ToolTipManager.Instance.SetText(_id, newValue); // update text clients
+        }
+
         private int _id;
         private Coroutine _coroutine;
         private bool _isShown;
-        
-       private void Awake()
+        private bool _forceHide;
+
+        private void Awake()
        {
            _id = GetHashCode();
            ToolTipManager.Instance.CreateToolTip(_id);
@@ -43,26 +56,30 @@ namespace Reconnect.ToolTips
                ToolTipManager.Instance.SetPositionToMouse(_id);
        }
 
-        public void OnPointerEnter(PointerEventData eventData)
+       void ICursorHandle.OnCursorEnter()
         {
             Show();
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        void ICursorHandle.OnCursorExit()
         {
             Hide();
         }
 
-        public void OnDrag(PointerEventData eventData)
+        void ICursorHandle.OnCursorDrag()
         {
             Hide();
         }
         
-        public void OnEndDrag(PointerEventData eventData)
+        void ICursorHandle.OnCursorEndDrag()
         {
-            Show();
+            if (!_forceHide)
+                Show();
+            _forceHide = false;
         }
 
+        public void ForceHideUntilEndDrag() => _forceHide = true;
+        
         private void Show()
         {
             if (_coroutine is not null)
@@ -70,7 +87,7 @@ namespace Reconnect.ToolTips
             _coroutine = StartCoroutine(ShowCoroutine());
         }
 
-        private void Hide()
+        public void Hide()
         {
             if (_coroutine is not null)
             {
