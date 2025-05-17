@@ -172,15 +172,7 @@ namespace Reconnect.Player
                     new ComponentNotFoundException("No wireScript has been found on the network identity"));
                 return;
             }
-            if (wire.Breadboard.breadboardHolder.breadboardSwitch.IsOn)
-            {
-                TargetKnockOut(
-                    "You have been electrocuted because you tried to edit the circuit while it was still powered on.");
-            }
-            else
-            {
-                wire.DeleteWire();
-            }
+            wire.DeleteWire();
         }
 
         [Command]

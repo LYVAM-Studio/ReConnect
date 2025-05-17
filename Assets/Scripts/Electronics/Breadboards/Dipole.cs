@@ -3,7 +3,6 @@ using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
-using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -103,7 +102,6 @@ namespace Reconnect.Electronics.Breadboards
                 if (_isLocked) _outline.enabled = false;
             }
         }
-        
         public Uid InnerUid { get; set; }
         
         // Control map
@@ -112,8 +110,6 @@ namespace Reconnect.Electronics.Breadboards
         // Dragging status of the dipole
         [SyncVar]
         public bool isBeingDragged;
-
-        public bool IsCircuitOn => Breadboard.breadboardHolder.breadboardSwitch.IsOn;
         
         private new void Awake()
         {
@@ -166,13 +162,13 @@ namespace Reconnect.Electronics.Breadboards
         
         void ICursorHandle.OnCursorDown()
         {
-            if (_isLocked) return;
-            Debug.Log(IsCircuitOn);
-            if (IsCircuitOn)
+            if (Breadboard.IsCircuitOn)
             {
-                KnockOutOnEdit();
+                Breadboard.KnockOutOnEdit();
                 return;
             }
+            
+            if (_isLocked) return;
 
             isBeingDragged = true;
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
@@ -227,17 +223,6 @@ namespace Reconnect.Electronics.Breadboards
             }
             playerNetwork.TargetForceHideTooltip(netIdentity);
             playerNetwork.TargetStopDragging(netIdentity);
-        }
-
-        private void KnockOutOnEdit()
-        {
-            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
-            {
-                Debug.LogException(
-                    new ComponentNotFoundException("No PlayerNetwork component has been found on the local player"));
-                return;
-            }
-            playerNetwork.CmdKnockOutPlayer("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
         }
     }
 }
