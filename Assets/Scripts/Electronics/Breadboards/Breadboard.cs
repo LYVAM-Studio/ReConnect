@@ -4,9 +4,9 @@ using System.Linq;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.ResistorComponent;
+using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Electronics.Breadboards
 {
@@ -181,6 +181,10 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.IsLocked = isLocked;
             dipoleScript.Inner = inner;
             Dipoles.Add(dipoleScript);
+            if (!resistorGameObj.TryGetComponent(out HoverToolTip tooltipScript))
+                throw new ComponentNotFoundException(
+                    "The resistor prefab clone does not contain any TooltipScript component.");
+            tooltipScript.Text = $"{resistance} Ω";
             return inner;
         }
         
