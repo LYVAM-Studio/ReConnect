@@ -36,7 +36,9 @@ namespace Reconnect.Menu
         [Header("Multiplayer parameters")]
         
         public ReconnectNetworkManager networkManager;
+        public TMP_InputField hostPort;
         public TMP_InputField serverAddress;
+        public TMP_InputField serverPort;
         
         public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
@@ -249,21 +251,37 @@ namespace Reconnect.Menu
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.Single;
             networkManager.maxConnections = 1;
+            ReconnectNetworkManager.SetConnectionPort(7777);
             networkManager.StartHost();
         }
         
-        public void RunHostMode()
+        public void RunHostMode()   
         {
+            if (!ushort.TryParse(hostPort.text, out ushort port))
+            {
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                return;
+            }
+            
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
             GameMode = PlayMode.MultiHost;
+            ReconnectNetworkManager.SetConnectionPort(port);
             networkManager.StartHost();
         }
         
         public async void RunMultiplayerMode()
         {
+            if (!ushort.TryParse(hostPort.text, out ushort port))
+            {
+                SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                return;
+            }
+            
             try
             {
                 networkManager.networkAddress = serverAddress.text;
+                ReconnectNetworkManager.SetConnectionPort(port);
+                
                 bool success = await networkManager.StartClientAsync();
                 if (success)
                 {
