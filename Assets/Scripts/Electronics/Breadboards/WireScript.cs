@@ -12,6 +12,7 @@ namespace Reconnect.Electronics.Components
     public class WireScript : ComponentSync, IDipole, ICursorHandle
     {
         bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
         
         public Breadboard Breadboard => breadboardNetIdentity != null
             ? breadboardNetIdentity.GetComponent<BreadboardHolder>().breadboard

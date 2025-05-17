@@ -1,13 +1,17 @@
 using System;
 using System.Collections;
 using Mirror;
+using Reconnect.MouseEvents;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Reconnect.ToolTips
 {
-    public class HoverToolTip : NetworkBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IEndDragHandler
+    public class HoverToolTip : NetworkBehaviour, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
+
         [SerializeField]
         [TextArea(1, 3)]
         [SyncVar(hook = nameof(OnTextChanged))]
@@ -37,7 +41,8 @@ namespace Reconnect.ToolTips
         private Coroutine _coroutine;
         private bool _isShown;
         private bool _forceHide;
-       private void Awake()
+
+        private void Awake()
        {
            _id = GetHashCode();
            ToolTipManager.Instance.CreateToolTip(_id);
@@ -51,22 +56,22 @@ namespace Reconnect.ToolTips
                ToolTipManager.Instance.SetPositionToMouse(_id);
        }
 
-        public void OnPointerEnter(PointerEventData eventData)
+       void ICursorHandle.OnCursorEnter()
         {
             Show();
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        void ICursorHandle.OnCursorExit()
         {
             Hide();
         }
 
-        public void OnDrag(PointerEventData eventData)
+        void ICursorHandle.OnCursorDrag()
         {
             Hide();
         }
         
-        public void OnEndDrag(PointerEventData eventData)
+        void ICursorHandle.OnCursorEndDrag()
         {
             if (!_forceHide)
                 Show();

@@ -12,6 +12,9 @@ namespace Reconnect.Electronics.Breadboards
 {
     public class Dipole : ComponentSync, IDipole, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
+        
         public Breadboard Breadboard => breadboardNetIdentity != null
             ? breadboardNetIdentity.GetComponent<BreadboardHolder>().breadboard
             : null;
@@ -50,7 +53,6 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        bool ICursorHandle.IsPointerDown { get; set; }
         public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
         
         // Whether this object is rotated or not

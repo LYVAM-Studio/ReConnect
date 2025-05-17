@@ -13,9 +13,11 @@ namespace Reconnect.Electronics.Breadboards
 {
     public class BbSwitch : NetworkBehaviour, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
+        
         private Animator _animator;
         public Breadboard breadboard;
-        bool ICursorHandle.IsPointerDown { get; set; }
 
         // The component responsible for the outlines
         private Outline _outline;
