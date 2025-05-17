@@ -75,7 +75,7 @@ namespace Reconnect.Interactions
             if (MenuManager.Instance.CurrentMenuState is not MenuState.Pause
                 && !_playerGetter.Movements.IsKo
                 && _interactableInRange.Count > 0)
-                GetNearestInteractable()!.Interact(player);
+                GetNearestInteractable()?.Interact(player);
         }
 
         // Update is called once per frame
@@ -113,7 +113,9 @@ namespace Reconnect.Interactions
             if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
-                interactable.OnEnterPlayerRange();
+                if (interactable.CanInteract(_playerGetter))
+                    interactable.OnEnterPlayerRange();
+                
                 _interactableInRange.Add((interactable, other.transform));
             }
         }
