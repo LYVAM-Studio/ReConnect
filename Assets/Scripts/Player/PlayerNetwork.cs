@@ -208,6 +208,9 @@ namespace Reconnect.Player
             dipole.isBeingDragged = false;
         }
 
+        [Command]
+        public void CmdKnockOutPlayer(string reason) => TargetKnockOut(reason);
+        
         [TargetRpc]
         public void TargetKnockOut(string reason)
         {

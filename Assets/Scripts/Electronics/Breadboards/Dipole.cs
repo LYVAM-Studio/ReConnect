@@ -167,6 +167,7 @@ namespace Reconnect.Electronics.Breadboards
         void ICursorHandle.OnCursorDown()
         {
             if (_isLocked) return;
+            Debug.Log(IsCircuitOn);
             if (IsCircuitOn)
             {
                 KnockOutOnEdit();
@@ -236,7 +237,7 @@ namespace Reconnect.Electronics.Breadboards
                     new ComponentNotFoundException("No PlayerNetwork component has been found on the local player"));
                 return;
             }
-            playerNetwork.TargetKnockOut("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
+            playerNetwork.CmdKnockOutPlayer("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
         }
     }
 }
