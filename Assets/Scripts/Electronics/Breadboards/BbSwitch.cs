@@ -80,7 +80,7 @@ namespace Reconnect.Electronics.Breadboards
         
         private void ExecuteCircuit()
         {
-            Debug.Log($"Command received by server");
+            Debug.Log("Command received by server");
             if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
             if (!lastPlayerExecuting.TryGetComponent(out PlayerNetwork playerNetwork))
@@ -91,7 +91,7 @@ namespace Reconnect.Electronics.Breadboards
             switch (result)
             {
                 case BreadboardResult.ShortCircuit:
-                    playerNetwork.TargetKnockOut();
+                    playerNetwork.TargetKnockOut("You have been electrocuted because you have short-circuited the whole circuit.");
                     IsOn = false;
                     break;
                 case BreadboardResult.Success :
