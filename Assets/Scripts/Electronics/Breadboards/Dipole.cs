@@ -1,3 +1,4 @@
+using System;
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
@@ -66,7 +67,8 @@ namespace Reconnect.Electronics.Breadboards
         private Vector3 _deltaCursor;
         
         // The last position occupied by this component
-        private Vector3 _lastLocalPosition;
+        [NonSerialized]
+        public Vector3 LastLocalPosition;
         
         // Whether this was rotated or not on its last position
         private bool _wasHorizontal;
@@ -94,6 +96,7 @@ namespace Reconnect.Electronics.Breadboards
         private PlayerControls _controls;
         
         // Dragging status of the dipole
+        [SyncVar]
         private bool _isBeingDragged;
         
         private new void Awake()
@@ -111,7 +114,8 @@ namespace Reconnect.Electronics.Breadboards
         private new void Start()
         {
             base.Start();
-            _lastLocalPosition = transform.localPosition;
+            LastLocalPosition = transform.localPosition;
+            _wasHorizontal = IsHorizontal;
         }
 
         private void OnEnable()
@@ -145,8 +149,6 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (_isLocked) return;
             _isBeingDragged = true;
-            _lastLocalPosition = transform.localPosition;
-            _wasHorizontal = _isHorizontal;
             
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
@@ -157,20 +159,21 @@ namespace Reconnect.Electronics.Breadboards
             EndDrag();
         }
 
+        public void SetLocalPosition(Vector3 value) => transform.localPosition = value;
+        public void SetPosition(Vector3 value) => transform.position = value;
+
         private void RollbackPosition()
         {
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException(
                     "No PlayerNetwork component has been found on the local player");
             // Restore the last valid position and rotation
-            playerNetwork.CmdSetDipoleLocalPosition(netIdentity, _lastLocalPosition);
+            playerNetwork.CmdSetDipoleLocalPosition(netIdentity, LastLocalPosition);
             playerNetwork.CmdSetHorizontalDipole(netIdentity, _wasHorizontal);
         }
 
         private void EndDrag()
         {
-            _isBeingDragged = false;
-            
             if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
             {
                 if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
@@ -183,13 +186,13 @@ namespace Reconnect.Electronics.Breadboards
             {
                 RollbackPosition();
             }
+            _isBeingDragged = false;
         }
 
         void ICursorHandle.OnCursorDrag()
         {
-            Debug.Log("Cursor drag");
             if (_isLocked) return;
-            Debug.Log("moves");
+            if (!_isBeingDragged) return;
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             playerNetwork.CmdSetDipolePosition(netIdentity,
@@ -212,8 +215,10 @@ namespace Reconnect.Electronics.Breadboards
         // Returns to last pos when the player exists the breadboard holder
         public void OnBreadBoardExit()
         {
-            if (_isBeingDragged)
-                RollbackPosition();
+            SetLocalPosition(LastLocalPosition);
+            IsHorizontal = _wasHorizontal;
+            _isBeingDragged = false;
+        
         }
     }
 }

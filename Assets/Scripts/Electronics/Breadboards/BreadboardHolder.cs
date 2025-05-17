@@ -78,7 +78,7 @@ namespace Reconnect.Electronics.Breadboards
             else
             {
                 // quit the interface
-                breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
+                p.PlayerNetwork.CmdOnBreadboardExit(netIdentity);
                 Outline.enabled = true;
                 p.MovementsNetwork.isLocked = false;
                 p.DummyModel.SetActive(true);
