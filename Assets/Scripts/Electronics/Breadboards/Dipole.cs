@@ -3,6 +3,7 @@ using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
+using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -135,7 +136,6 @@ namespace Reconnect.Electronics.Breadboards
         
         void ICursorHandle.OnCursorEnter()
         {
-            Debug.Log(Breadboard);
             if (!_isLocked && !Breadboard.OnWireCreation)
                 _outline.enabled = true;
         }
@@ -213,12 +213,14 @@ namespace Reconnect.Electronics.Breadboards
         }
 
         // Returns to last pos when the player exists the breadboard holder
-        public void OnBreadBoardExit()
+        public void OnBreadBoardExit(NetworkConnection clientConnection)
         {
             SetLocalPosition(LastLocalPosition);
             IsHorizontal = _wasHorizontal;
             _isBeingDragged = false;
-        
+            if (!clientConnection.identity.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException("No PlayerNetwork component has been found on the client player");
+            playerNetwork.TargetForceHideTooltip(netIdentity);
         }
     }
 }

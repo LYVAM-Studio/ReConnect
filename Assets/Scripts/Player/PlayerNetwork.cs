@@ -4,6 +4,7 @@ using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
 using Reconnect.Menu;
 using Reconnect.Physics;
+using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
 
@@ -90,6 +91,13 @@ namespace Reconnect.Player
             dipole.IsHorizontal = value;
         }
         
+        [TargetRpc]
+        public void TargetForceHideTooltip(NetworkIdentity dipoleIdentity)
+        {
+            if (dipoleIdentity.TryGetComponent(out HoverToolTip tooltip))
+                tooltip.ForceHideUntilEndDrag();
+        }
+        
         [Command]
         public void CmdRequestCreateWire(NetworkIdentity breadboardHolderIdentity, Vector2Int sourcePoint, 
             Vector2Int destinationPoint, string wireName, bool isWireLocked)
@@ -130,7 +138,7 @@ namespace Reconnect.Player
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
                 throw new ComponentNotFoundException("No component Dipole found on the identity provided");
-            breadboardHolder.breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit());
+            breadboardHolder.breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit(connectionToClient));
         }
 
         [TargetRpc]
