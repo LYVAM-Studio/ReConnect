@@ -10,7 +10,6 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 namespace Reconnect.Menu
 {
@@ -18,27 +17,29 @@ namespace Reconnect.Menu
     {
         public static MenuManager Instance;
         
+        [Header("Multiplayer parameters")]
+        
+        public ReconnectNetworkManager networkManager;
+        
         [Header("Menu canvas")]
         
         public GameObject mainMenu;
         public GameObject singleplayerMenu;
         public GameObject multiplayerMenu;
+        public TMP_InputField hostPort;
+        public TMP_InputField serverAddress;
+        public TMP_InputField serverPort;
         public GameObject settingsMenu;
         public GameObject pauseMenu;
         public GameObject lessonsMenu;
         public GameObject imageViewerMenu;
         public GameObject knockOutMenu;
-        [VolumeComponent.Indent] public TMP_Text timerText;
+        public TMP_Text knockOutReason;
+        public TMP_Text timerText;
         public GameObject connectionFailed;
+        public TMP_Text errorMsg;
         public GameObject quitMenu;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
-        
-        [Header("Multiplayer parameters")]
-        
-        public ReconnectNetworkManager networkManager;
-        public TMP_InputField hostPort;
-        public TMP_InputField serverAddress;
-        public TMP_InputField serverPort;
         
         public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
@@ -260,6 +261,7 @@ namespace Reconnect.Menu
             if (!ushort.TryParse(hostPort.text, out ushort port))
             {
                 SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Invalid port\n\nTry again with a valid port";
                 return;
             }
             
@@ -271,9 +273,10 @@ namespace Reconnect.Menu
         
         public async void RunMultiplayerMode()
         {
-            if (!ushort.TryParse(hostPort.text, out ushort port))
+            if (!ushort.TryParse(serverPort.text, out ushort port))
             {
                 SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Invalid port\n\nTry again with a valid port";
                 return;
             }
             
@@ -291,12 +294,14 @@ namespace Reconnect.Menu
                 else
                 {
                     SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                    errorMsg.text = "Connection failed\n\nPlease try again";
                 }
             }
             catch (Exception e)
             {
                 Debug.LogWarning($"An exception has been thrown while trying to connect:\n{e}");
                 SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                errorMsg.text = "Connection failed\n\nPlease try again";
             }
         }
 
