@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Mirror;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace Reconnect.ToolTips
         public float height;
 
         public float timeBeforeAppearing = 0.5f;
-
+        
         public string Text
         {
             get => text;
@@ -35,7 +36,7 @@ namespace Reconnect.ToolTips
         private int _id;
         private Coroutine _coroutine;
         private bool _isShown;
-        
+        private bool _forceHide;
        private void Awake()
        {
            _id = GetHashCode();
@@ -52,24 +53,32 @@ namespace Reconnect.ToolTips
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            Debug.LogError("Pointer enter");
             Show();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            Debug.LogError("Pointer Exit");
             Hide();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
+            Debug.LogError("Pointer drag");
             Hide();
         }
         
         public void OnEndDrag(PointerEventData eventData)
         {
-            Show();
+            Debug.LogWarning($"EndDragCallback hide={_forceHide}");
+            if (!_forceHide)
+                Show();
+            _forceHide = false;
         }
 
+        public void ForceHideUntilEndDrag() => _forceHide = true;
+        
         private void Show()
         {
             if (_coroutine is not null)
@@ -77,7 +86,7 @@ namespace Reconnect.ToolTips
             _coroutine = StartCoroutine(ShowCoroutine());
         }
 
-        private void Hide()
+        public void Hide()
         {
             if (_coroutine is not null)
             {
