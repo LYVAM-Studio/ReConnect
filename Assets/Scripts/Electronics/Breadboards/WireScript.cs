@@ -1,4 +1,3 @@
-using System;
 using Mirror;
 using UnityEngine;
 using Reconnect.Electronics.Breadboards;
@@ -21,7 +20,8 @@ namespace Reconnect.Electronics.Components
         public Vector2Int Pole2 { get; set; }
 
         private Outline _outline;
-
+        
+        [SyncVar]
         private bool _isLocked = false;
         public bool IsLocked
         {
@@ -55,6 +55,11 @@ namespace Reconnect.Electronics.Components
 
         void ICursorHandle.OnCursorClick()
         {
+            if (Breadboard.IsCircuitOn)
+            {
+                Breadboard.KnockOutOnEdit();
+                return;
+            }
             if (!_isLocked)
             {
                 if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))

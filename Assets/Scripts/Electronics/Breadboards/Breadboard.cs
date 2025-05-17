@@ -16,7 +16,7 @@ namespace Reconnect.Electronics.Breadboards
     public class Breadboard : NetworkBehaviour
     {
         public BreadboardHolder breadboardHolder;
-
+        public bool IsCircuitOn => breadboardHolder.breadboardSwitch.IsOn;
         /// <summary>
         /// The list of the components currently on the breadboard.
         /// </summary>
@@ -295,6 +295,17 @@ namespace Reconnect.Electronics.Breadboards
             if (!Dipoles.Contains(component))
                 return;
             Dipoles.Remove(component);
+        }
+        
+        public void KnockOutOnEdit()
+        {
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No PlayerNetwork component has been found on the local player"));
+                return;
+            }
+            playerNetwork.CmdKnockOutPlayer("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
         }
         
         public bool TryGetClosestValidPos(Dipole component, out Vector3 closest, out Vector2Int newPole1, out Vector2Int newPole2)
