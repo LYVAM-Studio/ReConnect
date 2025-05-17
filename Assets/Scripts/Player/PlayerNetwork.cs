@@ -29,6 +29,7 @@ namespace Reconnect.Player
 
             if (!TryGetComponent(out CharacterController))
                 throw new ComponentNotFoundException("No CharacterController component has been found on the player.");
+            
             if (!TryGetComponent(out Physics))
                 throw new ComponentNotFoundException("No PhysicsScript component has been found on the player.");
         }
@@ -44,7 +45,11 @@ namespace Reconnect.Player
         public void CmdSetSwitchAnimation(NetworkIdentity bbHolderIdentity, bool value)
         {
             if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided"));
+                return;
+            }
             breadboardHolder.breadboardSwitch.IsOn = value;
             breadboardHolder.breadboardSwitch.lastPlayerExecuting = connectionToClient.identity; // the player who sent the command
         }
@@ -60,7 +65,11 @@ namespace Reconnect.Player
         public void CmdRequestSetPoles(NetworkIdentity dipoleIdentity, Vector2Int pole1, Vector2Int pole2)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No Dipole component has been found on the identity provided"));
+                return;
+            }
             dipole.Pole1 = pole1;
             dipole.Pole2 = pole2;
         }
@@ -69,7 +78,11 @@ namespace Reconnect.Player
         public void CmdSetDipolePosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No Dipole component has been found on the identity provided"));
+                return;
+            }
             dipole.SetPosition(targetPos);
         }
         
@@ -77,7 +90,11 @@ namespace Reconnect.Player
         public void CmdSetDipoleLocalPosition(NetworkIdentity dipoleIdentity, Vector3 targetPos)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-                throw new ComponentNotFoundException("No Dipole component has been found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No Dipole component has been found on the identity provided"));
+                return;
+            }
             dipole.SetLocalPosition(targetPos);
             dipole.LastLocalPosition = targetPos;
         }
@@ -86,7 +103,11 @@ namespace Reconnect.Player
         public void CmdSetHorizontalDipole(NetworkIdentity dipoleIdentity, bool value)
         {
             if (!dipoleIdentity.TryGetComponent(out Dipole dipole))
-                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
             dipole.IsHorizontal = value;
         }
         
@@ -102,7 +123,11 @@ namespace Reconnect.Player
             Vector2Int destinationPoint, string wireName, bool isWireLocked)
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
             if (breadboardHolder.breadboardSwitch.IsOn)
             {
                 TargetKnockOut(
@@ -119,7 +144,11 @@ namespace Reconnect.Player
             Vector2Int destinationPoint, string resistorName, uint resistance, float tolerance, bool isResistorLocked)
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
             breadboardHolder.breadboard.CreateResistor(sourcePoint, destinationPoint, resistorName, resistance, tolerance, isResistorLocked);
         }
         
@@ -128,7 +157,11 @@ namespace Reconnect.Player
             Vector2Int destinationPoint, string lampName, uint resistance, bool isLampLocked)
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
             breadboardHolder.breadboard.CreateLamp(sourcePoint, destinationPoint, lampName, resistance, isLampLocked);
         }
         
@@ -136,7 +169,11 @@ namespace Reconnect.Player
         public void CmdRequestDeleteWire(NetworkIdentity wireIdentity)
         {
             if (!wireIdentity.TryGetComponent(out WireScript wire))
-                throw new ComponentNotFoundException("No wireScript has been found on the network identity");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No wireScript has been found on the network identity"));
+                return;
+            }
             if (wire.Breadboard.breadboardHolder.breadboardSwitch.IsOn)
             {
                 TargetKnockOut(
@@ -152,7 +189,11 @@ namespace Reconnect.Player
         public void CmdOnBreadboardExit(NetworkIdentity breadboardHolderIdentity)
         {
             if (!breadboardHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
-                throw new ComponentNotFoundException("No component Dipole found on the identity provided");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component Dipole found on the identity provided"));
+                return;
+            }
             breadboardHolder.breadboard.Dipoles.ForEach(d => d.OnBreadBoardExit(connectionToClient));
         }
 
@@ -160,7 +201,11 @@ namespace Reconnect.Player
         public void TargetKnockOut(string reason)
         {
             if (!TryGetComponent(out PlayerMovementsNetwork playerMovements))
-                throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No component PlayerNetwork has been found on the local player"));
+                return;
+            }
             if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
                 MenuManager.Instance.BackToPreviousMenu();
             MenuManager.Instance.SetKnockOutReason(reason);

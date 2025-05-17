@@ -163,7 +163,10 @@ namespace Reconnect.Menu
         public void BackToPreviousMenu()
         {
             if (_history.IsEmpty())
-                throw new ArgumentException("Cannot go back with an empty history");
+            {
+                Debug.LogWarning("Cannot go back with an empty history");
+                return;
+            }
 
             (CurrentMenuState, CurrentCursorState) = _history.Pop();
             

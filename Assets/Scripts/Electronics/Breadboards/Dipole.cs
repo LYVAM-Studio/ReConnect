@@ -28,7 +28,10 @@ namespace Reconnect.Electronics.Breadboards
             set
             {
                 if (!isServer)
-                    throw new UnauthorizedActionFromClientException("Client cannot set Pole1");
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set Pole1"));
+                    return;
+                }
                 _pole1 = value;
             }
         }
@@ -39,7 +42,10 @@ namespace Reconnect.Electronics.Breadboards
             set
             {
                 if (!isServer)
-                    throw new UnauthorizedActionFromClientException("Client cannot set Pole2");
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set Pole2"));
+                    return;
+                }
                 _pole2 = value;
             }
         }
@@ -58,7 +64,10 @@ namespace Reconnect.Electronics.Breadboards
             set
             {
                 if (!isServer)
-                    throw new UnauthorizedActionFromClientException("Client cannot set IsHorizontal");
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set IsHorizontal"));
+                    return;
+                }
                 transform.localEulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
                 _isHorizontal = value;
             }
@@ -85,7 +94,10 @@ namespace Reconnect.Electronics.Breadboards
             set 
             {
                 if (!isServer)
-                    throw new UnauthorizedActionFromClientException("Client cannot set IsLocked");
+                {
+                    Debug.LogException( new UnauthorizedActionFromClientException("Client cannot set IsLocked"));
+                    return;
+                }
                 _isLocked = value;
                 if (_isLocked) _outline.enabled = false;
             }
@@ -227,15 +239,22 @@ namespace Reconnect.Electronics.Breadboards
             IsHorizontal = _wasHorizontal;
             _isBeingDragged = false;
             if (!clientConnection.identity.TryGetComponent(out PlayerNetwork playerNetwork))
-                throw new ComponentNotFoundException("No PlayerNetwork component has been found on the client player");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No PlayerNetwork component has been found on the client player"));
+                return;
+            }
             playerNetwork.TargetForceHideTooltip(netIdentity);
         }
 
         private void KnockOutOnEdit()
         {
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
-                throw new ComponentNotFoundException(
-                    "No PlayerNetwork component has been found on the local player");
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No PlayerNetwork component has been found on the local player"));
+                return;
+            }
             playerNetwork.TargetKnockOut("You have been electrocuted because you tried to edit the circuit while it was still powered on.");
         }
     }
