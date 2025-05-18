@@ -7,7 +7,15 @@ namespace Reconnect.Pathfinding
 {
     public class AggressiveMob : Mob
     {
-        private List<Transform> _playersInRange = new List<Transform>();
+        [Header("Movement settings")]
+        [SerializeField] private float walkingSpeed = 2f;
+        [SerializeField] private float runningSpeed = 6f;
+        [SerializeField] private float minPauseTime = 5f;
+        [SerializeField] private float maxPauseTime = 15f;
+        [SerializeField] private float minMovementRadius = 5f;
+        [SerializeField] private float maxMovementRadius = 20f;
+        
+        private List<Transform> _playersInRange = new();
         
         private Animator _animator;
         private int _isDeadHash;
@@ -29,50 +37,48 @@ namespace Reconnect.Pathfinding
             var closestPlayerTransform = GetClosestPlayerTransform();
             if (closestPlayerTransform is not null)
             {
-                Agent.speed = 4f;
+                StopCoroutine(nameof(PauseForSeconds));
+                IsWaiting = false;
+                
+                Agent.speed = runningSpeed;
                 Agent.SetDestination(closestPlayerTransform.position);
             }
             else
             {
-                Agent.speed = 2f;
-                if (Agent.remainingDistance <= 3 && !IsWaiting)
+                Agent.speed = walkingSpeed;
+                if (HasArrived && !IsWaiting)
                 {
-                    StartCoroutine(PauseForSeconds(Random.Range(minWaitingTime, maxWaitingTime)));
+                    StartCoroutine(PauseForSeconds(Random.Range(minPauseTime, maxPauseTime)));
                 }
             }
 
-            _animator.SetBool(_isRunningHash, Agent.velocity.magnitude >= 0.1f);
+            _animator.SetBool(_isRunningHash, Agent.velocity.magnitude >= 1f);
         }
 
-        public void OnTriggerEnter(Collider other)
+        protected override void ChooseRandomDestination()
+        {
+            float radius = Random.Range(minMovementRadius, maxMovementRadius);
+            float angle = Random.Range(0f, Mathf.PI * 2);
+
+            Agent.SetDestination(transform.position + new Vector3(
+                Mathf.Cos(angle) * radius, 
+                0, 
+                Mathf.Sin(angle) * radius));
+        }
+
+        private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
-            {
-                if (IsWaiting)
-                {
-                    StopCoroutine(nameof(PauseForSeconds));
-                    IsWaiting = false;
-                }
-
                 _playersInRange.Add(other.transform);
-                Agent.SetDestination(GetClosestPlayerTransform().position);
-            }
         }
 
-        public void OnTriggerExit(Collider other)
+        private void OnTriggerExit(Collider other)
         {
             if (other.CompareTag("Player"))
-            {
                 _playersInRange.Remove(other.transform);
-                // reset the destination that will be set by update
-                Agent.SetDestination(transform.position);
-                // reset to low speed when not attacking player 
-                Agent.speed = 2f;
-            }
-        }
 
-        public void AttackAnimation() => _animator.SetTrigger(_isAttackingHash);
-        public void DeathAnimation() => _animator.SetTrigger(_isDeadHash);
+            Agent.SetDestination(transform.position);
+        }
 
         private Transform GetClosestPlayerTransform()
         {
@@ -84,5 +90,8 @@ namespace Reconnect.Pathfinding
                 .OrderBy(p => Vector3.Distance(transform.position, p.position))
                 .FirstOrDefault();
         }
+        
+        public void AttackAnimation() => _animator.SetTrigger(_isAttackingHash);
+        public void DeathAnimation() => _animator.SetTrigger(_isDeadHash);
     }
 }
