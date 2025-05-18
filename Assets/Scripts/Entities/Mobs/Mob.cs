@@ -27,10 +27,8 @@ namespace Reconnect.Pathfinding
                 throw new ComponentNotFoundException("No NavMeshAgent component has been found on this mob.");
         }
 
-        protected void Start()
+        public override void OnStartServer()
         {
-            if (!isServer) return;
-            
             if (!NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 10f, NavMesh.AllAreas))
                 throw new UnreachableCaseException("This should have been checked before in the MobManager.");
             

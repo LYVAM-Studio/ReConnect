@@ -6838,6 +6838,37 @@ RectTransform:
   m_AnchoredPosition: {x: 4.7225137, y: -0.635053}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &447346204
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 447346205}
+  m_Layer: 0
+  m_Name: Spawner2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &447346205
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447346204}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -19.7, y: 6.66, z: 9.61}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1788988484}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &463030803
 GameObject:
   m_ObjectHideFlags: 0
@@ -21584,7 +21615,7 @@ MonoBehaviour:
   minAggressiveSpawnInterval: 10
   maxAggressiveSpawnInterval: 120
   passiveSpawners: {fileID: 1788988484}
-  numberOfPassiveMobs: 20
+  numberOfPassiveMobs: 40
 --- !u!114 &1564851031
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25805,6 +25836,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1913546761}
+  - {fileID: 447346205}
   m_Father: {fileID: 1564851029}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1789164813
