@@ -200,6 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ee971769a840f5a29a573bf97be2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   player: {fileID: 6700679459460615958}
   visualRange: {fileID: 3017131213165227921}
   isShownByDefault: 0
@@ -350,8 +353,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d66d7af907e347f28caafacce84a8e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementsNetwork: {fileID: 8583066610830916097}
-  DummyModel: {fileID: 7555439701663789874}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &8583066610830916097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -546,10 +550,5 @@ PrefabInstance:
 --- !u!4 &7174657296268388744 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
-  m_PrefabInstance: {fileID: 7213422661467147875}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7555439701663789874 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: af5683ec8fdba9041af3ae5b394f5250, type: 3}
   m_PrefabInstance: {fileID: 7213422661467147875}
   m_PrefabAsset: {fileID: 0}

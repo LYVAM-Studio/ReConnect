@@ -35,16 +35,16 @@ namespace Reconnect.Interactions
         
         private PlayerControls _controls;
 
-        private PlayerMovementsNetwork _playerMovements;
+        private PlayerGetter _playerGetter;
 
         private void Awake()
         {
             _controls = new PlayerControls();
             _controls.Player.Interact.performed += OnInteraction;
-
-            if (!player.TryGetComponent(out _playerMovements))
+            
+            if (!player.TryGetComponent(out _playerGetter))
                 throw new ComponentNotFoundException(
-                    "No PlayerMovementsNetwork has been found on the player game object.");
+                    "No PlayerGetter has been found on the player game object.");
         }
         
         private void OnEnable()
@@ -73,9 +73,9 @@ namespace Reconnect.Interactions
         private void OnInteraction(InputAction.CallbackContext context)
         {
             if (MenuManager.Instance.CurrentMenuState is not MenuState.Pause
-                && !_playerMovements.IsKo
+                && !_playerGetter.Movements.IsKo
                 && _interactableInRange.Count > 0)
-                GetNearestInteractable()!.Interact(player);
+                GetNearestInteractable()?.Interact(player);
         }
 
         // Update is called once per frame
@@ -113,7 +113,9 @@ namespace Reconnect.Interactions
             if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
-                interactable.OnEnterPlayerRange();
+                if (interactable.CanInteract())
+                    interactable.OnEnterPlayerRange();
+                
                 _interactableInRange.Add((interactable, other.transform));
             }
         }
