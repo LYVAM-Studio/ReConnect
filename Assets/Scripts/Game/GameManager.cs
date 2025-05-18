@@ -89,7 +89,6 @@ namespace Reconnect.Game
                     Debug.LogWarning($"Sprite '{spriteName}' not found in Resources/Sprites/Lessons/{spriteName}.");
                 }
             }
-            Debug.Log($"Loaded {_lessonsByLevel.Count} sprites.");
         }
 
         public override void OnStartClient()
@@ -101,7 +100,6 @@ namespace Reconnect.Game
         {
             // Wait until the localPlayer is set
             yield return new WaitUntil(() => NetworkClient.localPlayer is not null);
-            Debug.Log("Local player spawned");
             Level = 1;
         }
         
