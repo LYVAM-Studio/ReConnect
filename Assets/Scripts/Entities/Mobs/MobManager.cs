@@ -28,6 +28,8 @@ namespace Reconnect.Pathfinding
         [Tooltip("The game object whose children's transforms are the spawn positions.")]
         private Transform passiveSpawners;
         [SerializeField] private uint numberOfPassiveMobs = 20;
+        [SerializeField] private float minPassiveSpawnInterval = 3f;
+        [SerializeField] private float maxPassiveSpawnInterval = 8f;
 
         private void Awake()
         {
@@ -54,19 +56,21 @@ namespace Reconnect.Pathfinding
                 if (!NavMesh.SamplePosition(childTransform.position, out NavMeshHit _, 10f, NavMesh.AllAreas))
                     throw new ArgumentException($"The given passive mob spawner '{childTransform.gameObject.name}' is not close enough to the navmesh.");
             
-            SpawnPassiveMobs();
+            StartCoroutine(SpawnPassiveMobs());
             
-            StartCoroutine(LowFrequencyUpdate());
+            StartCoroutine(UpdateForAggressive());
         }
 
         /// <summary>
-        /// Spawns all the passive mobs across the network.
+        /// Spawns all the passive mobs across the network. This is a finite coroutine.
         /// </summary>
-        [Server]
-        private void SpawnPassiveMobs()
+        private IEnumerator SpawnPassiveMobs()
         {
             for (int i = 0; i < numberOfPassiveMobs; i++)
+            {
                 _ = SpawnPassive();
+                yield return new WaitForSeconds(Random.Range(minPassiveSpawnInterval, maxPassiveSpawnInterval));
+            }
         }
 
         /// <summary>
@@ -83,10 +87,10 @@ namespace Reconnect.Pathfinding
         }
 
         /// <summary>
-        /// A coroutine used as an Update function but with a low call frequency. The interval between two calls is a random number between minAggressiveSpawnInterval and maxAggressiveSpawnInterval.
+        /// A coroutine used as an Update function but with a low call frequency. The interval between two calls is a random number between minAggressiveSpawnInterval and maxAggressiveSpawnInterval. This is an infinite coroutine.
         /// </summary>
         /// <returns>An IEnumerator corresponding to a coroutine.</returns>
-        private IEnumerator LowFrequencyUpdate()
+        private IEnumerator UpdateForAggressive()
         {
             while (true)
             {
@@ -117,7 +121,6 @@ namespace Reconnect.Pathfinding
             Vector3 spawnPos = Choose(aggressiveSpawners.OfType<Transform>().ToList()).position;
             GameObject mob = Instantiate(Resources.Load<GameObject>("Prefabs/Mobs/AggressiveMob"), spawnPos, Quaternion.identity);
             NetworkServer.Spawn(mob);
-            mob.transform.position = Choose(aggressiveSpawners.OfType<Transform>().ToList()).position;
             return mob;
         }
 
