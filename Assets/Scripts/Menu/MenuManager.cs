@@ -42,6 +42,7 @@ namespace Reconnect.Menu
         public GameObject quitMenu;
         public GameObject hudMenu;
         public GameObject newLessonMenu;
+        public NewLessonMenuController newLessonController;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
         
         public MenuState CurrentMenuState { get; private set; }

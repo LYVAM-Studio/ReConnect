@@ -224,5 +224,11 @@ namespace Reconnect.Player
         {
             GameManager.Instance.Level = level;
         }
+        
+        [Command]
+        public void CmdLevelUpPlayers(uint level)
+        {
+            GameManager.Instance.LevelUp();
+        }
     }
 }
