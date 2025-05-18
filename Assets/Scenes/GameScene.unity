@@ -21616,6 +21616,8 @@ MonoBehaviour:
   maxAggressiveSpawnInterval: 120
   passiveSpawners: {fileID: 1788988484}
   numberOfPassiveMobs: 40
+  minPassiveSpawnInterval: 8
+  maxPassiveSpawnInterval: 15
 --- !u!114 &1564851031
 MonoBehaviour:
   m_ObjectHideFlags: 0

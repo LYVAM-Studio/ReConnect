@@ -14,10 +14,10 @@ namespace Reconnect.Player
 
         [Header("Speed settings")]
         [Tooltip("The walking speed of the player")]
-        public float defaultSpeed = 1f;
+        public float defaultSpeed = 3f;
 
         [Tooltip("The sprinting speed modifier to be applied to the defaultSpeed")]
-        public float sprintingFactor = 1.2f;
+        public float sprintingFactor = 2f;
         [Tooltip("The crouching speed modifier to be applied to the defaultSpeed")]
         public float crouchingFactor = 0.7f;
         [Tooltip("The time to smooth the rotation of the player (camera and keyboard)")]
