@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using Mirror;
 using Reconnect.Menu;
 using Reconnect.Menu.Lessons;
-using Reconnect.Player;
 using Reconnect.Utils;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Game
 {
@@ -23,6 +21,17 @@ namespace Reconnect.Game
         private readonly List<Sprite> _lessonsByLevel = new();
 
         private LessonsInventoryManager _lessonsInventoryManager;
+        
+        // lessons to load in the order of the levels
+        [SerializeField]
+        private string[] lessonSpritesNames =
+        {
+            "Reading a circuit diagram",
+            "Intensity in a circuit",
+            "Tension in a circuit",
+            "Resistance in a circuit",
+            "Resistance color code"
+        };
         
         public void OnLevelChange(uint oldLevel, uint newLevel)
         {
@@ -67,17 +76,7 @@ namespace Reconnect.Game
         
         private void LoadSpritesFromNames()
         {
-            // lessons to load in the order of the levels
-            string[] lessonSprites =
-            {
-                "Reading a circuit diagram",
-                "Intensity in a circuit",
-                "Tension in a circuit",
-                "Resistance in a circuit",
-                "Resistance color code"
-            };
-
-            foreach (string spriteName in lessonSprites)
+            foreach (string spriteName in lessonSpritesNames)
             {
                 Sprite sprite = Resources.Load<Sprite>($"Sprites/Lessons/{spriteName}");
                 if (sprite != null)
