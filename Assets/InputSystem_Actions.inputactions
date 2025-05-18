@@ -1014,6 +1014,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MissionBrief",
+                    "type": "Button",
+                    "id": "68e213db-7c5b-43c4-b114-5fe2a830000f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1036,6 +1045,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Lessons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d96e7679-9deb-4a79-9b11-c6ad61d51826",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "MissionBrief",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

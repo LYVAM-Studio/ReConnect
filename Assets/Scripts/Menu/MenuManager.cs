@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Mirror;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.Game;
 using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -78,6 +79,7 @@ namespace Reconnect.Menu
             _controls = new PlayerControls();
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
+            _controls.Menu.MissionBrief.performed += OnToggleMissionBrief;
             
             SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
         }
@@ -96,6 +98,7 @@ namespace Reconnect.Menu
         {
             _controls.Menu.Esc.performed -= OnEscPressed;
             _controls.Menu.Lessons.performed -= OnToggleLessonsMenu;
+            _controls.Menu.MissionBrief.performed -= OnToggleMissionBrief;
         }
 
         private void OnEscPressed(InputAction.CallbackContext ctx)
@@ -136,6 +139,20 @@ namespace Reconnect.Menu
                 SetMenuTo(MenuState.Lessons, CursorState.Shown);
             }
             else if (CurrentMenuState is MenuState.Lessons)
+            {
+                UnLockPlayer();
+                BackToPreviousMenu();
+            }
+        }
+        
+        private void OnToggleMissionBrief(InputAction.CallbackContext ctx)
+        {
+            if (CurrentMenuState is MenuState.None)
+            {
+                LockPlayer();
+                SetMenuToMissionBrief(GameManager.Instance.Level);
+            }
+            else if (CurrentMenuState.IsBriefMission())
             {
                 UnLockPlayer();
                 BackToPreviousMenu();
