@@ -91,7 +91,11 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        public override bool CanInteract() => GameManager.Instance.Level == level;
+        public override bool CanInteract()
+        {
+            Debug.Log($"BH level : {level}\nGame level : {GameManager.Level}");
+            return GameManager.Level == level;
+        }
         
         public Vector3 GetFlattenedCursorPos()
         {

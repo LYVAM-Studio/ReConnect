@@ -222,13 +222,41 @@ namespace Reconnect.Player
         [Command]
         public void CmdSetPlayersLevel(uint level)
         {
-            GameManager.Instance.Level = level;
+            RpcSetPlayerLevel(level);
+        }
+        
+        [Command]
+        public void CmdGetPlayerLevel()
+        {
+            TargetSetPlayerLevel(GameManager.Level);
+        }
+
+        [TargetRpc]
+        private void TargetSetPlayerLevel(uint level)
+        {
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            GameManager.OnLevelChange(old, level);
+        }
+
+        [ClientRpc]
+        private void RpcSetPlayerLevel(uint level)
+        {
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            GameManager.OnLevelChange(old, level);
         }
         
         [Command]
         public void CmdLevelUpPlayers(uint level)
         {
-            GameManager.Instance.LevelUp();
+            RpcLevelUpPlayers(level);
+        }
+        
+        [ClientRpc]
+        private void RpcLevelUpPlayers(uint level)
+        {
+            GameManager.Level = level;
         }
     }
 }

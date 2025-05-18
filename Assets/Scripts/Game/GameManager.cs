@@ -1,30 +1,24 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using Reconnect.Menu;
 using Reconnect.Menu.Lessons;
+using Reconnect.Player;
 using Reconnect.Utils;
-using TMPro;
 using UnityEngine;
 
 namespace Reconnect.Game
 {
     public class GameManager : NetworkBehaviour
     {
-        [NonSerialized] 
-        public static GameManager Instance;
-        
-        [SyncVar(hook = nameof(OnLevelChange))]
-        public uint Level;
+        public static uint Level = 1;
 
-        private readonly List<Sprite> _lessonsByLevel = new();
+        private static readonly List<Sprite> LessonsByLevel = new();
 
-        private LessonsInventoryManager _lessonsInventoryManager;
+        private static LessonsInventoryManager _lessonsInventoryManager;
         
         // lessons to load in the order of the levels
-        [SerializeField]
-        private string[] lessonSpritesNames =
+        private static readonly string[] LessonSpritesNames =
         {
             "Reading a circuit diagram",
             "Intensity in a circuit",
@@ -33,38 +27,31 @@ namespace Reconnect.Game
             "Resistance color code"
         };
         
-        public void OnLevelChange(uint oldLevel, uint newLevel)
+        public static void OnLevelChange(uint oldLevel, uint newLevel)
         {
-            StartCoroutine(WaitForLocalPlayerThenHandleLevelChange(oldLevel, newLevel));
-        }
-
-        private IEnumerator WaitForLocalPlayerThenHandleLevelChange(uint oldLevel, uint newLevel)
-        {
-            yield return new WaitUntil(() => NetworkClient.localPlayer is not null);
-    
+            Debug.Log($"New Level to Sync {oldLevel} => {newLevel}");
+            
             if (newLevel == 0)
             {
                 Debug.LogError("The new level is null and it should not be!");
-                yield break;
+                return;
             }
             // change the HUD level text
+            Debug.Log($"Before set level {newLevel}");
             MenuManager.Instance.SetLevel(newLevel);
             // show the canva of the mission brief for this level
             MenuManager.Instance.SetMenuToMissionBrief(newLevel);
             int lessonIndex = (int)newLevel - 1;
             // show the menu of the new lesson with the image of the lesson
-            MenuManager.Instance.SetMenuToNewLesson(newLevel, _lessonsByLevel[lessonIndex]);
+            MenuManager.Instance.SetMenuToNewLesson(newLevel, LessonsByLevel[lessonIndex]);
             for (uint level = oldLevel + 1; level <= newLevel; level++)
             {
-                _lessonsInventoryManager.AddItem(_lessonsByLevel[(int)level - 1].name, _lessonsByLevel[(int)level - 1]);
+                _lessonsInventoryManager.AddItem(LessonsByLevel[(int)level - 1].name, LessonsByLevel[(int)level - 1]);
             }
         }
         
         private void Awake()
         {
-            if (Instance is not null)
-                throw new Exception("A GameManager has already been instantiated.");
-            Instance = this;
             if (!TryGetComponent(out _lessonsInventoryManager))
                 throw new ComponentNotFoundException(
                     "No component LessonsInventoryManager has been found on the GameManager");
@@ -72,14 +59,14 @@ namespace Reconnect.Game
         }
         
         
-        private void LoadSpritesFromNames()
+        private static void LoadSpritesFromNames()
         {
-            foreach (string spriteName in lessonSpritesNames)
+            foreach (string spriteName in LessonSpritesNames)
             {
                 Sprite sprite = Resources.Load<Sprite>($"Sprites/Lessons/{spriteName}");
                 if (sprite != null)
                 {
-                    _lessonsByLevel.Add(sprite);
+                    LessonsByLevel.Add(sprite);
                 }
                 else
                 {
@@ -97,10 +84,12 @@ namespace Reconnect.Game
         {
             // Wait until the localPlayer is set
             yield return new WaitUntil(() => NetworkClient.localPlayer is not null);
-            Level = 1;
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerGetter playerGetter))
+                throw new ComponentNotFoundException("No PlayerGetter found on the local player");
+            playerGetter.Network.CmdGetPlayerLevel();
         }
         
-        public void LevelUp()
+        public static void LevelUp()
         {
             Level++;
         }

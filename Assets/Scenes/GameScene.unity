@@ -45803,13 +45803,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  Level: 0
-  lessonSpritesNames:
-  - Reading a circuit diagram
-  - Intensity in a circuit
-  - Tension in a circuit
-  - Resistance in a circuit
-  - Resistance color code
 --- !u!4 &2002407288
 Transform:
   m_ObjectHideFlags: 0
