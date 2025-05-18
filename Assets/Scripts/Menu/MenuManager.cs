@@ -150,7 +150,7 @@ namespace Reconnect.Menu
             if (CurrentMenuState is MenuState.None)
             {
                 LockPlayer();
-                SetMenuToMissionBrief(GameManager.Instance.Level);
+                SetMenuToMissionBrief(GameManager.Level);
             }
             else if (CurrentMenuState.IsBriefMission())
             {
@@ -332,6 +332,7 @@ namespace Reconnect.Menu
         
         public void SetLevel(uint level)
         {
+            Debug.Log($"In set level {level}");
             hudLevelText.text = $"Level : {level}";
         }
         
