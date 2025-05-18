@@ -8,7 +8,6 @@ namespace Reconnect.Player
     public class PlayerGetter : NetworkBehaviour
     {
         [NonSerialized] public PlayerMovementsNetwork Movements;
-        [NonSerialized] public PlayerLevel Level;
         [NonSerialized] public PlayerNetwork Network;
         [NonSerialized] public GameObject DummyModel;
 
@@ -18,8 +17,6 @@ namespace Reconnect.Player
                 throw new ComponentNotFoundException("MovementNetwork not found");
             if (!TryGetComponent(out Network))
                 throw new ComponentNotFoundException("PlayerNetwork not found");
-            if (!TryGetComponent(out Level))
-                throw new ComponentNotFoundException("PlayerLevel not found");
 
             DummyModel = netIdentity.transform.GetChild(0).gameObject;
         }

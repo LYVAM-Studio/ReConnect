@@ -23,7 +23,7 @@ namespace Reconnect.Interactions
         }
 
         public abstract void Interact(GameObject player);
-        public abstract bool CanInteract(PlayerGetter playerGetter);
+        public abstract bool CanInteract();
 
         // This method is called by the player when this interactable enters its range.
         public void OnEnterPlayerRange()
