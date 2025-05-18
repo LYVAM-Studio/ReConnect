@@ -224,7 +224,8 @@ namespace Reconnect.Player
         {
             uint old = GameManager.Level;
             GameManager.Level = level;
-            GameManager.OnLevelChange(old, GameManager.Level);
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
             RpcSetPlayerLevel(level);
         }
         
