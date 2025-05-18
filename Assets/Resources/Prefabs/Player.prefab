@@ -200,6 +200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3ee971769a840f5a29a573bf97be2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   player: {fileID: 6700679459460615958}
   visualRange: {fileID: 3017131213165227921}
   isShownByDefault: 0
@@ -350,7 +353,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d66d7af907e347f28caafacce84a8e08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   MovementsNetwork: {fileID: 8583066610830916097}
+  PlayerNetwork: {fileID: 0}
   DummyModel: {fileID: 7555439701663789874}
 --- !u!114 &8583066610830916097
 MonoBehaviour:
@@ -370,7 +377,7 @@ MonoBehaviour:
   lookAtObject: {fileID: 1667432634277388400}
   isLocked: 0
   jumpHeight: 0.7
-  defaultSpeed: 6
+  defaultSpeed: 2
   sprintingFactor: 1.8
   crouchingFactor: 0.7
   turnSmoothTime: 0.1
