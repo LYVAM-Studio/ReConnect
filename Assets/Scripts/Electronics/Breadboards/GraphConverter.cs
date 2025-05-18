@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
 
@@ -19,50 +20,50 @@ namespace Reconnect.Electronics.Breadboards
             Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
             var output = new CircuitOutput("output");
             Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
-            var graph = new Graph("Main graph", input, output, breadboard.Target);
+            var graph = new Graph("Main graph", input, output, UidDictionary.Get<ElecComponent>(breadboard.TargetUid));
             foreach (Vertex v in grid)
                 if (v is not null)
                     graph.AddVertex(v);
 
             foreach (var d in breadboard.Dipoles)
-                graph.AddVertex(d.Inner);
+                graph.AddVertex(UidDictionary.Get<Vertex>(d.InnerUid));
 
-            Clean(grid, graph);
-            
-            foreach (Vertex v in grid)
-            {
-                if (v is Vertex node && node.AdjacentComponents.Count > 2)
-                {
-                    graph.Vertices.Remove(v);
-                    graph.AddVertex(v.ToNode());
-                }
-            }
+            Clean(graph);
+            MakeNodes(graph);
 
             return graph;
         }
 
-        private static void Clean(Vertex[,] grid, Graph graph)
+        private static void Clean(Graph graph)
         {
             bool changed = true;
             while (changed)
             {
                 changed = false;
-                for (int y = 0; y < 8; y++)
-                for (int x = 0; x < 8; x++)
+                for (int i = graph.Vertices.Count - 1; i >= 0; i--)
                 {
-                    Vertex v = grid[y, x];
-                    if (v is not null)
+                    Vertex vertex = graph.Vertices[i];
+                    if (vertex.AdjacentComponents.Count <= 1)
                     {
-                        if (v.AdjacentComponents.Count <= 1)
-                        {
-                            if (v.AdjacentComponents.Count == 1)
-                                Vertex.RemoveReciprocalAdjacent(v, v.AdjacentComponents[0]);
+                        if (vertex.AdjacentComponents.Count == 1)
+                            Vertex.RemoveReciprocalAdjacent(vertex, vertex.AdjacentComponents[0]);
 
-                            graph.Vertices.Remove(v);
-                            grid[y, x] = null;
-                            changed = true;
-                        }
+                        graph.Vertices.RemoveAt(i);
+                        changed = true;
                     }
+                }
+            }
+        }
+
+        private static void MakeNodes(Graph graph)
+        {
+            for (int i = graph.Vertices.Count - 1; i >= 0; i--)
+            {
+                Vertex vertex = graph.Vertices[i];
+                if (vertex is Vertex node && node.AdjacentComponents.Count > 2)
+                {
+                    graph.Vertices.Remove(vertex);
+                    graph.AddVertex(vertex.ToNode());
                 }
             }
         }
@@ -70,7 +71,7 @@ namespace Reconnect.Electronics.Breadboards
         private static void ClearInnerAdjacences(List<Dipole> dipoles)
         {
             foreach (var d in dipoles)
-                d.Inner.ClearAdjacent();
+                UidDictionary.Get<Vertex>(d.InnerUid).ClearAdjacent();
         }
 
         private static Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
@@ -99,8 +100,8 @@ namespace Reconnect.Electronics.Breadboards
             {
                 Vertex v1 = GetVertexOrNewAt(grid, d.Pole1.y, d.Pole1.x);
                 Vertex v2 = GetVertexOrNewAt(grid, d.Pole2.y, d.Pole2.x);
-                Vertex.AddReciprocalAdjacent(v1, d.Inner);
-                Vertex.AddReciprocalAdjacent(d.Inner, v2);
+                Vertex.AddReciprocalAdjacent(v1, UidDictionary.Get<Vertex>(d.InnerUid));
+                Vertex.AddReciprocalAdjacent(UidDictionary.Get<Vertex>(d.InnerUid), v2);
             }
         }
     }

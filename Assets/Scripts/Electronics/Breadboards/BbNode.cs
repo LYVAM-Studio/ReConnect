@@ -6,6 +6,9 @@ namespace Reconnect.Electronics.Breadboards
 {
     public class BbNode : MonoBehaviour, ICursorHandle
     {
+        bool ICursorHandle.IsPointerDown { get; set; }
+        bool ICursorHandle.IsPointerOver { get; set; }
+        
         [SerializeField]
         private Vector2Int point;
 
@@ -13,8 +16,6 @@ namespace Reconnect.Electronics.Breadboards
         [SerializeField]
         private Breadboard breadboard;
 
-        bool ICursorHandle.IsPointerDown { get; set; }
-        
         private Outline _outline;
 
         private void Start()
