@@ -332,7 +332,6 @@ namespace Reconnect.Menu
         
         public void SetLevel(uint level)
         {
-            Debug.Log($"In set level {level}");
             hudLevelText.text = $"Level : {level}";
         }
         
