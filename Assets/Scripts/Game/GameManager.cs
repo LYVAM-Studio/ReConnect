@@ -11,7 +11,7 @@ namespace Reconnect.Game
 {
     public class GameManager : NetworkBehaviour
     {
-        public static uint Level = 1;
+        public static uint Level;
 
         private static readonly List<Sprite> LessonsByLevel = new();
 
@@ -29,15 +29,12 @@ namespace Reconnect.Game
         
         public static void OnLevelChange(uint oldLevel, uint newLevel)
         {
-            Debug.Log($"New Level to Sync {oldLevel} => {newLevel}");
-            
             if (newLevel == 0)
             {
                 Debug.LogError("The new level is null and it should not be!");
                 return;
             }
             // change the HUD level text
-            Debug.Log($"Before set level {newLevel}");
             MenuManager.Instance.SetLevel(newLevel);
             // show the canva of the mission brief for this level
             MenuManager.Instance.SetMenuToMissionBrief(newLevel);
@@ -77,7 +74,21 @@ namespace Reconnect.Game
 
         public override void OnStartClient()
         {
-            StartCoroutine(WaitForLocalPlayer());
+            if(isServer)
+                OnLevelChange(0,1);
+            else
+            {
+                StartCoroutine(WaitForLocalPlayer());
+            }
+        }
+
+        public override void OnStartServer()
+        {
+            Level = 1;
+            if (isClient)
+            {
+                OnLevelChange(0,1);
+            }
         }
 
         private IEnumerator WaitForLocalPlayer()
