@@ -41,6 +41,7 @@ namespace Reconnect.Menu
         public TMP_Text errorMsg;
         public GameObject quitMenu;
         public GameObject hudMenu;
+        public GameObject newLessonMenu;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
         
         public MenuState CurrentMenuState { get; private set; }
@@ -143,6 +144,7 @@ namespace Reconnect.Menu
             connectionMenu.SetActive(menu is MenuState.Connection);
             connectionFailed.SetActive(menu is MenuState.ConnectionFailed);
             quitMenu.SetActive(menu is MenuState.Quit);
+            newLessonMenu.SetActive(menu is MenuState.NewLesson);
             BreadBoardHolder?.Activate(menu is MenuState.BreadBoard);
             
             CurrentMenuState = menu;
@@ -182,6 +184,7 @@ namespace Reconnect.Menu
             connectionMenu.SetActive(CurrentMenuState is MenuState.Connection);
             connectionFailed.SetActive(CurrentMenuState is MenuState.ConnectionFailed);
             quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
+            newLessonMenu.SetActive(CurrentMenuState is MenuState.NewLesson);
             BreadBoardHolder?.Activate(CurrentMenuState is MenuState.BreadBoard);
             
             if (CurrentCursorState is CursorState.Shown)
