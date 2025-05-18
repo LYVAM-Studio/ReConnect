@@ -56,7 +56,7 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 0
-  m_Height: 1
+  m_Height: 0.1
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
@@ -80,6 +80,7 @@ MonoBehaviour:
   maxPauseTime: 5
   minMovementRadius: 2
   maxMovementRadius: 5
+  maxYMovement: 2
 --- !u!95 &688580133545553952
 Animator:
   serializedVersion: 7

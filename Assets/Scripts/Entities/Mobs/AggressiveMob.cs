@@ -22,9 +22,9 @@ namespace Reconnect.Pathfinding
         private int _isRunningHash;
         private int _isAttackingHash;
         
-        private new void Start()
+        public override void OnStartServer()
         {
-            base.Start();
+            base.OnStartServer();
             
             MinMovementRadius = minMovementRadius;
             MaxMovementRadius = maxMovementRadius;

@@ -27,9 +27,9 @@ namespace Reconnect.Pathfinding
         /// </summary>
         private float _targetDistance;
         
-        private new void Start()
+        public override void OnStartServer()
         {
-            base.Start();
+            base.OnStartServer();
 
             MinMovementRadius = minMovementRadius;
             MaxMovementRadius = maxMovementRadius;
@@ -39,7 +39,13 @@ namespace Reconnect.Pathfinding
 
         private void Update()
         {
-            if (!isServer || IsWaiting) return;
+            if (!isServer) return;
+            
+            // make the model spin
+            model.transform.localEulerAngles +=
+                20 * Random.Range(0.5f, 1.5f) * Time.deltaTime * Vector3.up;
+            
+            if (IsWaiting) return;
             
             if (HasArrived)
             {
@@ -53,16 +59,12 @@ namespace Reconnect.Pathfinding
                     _previousY + (_targetY - _previousY) *
                     (1 - Vector3.Distance(Agent.destination, model.transform.position) / _targetDistance),
                     model.transform.position.z);
-                
-                // make the model spin
-                model.transform.localEulerAngles +=
-                    20 * Random.Range(0.5f, 1.5f) * Time.deltaTime * Vector3.up;
             }
         }
 
         protected override void ChooseRandomDestination()
         {
-            transform.position = GetRandomDestination();
+            Agent.SetDestination(GetRandomDestination());
 
             _previousY = model.transform.position.y;
             _targetY = Mathf.Max(model.transform.position.y + Random.Range(-maxYMovement, maxYMovement), transform.position.y, Agent.destination.y);
