@@ -22,18 +22,23 @@ namespace Reconnect.Pathfinding
         private int _isRunningHash;
         private int _isAttackingHash;
         
-        private void Start()
+        private new void Start()
         {
+            base.Start();
+            
+            MinMovementRadius = minMovementRadius;
+            MaxMovementRadius = maxMovementRadius;
+            
             _animator = GetComponent<Animator>();
             _isDeadHash = Animator.StringToHash("IsDead");
             _isRunningHash = Animator.StringToHash("IsRunning");
             _isAttackingHash = Animator.StringToHash("IsAttacking");
-            
-            ChooseRandomDestination();
         }
 
         private void Update()
         {
+            if (!isServer) return;
+            
             var closestPlayerTransform = GetClosestPlayerTransform();
             if (closestPlayerTransform is not null)
             {
@@ -55,29 +60,27 @@ namespace Reconnect.Pathfinding
             _animator.SetBool(_isRunningHash, Agent.velocity.magnitude >= 1f);
         }
 
-        protected override void ChooseRandomDestination()
-        {
-            float radius = Random.Range(minMovementRadius, maxMovementRadius);
-            float angle = Random.Range(0f, Mathf.PI * 2);
-
-            Agent.SetDestination(transform.position + new Vector3(
-                Mathf.Cos(angle) * radius, 
-                0, 
-                Mathf.Sin(angle) * radius));
-        }
-
         private void OnTriggerEnter(Collider other)
         {
+            if (!isServer) return;
+            
             if (other.CompareTag("Player"))
                 _playersInRange.Add(other.transform);
         }
 
         private void OnTriggerExit(Collider other)
         {
+            if (!isServer) return;
+            
             if (other.CompareTag("Player"))
                 _playersInRange.Remove(other.transform);
 
             Agent.SetDestination(transform.position);
+        }
+        
+        protected override void ChooseRandomDestination()
+        {
+            Agent.SetDestination(GetRandomDestination());
         }
 
         private Transform GetClosestPlayerTransform()
@@ -86,7 +89,8 @@ namespace Reconnect.Pathfinding
             _playersInRange = _playersInRange.Where(p => p).ToList();
 
             return _playersInRange
-                // .Where(p => p.!IsKO)
+                // .Where(p => !p.IsKO)
+                // .Where(p => !p.IsCrouching)
                 .OrderBy(p => Vector3.Distance(transform.position, p.position))
                 .FirstOrDefault();
         }
