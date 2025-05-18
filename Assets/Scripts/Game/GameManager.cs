@@ -47,15 +47,13 @@ namespace Reconnect.Game
                 Debug.LogError("The new level is null and it should not be!");
                 yield break;
             }
-
-            MenuManager.Instance.hudMenu.GetComponentInChildren<TMP_Text>().text = $"Level : {newLevel}";
-            MenuManager.Instance.LockPlayer();
-            // TODO : display indication on the new level
+            // change the HUD level text
+            MenuManager.Instance.SetLevel(newLevel);
+            // show the canva of the mission brief for this level
+            MenuManager.Instance.SetMenuToMissionBrief(newLevel);
             int lessonIndex = (int)newLevel - 1;
-            MenuManager.Instance.newLessonController.LoadImage(_lessonsByLevel[lessonIndex]);
-            MenuManager.Instance.newLessonController.SetTextToLevel(newLevel);
-            FreeLookCamera.InputAxisController.enabled = false;
-            MenuManager.Instance.SetMenuTo(MenuState.NewLesson, CursorState.Shown);
+            // show the menu of the new lesson with the image of the lesson
+            MenuManager.Instance.SetMenuToNewLesson(newLevel, _lessonsByLevel[lessonIndex]);
             for (uint level = oldLevel + 1; level <= newLevel; level++)
             {
                 _lessonsInventoryManager.AddItem(_lessonsByLevel[(int)level - 1].name, _lessonsByLevel[(int)level - 1]);
