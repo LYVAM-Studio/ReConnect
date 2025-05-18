@@ -2,6 +2,7 @@ using Mirror;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Game;
 using Reconnect.Menu;
 using Reconnect.Physics;
 using Reconnect.ToolTips;
@@ -216,6 +217,52 @@ namespace Reconnect.Player
                 MenuManager.Instance.BackToPreviousMenu();
             MenuManager.Instance.SetKnockOutReason(reason);
             playerMovements.KnockOut();
+        }
+
+        [Command]
+        public void CmdSetPlayersLevel(uint level)
+        {
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
+            RpcSetPlayerLevel(level);
+        }
+        
+        [Command]
+        public void CmdGetPlayerLevel()
+        {
+            TargetSetPlayerLevel(GameManager.Level);
+        }
+
+        [TargetRpc]
+        private void TargetSetPlayerLevel(uint level)
+        {
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            GameManager.OnLevelChange(old, level);
+        }
+
+        [ClientRpc]
+        private void RpcSetPlayerLevel(uint level)
+        {
+            if (isServer) return;
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            GameManager.OnLevelChange(old, level);
+        }
+        
+        [Command]
+        public void CmdLevelUpPlayers()
+        {
+            RpcLevelUpPlayers();
+        }
+        
+        [ClientRpc]
+        private void RpcLevelUpPlayers()
+        {
+            GameManager.Level += 1;
+            GameManager.OnLevelChange(GameManager.Level - 1, GameManager.Level);
         }
     }
 }

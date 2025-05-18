@@ -1,6 +1,8 @@
 using Mirror;
+using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Interactions
 {
@@ -8,6 +10,9 @@ namespace Reconnect.Interactions
     public abstract class Interactable : NetworkBehaviour
     {
         protected Outline Outline;
+
+        [SyncVar]
+        public uint level;
         protected void Awake()
         {
             if (!TryGetComponent(out Outline))
