@@ -113,7 +113,7 @@ namespace Reconnect.Interactions
             if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
-                if (interactable.CanInteract(_playerGetter))
+                if (interactable.CanInteract())
                     interactable.OnEnterPlayerRange();
                 
                 _interactableInRange.Add((interactable, other.transform));
@@ -140,7 +140,7 @@ namespace Reconnect.Interactions
             Interactable nearest = null;
             var minDistance = double.MaxValue;
             foreach (var (interactable, transformComponent) in _interactableInRange)
-                if (interactable.CanInteract(_playerGetter))
+                if (interactable.CanInteract())
                 {
                     var distance = Dist(transformComponent);
                     if (distance < minDistance)

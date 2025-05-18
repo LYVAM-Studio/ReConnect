@@ -2,6 +2,7 @@ using Mirror;
 using Reconnect.Electronics.Breadboards;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Game;
 using Reconnect.Menu;
 using Reconnect.Physics;
 using Reconnect.ToolTips;
@@ -221,20 +222,7 @@ namespace Reconnect.Player
         [Command]
         public void CmdSetPlayersLevel(uint level)
         {
-            RpcSetPlayerLevel(level);
-        }
-
-        [ClientRpc]
-        public void RpcSetPlayerLevel(uint level)
-        {
-            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerGetter playerGetter))
-            {
-                Debug.LogException(
-                    new ComponentNotFoundException("No component PlayerGetter has been found on the local player"));
-                return;
-            }
-            playerGetter.Level.value = level;
-            Debug.Log($"RPC Level set on: {gameObject.name} to {level}");
+            GameManager.Instance.Level = level;
         }
     }
 }

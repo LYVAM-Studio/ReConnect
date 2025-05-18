@@ -1,5 +1,6 @@
 using System;
 using Mirror;
+using Reconnect.Game;
 using Reconnect.Interactions;
 using Reconnect.Menu;
 using Reconnect.Player;
@@ -90,7 +91,7 @@ namespace Reconnect.Electronics.Breadboards
             }
         }
 
-        public override bool CanInteract(PlayerGetter playerGetter) => playerGetter.Level.value == level;
+        public override bool CanInteract() => GameManager.Instance.Level == level;
         
         public Vector3 GetFlattenedCursorPos()
         {
