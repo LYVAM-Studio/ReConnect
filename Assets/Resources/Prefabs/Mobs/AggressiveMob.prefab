@@ -6912,7 +6912,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   walkingSpeed: 2
-  runningSpeed: 6
+  runningSpeed: 5
   minPauseTime: 5
   maxPauseTime: 15
   minMovementRadius: 5

@@ -9,7 +9,7 @@ namespace Reconnect.Pathfinding
     {
         [Header("Movement settings")]
         [SerializeField] private float walkingSpeed = 2f;
-        [SerializeField] private float runningSpeed = 6f;
+        [SerializeField] private float runningSpeed = 5f;
         [SerializeField] private float minPauseTime = 5f;
         [SerializeField] private float maxPauseTime = 15f;
         [SerializeField] private float minMovementRadius = 5f;

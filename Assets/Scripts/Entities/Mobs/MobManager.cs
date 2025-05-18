@@ -28,8 +28,8 @@ namespace Reconnect.Pathfinding
         [Tooltip("The game object whose children's transforms are the spawn positions.")]
         private Transform passiveSpawners;
         [SerializeField] private uint numberOfPassiveMobs = 20;
-        [SerializeField] private float minPassiveSpawnInterval = 3f;
-        [SerializeField] private float maxPassiveSpawnInterval = 8f;
+        [SerializeField] private float minPassiveSpawnInterval = 8f;
+        [SerializeField] private float maxPassiveSpawnInterval = 15f;
 
         private void Awake()
         {
