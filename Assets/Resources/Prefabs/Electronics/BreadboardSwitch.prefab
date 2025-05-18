@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 6606830496861618249}
   - component: {fileID: 7106575530311284054}
   - component: {fileID: 8127086875148998721}
+  - component: {fileID: -1914775698124996720}
+  - component: {fileID: 209556150139893708}
   m_Layer: 0
   m_Name: BreadboardSwitch
   m_TagString: Untagged
@@ -87,6 +89,40 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.97864926, y: 1.7216842, z: 0.5700114}
   m_Center: {x: 0.0026162267, y: 0.032995462, z: -0.575636}
+--- !u!114 &-1914775698124996720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2559706539940741362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 640789900
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &209556150139893708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2559706539940741362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  clientAuthority: 1
+  animator: {fileID: 9092557234932450490}
 --- !u!1001 &6755250057057869175
 PrefabInstance:
   m_ObjectHideFlags: 0

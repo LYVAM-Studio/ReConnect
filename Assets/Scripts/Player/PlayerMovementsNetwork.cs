@@ -49,6 +49,8 @@ namespace Reconnect.Player
 
         // KO
         [NonSerialized] public bool IsKo;
+        private Coroutine _koCoroutine;
+        private Coroutine _innerCoroutine;
         private int _isKoHash;
         
         // internal values
@@ -335,7 +337,8 @@ namespace Reconnect.Player
             isLocked = true;
             FreeLookCamera.InputAxisController.enabled = false;
             _animator.SetBool(_isKoHash, true);
-            yield return MenuManager.Instance.KnockOutForSeconds(10);
+            _innerCoroutine = StartCoroutine(MenuManager.Instance.KnockOutForSeconds(10));
+            yield return _innerCoroutine;
             _animator.SetBool(_isKoHash, false);
         }
 
@@ -348,7 +351,15 @@ namespace Reconnect.Player
         public void KnockOut()
         {
             if (!IsKo)
-                StartCoroutine(KoDelay());
+                _koCoroutine = StartCoroutine(KoDelay());
+        }
+
+        public void CancelKnockOut()
+        {
+            if (!IsKo) return;
+            StopCoroutine(_koCoroutine);
+            StopCoroutine(_innerCoroutine);
+            _animator.SetBool(_isKoHash, false);
         }
     }
 }

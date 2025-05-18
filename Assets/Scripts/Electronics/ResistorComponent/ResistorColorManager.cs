@@ -1,18 +1,22 @@
 using System;
 using Electronics.ResistorComponent;
+using Mirror;
 using UnityEngine;
 
 namespace Reconnect.Electronics.ResistorComponent
 {
-    public class ResistorColorManager : MonoBehaviour
+    public class ResistorColorManager : NetworkBehaviour
     {
         [SerializeField] private GameObject band0;
         [SerializeField] private GameObject band1;
         [SerializeField] private GameObject band2;
         [SerializeField] private GameObject band3;
         [SerializeField] private GameObject band4;
-        [NonSerialized] public uint ResistanceValue;
-        [NonSerialized] public float Tolerance = 5f;
+        [NonSerialized] [SyncVar(hook = nameof(OnChangeResistance))] public uint ResistanceValue;
+        [NonSerialized] [SyncVar(hook = nameof(OnChangeTolerance))] public float Tolerance = 5f;
+
+        private void OnChangeResistance(uint oldValue, uint newValue) => UpdateBandResistance();
+        private void OnChangeTolerance(float oldValue, float newValue) => UpdateBandTolerance();
         
         private static (int, int, int, int) ExtractDigits(int resistance)
         {
@@ -42,7 +46,9 @@ namespace Reconnect.Electronics.ResistorComponent
             return (d1, d2, d3, multiplierPower);
         }
 
-        public void UpdateBandColors()
+        private void UpdateBandTolerance() => SetBandColor(band4, ResistorColorCode.ToleranceToColor(Tolerance));
+
+        private void UpdateBandResistance()
         {
             (int d1, int d2, int d3, int multiplierPower) = ExtractDigits((int)ResistanceValue);
 
@@ -51,7 +57,11 @@ namespace Reconnect.Electronics.ResistorComponent
             SetBandColor(band1, ResistorColorCode.DigitToColor(d2));
             SetBandColor(band2, ResistorColorCode.DigitToColor(d3));
             SetBandColor(band3, ResistorColorCode.DigitToColor(multiplierPower));
-            SetBandColor(band4, ResistorColorCode.ToleranceToColor(Tolerance));
+        }
+        public void UpdateBandColors()
+        {
+            UpdateBandResistance();
+            UpdateBandTolerance();
         }
 
         private static void SetBandColor(GameObject band, Color color)

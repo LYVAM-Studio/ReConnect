@@ -2,8 +2,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Mirror;
 using Reconnect.Electronics.Breadboards;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Utils;
 using UnityEngine;
 using YamlDotNet.Helpers;
 using YamlDotNet.RepresentationModel;
@@ -68,13 +71,18 @@ namespace Reconnect.Electronics.CircuitLoading
                     : $"Invalid direction. Expected 'n', 'e', 's' or 'w' but got '{dir}'.")
             };
         }
-
+        
         private static void SummonSwitchWire(GameObject wirePrefab, Breadboard breadboard, Vector3 localPos, Vector3 scale, Vector3 eulerAngle)
         {
             GameObject wire = UnityEngine.Object.Instantiate(wirePrefab, breadboard.switchHolder.transform, false);
             wire.transform.localPosition = localPos;
             wire.transform.localScale = scale;
             wire.transform.localEulerAngles = eulerAngle;
+            if (!wire.TryGetComponent(out ComponentSync wireSync))
+                throw new ComponentNotFoundException(
+                    "The Switch wire prefab clone does not contain any ComponentSync script.");
+            wireSync.breadboardNetIdentity = breadboard.netIdentity;
+            NetworkServer.Spawn(wire);
         }
         private static void DrawSwitchWires(Breadboard breadboard)
         {
@@ -193,24 +201,24 @@ namespace Reconnect.Electronics.CircuitLoading
                         && !float.TryParse(toleranceValue, NumberStyles.Float, CultureInfo.InvariantCulture, out tolerance))
                         throw new InvalidDataException($"Yaml key 'tolerance' expect a floating point numeric value but got {toleranceValue}.");
                     
-                    Resistor resistor = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
+                    Uid resistorUid = breadboard.CreateResistor(sourcePoint, destinationPoint, name, resistance, tolerance, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.Target is not null)
+                        if (breadboard.TargetUid is not null)
                             throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        breadboard.Target = resistor;
+                        breadboard.TargetUid = resistorUid;
                     }
                 }
                 else if (type == "lamp")
                 {
                     uint resistance = uint.Parse(YamlGetScalarValue(component.Children, "resistance"), CultureInfo.InvariantCulture);
                     
-                    Lamp lamp = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
+                    Uid lampUid = breadboard.CreateLamp(sourcePoint, destinationPoint, name, resistance, isLocked);
                     if (isTarget) 
                     {
-                        if (breadboard.Target is not null)
+                        if (breadboard.TargetUid is not null)
                             throw new InvalidDataException("Multiple targets found. A circuit should have only one target.");
-                        breadboard.Target = lamp;
+                        breadboard.TargetUid = lampUid;
                     }
                 }
                 else
@@ -221,7 +229,7 @@ namespace Reconnect.Electronics.CircuitLoading
                 componentId++;
             }
 
-            if (breadboard.Target is null)
+            if (breadboard.TargetUid is null)
                 throw new FormatException("The loaded circuit does not contain any target.");
         }
     }
