@@ -8,12 +8,13 @@ namespace Reconnect.Pathfinding
 {
     public abstract class Mob : MonoBehaviour
     {
-        [SerializeField] protected float maxWaitingTime = 15f;
-        [SerializeField] protected float minWaitingTime = 5f;
-        
         protected bool IsWaiting;
         
         protected NavMeshAgent Agent;
+        
+        protected bool HasArrived => !Agent.pathPending &&
+                                     Agent.remainingDistance <= Agent.stoppingDistance &&
+                                     (!Agent.hasPath || Agent.velocity.sqrMagnitude == 0f);
 
         protected void Awake()
         {
@@ -21,14 +22,7 @@ namespace Reconnect.Pathfinding
                 throw new ComponentNotFoundException("No NavMeshAgent component has been found on this mob.");
         }
 
-        protected void ChooseRandomDestination()
-        {
-            float radius = Random.Range(5, 20);
-            float angle = Random.Range(0f, Mathf.PI * 2);
-
-            Agent.SetDestination(transform.position +
-                                  new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius));
-        }
+        protected abstract void ChooseRandomDestination();
         
         protected IEnumerator PauseForSeconds(float seconds)
         {
