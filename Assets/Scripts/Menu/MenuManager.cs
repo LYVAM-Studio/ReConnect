@@ -18,32 +18,47 @@ namespace Reconnect.Menu
         public static MenuManager Instance;
         
         [Header("Multiplayer parameters")]
-        
-        public ReconnectNetworkManager networkManager;
+        [SerializeField] private ReconnectNetworkManager networkManager;
         
         [Header("Menu canvas")]
+        [SerializeField] private GameObject mainMenu;
+        [SerializeField] private GameObject singleplayerMenu;
+        [SerializeField] private GameObject multiplayerMenu;
+        [SerializeField] private GameObject settingsMenu;
+        [SerializeField] private GameObject pauseMenu;
+        [SerializeField] private GameObject hudMenu;
+        [SerializeField] private GameObject lessonsMenu;
+        [SerializeField] private GameObject imageViewerMenu;
+        [SerializeField] private GameObject knockOutMenu;
+        [SerializeField] private GameObject connectionMenu;
+        [SerializeField] private GameObject connectionFailed;
+        [SerializeField] private GameObject quitMenu;
+        [SerializeField] private GameObject newLessonMenu;
         
-        public GameObject mainMenu;
-        public GameObject singleplayerMenu;
-        public GameObject multiplayerMenu;
-        public TMP_InputField hostPort;
-        public TMP_InputField serverAddress;
-        public TMP_InputField serverPort;
-        public GameObject settingsMenu;
-        public GameObject pauseMenu;
-        public GameObject lessonsMenu;
-        public GameObject imageViewerMenu;
-        public GameObject knockOutMenu;
+        [Header("Level Mission Briefs")]
+        [SerializeField] private GameObject level1Menu;
+        [SerializeField] private GameObject level2Menu;
+        [SerializeField] private GameObject level3Menu;
+        [SerializeField] private GameObject level4Menu;
+        [SerializeField] private GameObject level5Menu;
+        [SerializeField] private GameObject level6Menu;
+        [SerializeField] private GameObject level7Menu;
+        [SerializeField] private GameObject level8Menu;
+        [SerializeField] private GameObject level9Menu;
+        
+        [Header("TextMeshPro references")]
+        [SerializeField] private TMP_InputField hostPort;
+        [SerializeField] private TMP_InputField serverAddress;
+        [SerializeField] private TMP_InputField serverPort;
         [SerializeField] private TMP_Text knockOutReason;
-        public TMP_Text timerText;
-        public GameObject connectionMenu;
-        public GameObject connectionFailed;
-        public TMP_Text errorMsg;
-        public GameObject quitMenu;
-        public GameObject hudMenu;
-        public GameObject newLessonMenu;
-        public NewLessonMenuController newLessonController;
+        [SerializeField] private TMP_Text timerText;
+        [SerializeField] private TMP_Text errorMsg;
+        [SerializeField] private TMP_Text hudLevelText;
+        
+        [Header("Other useful references")]
+        [SerializeField] private NewLessonMenuController newLessonController;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
+        
         
         public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
@@ -147,7 +162,15 @@ namespace Reconnect.Menu
             quitMenu.SetActive(menu is MenuState.Quit);
             newLessonMenu.SetActive(menu is MenuState.NewLesson);
             BreadBoardHolder?.Activate(menu is MenuState.BreadBoard);
-            
+            level1Menu.SetActive(menu is MenuState.Level1);
+            level2Menu.SetActive(menu is MenuState.Level2);
+            level3Menu.SetActive(menu is MenuState.Level3);
+            level4Menu.SetActive(menu is MenuState.Level4);
+            level5Menu.SetActive(menu is MenuState.Level5);
+            level6Menu.SetActive(menu is MenuState.Level6);
+            level7Menu.SetActive(menu is MenuState.Level7);
+            level8Menu.SetActive(menu is MenuState.Level8);
+            level9Menu.SetActive(menu is MenuState.Level9);
             CurrentMenuState = menu;
             
             if (cursorState is CursorState.Shown)
@@ -187,6 +210,15 @@ namespace Reconnect.Menu
             quitMenu.SetActive(CurrentMenuState is MenuState.Quit);
             newLessonMenu.SetActive(CurrentMenuState is MenuState.NewLesson);
             BreadBoardHolder?.Activate(CurrentMenuState is MenuState.BreadBoard);
+            level1Menu.SetActive(CurrentMenuState is MenuState.Level1);
+            level2Menu.SetActive(CurrentMenuState is MenuState.Level2);
+            level3Menu.SetActive(CurrentMenuState is MenuState.Level3);
+            level4Menu.SetActive(CurrentMenuState is MenuState.Level4);
+            level5Menu.SetActive(CurrentMenuState is MenuState.Level5);
+            level6Menu.SetActive(CurrentMenuState is MenuState.Level6);
+            level7Menu.SetActive(CurrentMenuState is MenuState.Level7);
+            level8Menu.SetActive(CurrentMenuState is MenuState.Level8);
+            level9Menu.SetActive(CurrentMenuState is MenuState.Level9);
             
             if (CurrentCursorState is CursorState.Shown)
             {
@@ -261,6 +293,29 @@ namespace Reconnect.Menu
         public void SetKnockOutReason(string reason)
         {
             knockOutReason.text = $"{reason}\nWait until your regain consciousness...";
+        }
+
+        public void SetMenuToNewLesson(uint level, Sprite lesson)
+        {
+            LockPlayer();
+            newLessonController.LoadImage(lesson);
+            newLessonController.SetTextToLevel(level);
+            FreeLookCamera.InputAxisController.enabled = false;
+            SetMenuTo(MenuState.NewLesson, CursorState.Shown);
+        }
+        
+        public void SetMenuToMissionBrief(uint level)
+        {
+            if (level == 0 || level > 9)
+                throw new ArgumentOutOfRangeException(nameof(level));
+            LockPlayer();
+            FreeLookCamera.InputAxisController.enabled = false;
+            SetMenuTo((MenuState)level, CursorState.Shown);
+        }
+        
+        public void SetLevel(uint level)
+        {
+            hudLevelText.text = $"Level : {level}";
         }
         
         public void RunSingleplayerMode()
