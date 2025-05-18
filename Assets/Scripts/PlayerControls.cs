@@ -1038,6 +1038,15 @@ namespace Reconnect
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MissionBrief"",
+                    ""type"": ""Button"",
+                    ""id"": ""68e213db-7c5b-43c4-b114-5fe2a830000f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1060,6 +1069,17 @@ namespace Reconnect
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Lessons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d96e7679-9deb-4a79-9b11-c6ad61d51826"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MissionBrief"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1403,6 +1423,7 @@ namespace Reconnect
             m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
             m_Menu_Esc = m_Menu.FindAction("Esc", throwIfNotFound: true);
             m_Menu_Lessons = m_Menu.FindAction("Lessons", throwIfNotFound: true);
+            m_Menu_MissionBrief = m_Menu.FindAction("MissionBrief", throwIfNotFound: true);
             // CheatCodes
             m_CheatCodes = asset.FindActionMap("CheatCodes", throwIfNotFound: true);
             m_CheatCodes_KnockOut = m_CheatCodes.FindAction("KnockOut", throwIfNotFound: true);
@@ -1771,12 +1792,14 @@ namespace Reconnect
         private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
         private readonly InputAction m_Menu_Esc;
         private readonly InputAction m_Menu_Lessons;
+        private readonly InputAction m_Menu_MissionBrief;
         public struct MenuActions
         {
             private @PlayerControls m_Wrapper;
             public MenuActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Esc => m_Wrapper.m_Menu_Esc;
             public InputAction @Lessons => m_Wrapper.m_Menu_Lessons;
+            public InputAction @MissionBrief => m_Wrapper.m_Menu_MissionBrief;
             public InputActionMap Get() { return m_Wrapper.m_Menu; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1792,6 +1815,9 @@ namespace Reconnect
                 @Lessons.started += instance.OnLessons;
                 @Lessons.performed += instance.OnLessons;
                 @Lessons.canceled += instance.OnLessons;
+                @MissionBrief.started += instance.OnMissionBrief;
+                @MissionBrief.performed += instance.OnMissionBrief;
+                @MissionBrief.canceled += instance.OnMissionBrief;
             }
 
             private void UnregisterCallbacks(IMenuActions instance)
@@ -1802,6 +1828,9 @@ namespace Reconnect
                 @Lessons.started -= instance.OnLessons;
                 @Lessons.performed -= instance.OnLessons;
                 @Lessons.canceled -= instance.OnLessons;
+                @MissionBrief.started -= instance.OnMissionBrief;
+                @MissionBrief.performed -= instance.OnMissionBrief;
+                @MissionBrief.canceled -= instance.OnMissionBrief;
             }
 
             public void RemoveCallbacks(IMenuActions instance)
@@ -1969,6 +1998,7 @@ namespace Reconnect
         {
             void OnEsc(InputAction.CallbackContext context);
             void OnLessons(InputAction.CallbackContext context);
+            void OnMissionBrief(InputAction.CallbackContext context);
         }
         public interface ICheatCodesActions
         {
