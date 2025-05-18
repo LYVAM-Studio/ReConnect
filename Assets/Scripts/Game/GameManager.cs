@@ -85,10 +85,6 @@ namespace Reconnect.Game
         public override void OnStartServer()
         {
             Level = 1;
-            if (isClient)
-            {
-                OnLevelChange(0,1);
-            }
         }
 
         private IEnumerator WaitForLocalPlayer()
