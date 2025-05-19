@@ -1,0 +1,46 @@
+title: Intensity in a circuit
+input-tension: 200
+input-intensity: 16
+target-value: 2
+target-quantity: intensity
+input-x-pos: 3
+output-x-pos: 3
+components:
+  - lamp:
+    name: L1
+    x-pos: 3
+    y-pos: 0
+    direction: s
+    resistance: 30
+    target: true
+    locked: true
+  - resistor:
+    name: R25
+    x-pos: 0
+    y-pos: 1
+    direction: s
+    resistance: 25
+  - resistor:
+    name: R30
+    x-pos: 0
+    y-pos: 2
+    direction: s
+    resistance: 30
+  - resistor:
+    name: R35
+    x-pos: 0
+    y-pos: 3
+    direction: s
+    resistance: 35
+  - resistor:
+    name: R40
+    x-pos: 0
+    y-pos: 4
+    direction: s
+    resistance: 40
+  - resistor:
+    name: R45
+    x-pos: 0
+    y-pos: 5
+    direction: s
+    resistance: 45
