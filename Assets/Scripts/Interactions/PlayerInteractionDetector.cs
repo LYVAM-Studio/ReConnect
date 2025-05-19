@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
+using Reconnect.Menu;
+using Reconnect.Player;
+using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Reconnect.Interactions
 {
-    public class InteractionDetector : MonoBehaviour
+    public class InteractionDetector : NetworkBehaviour
     {
         [Header("Display of the interaction range")]
         [SerializeField]
@@ -31,11 +35,16 @@ namespace Reconnect.Interactions
         
         private PlayerControls _controls;
 
+        private PlayerGetter _playerGetter;
+
         private void Awake()
         {
             _controls = new PlayerControls();
-
             _controls.Player.Interact.performed += OnInteraction;
+            
+            if (!player.TryGetComponent(out _playerGetter))
+                throw new ComponentNotFoundException(
+                    "No PlayerGetter has been found on the player game object.");
         }
         
         private void OnEnable()
@@ -55,6 +64,7 @@ namespace Reconnect.Interactions
         
         public void Start()
         {
+            enabled = isLocalPlayer;
             _showRange = isShownByDefault;
             _currentNearest = null;
             visualRange.enabled = _showRange;
@@ -62,14 +72,18 @@ namespace Reconnect.Interactions
 
         private void OnInteraction(InputAction.CallbackContext context)
         {
-            if (_interactableInRange.Count > 0)
-                GetNearestInteractable()!.Interact(player);
+            if (MenuManager.Instance.CurrentMenuState is not MenuState.Pause
+                && !_playerGetter.Movements.IsKo
+                && _interactableInRange.Count > 0)
+                GetNearestInteractable()?.Interact(player);
         }
 
         // Update is called once per frame
         private void Update()
         {
-
+            if (!isLocalPlayer)
+                return;
+            
             // Make the nearest interactable glow more
             if (_currentNearest is not null) _currentNearest.ResetNearest();
             var newNearest = GetNearestInteractable();
@@ -94,10 +108,14 @@ namespace Reconnect.Interactions
         // This method is called when a trigger enters the player interaction range.
         public void OnTriggerEnter(Collider other)
         {
+            if (!isLocalPlayer)
+                return;
             if (other.TryGetComponent(out Interactable interactable))
             {
                 // Debug.Log("Interactable entered");
-                interactable.OnEnterPlayerRange();
+                if (interactable.CanInteract())
+                    interactable.OnEnterPlayerRange();
+                
                 _interactableInRange.Add((interactable, other.transform));
             }
         }
@@ -105,6 +123,8 @@ namespace Reconnect.Interactions
         // This method is called when a trigger leaves the player interaction range.
         public void OnTriggerExit(Collider other)
         {
+            if (!isLocalPlayer)
+                return;
             if (other.TryGetComponent(out Interactable interactable) &&
                 _interactableInRange.Any(e => e.interactable.Equals(interactable)))
             {

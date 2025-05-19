@@ -22,4 +22,34 @@ namespace Reconnect.Utils
         public UnreachableCaseException(string message) : base(message) { }
         public UnreachableCaseException(string message, Exception innerException) : base(message, innerException) { }
     }
+    
+    public class InventoryFullException: Exception
+    {
+        public InventoryFullException() { }
+        public InventoryFullException(string message) : base(message) { }
+        public InventoryFullException(string message, Exception innerException) : base(message, innerException) { }
+    }
+    
+    public class MissingSerializedFieldException: Exception
+    {
+        public MissingSerializedFieldException() { }
+        public MissingSerializedFieldException(string paramName) : base($"The field {paramName} is not serialized but it should be.") { }
+        public MissingSerializedFieldException(string paramName, Exception innerException) : base($"The field {paramName} is not serialized but it should be.", innerException) { }
+    }
+
+    public class UnauthorizedActionFromClientException : Exception
+    {
+        public UnauthorizedActionFromClientException()
+        {
+        }
+
+        public UnauthorizedActionFromClientException(string message) : base(message)
+        {
+        }
+
+        public UnauthorizedActionFromClientException(string message, Exception innerException) : base(message,
+            innerException)
+        {
+        }
+    }
 }

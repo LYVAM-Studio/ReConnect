@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Reconnect.MouseEvents
@@ -9,9 +8,12 @@ namespace Reconnect.MouseEvents
         IPointerDownHandler,
         IPointerUpHandler,
         IDragHandler,
-        IPointerClickHandler
+        IPointerClickHandler,
+        IBeginDragHandler,
+        IEndDragHandler
     {
         protected bool IsPointerDown { get;set; }
+        protected bool IsPointerOver { get;set; }
 
         public void OnCursorEnter() { }
         public void OnCursorExit() { }
@@ -19,14 +21,18 @@ namespace Reconnect.MouseEvents
         public void OnCursorUp() { }
         public void OnCursorClick() { }
         public void OnCursorDrag() { }
+        public void OnCursorBeginDrag() { }
+        public void OnCursorEndDrag() { }
 
         void IPointerEnterHandler.OnPointerEnter(PointerEventData eventData)
         {
+            IsPointerOver = true;
             OnCursorEnter();
         }
 
         void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
         {
+            IsPointerOver = false;
             OnCursorExit();
         }
         
@@ -59,5 +65,16 @@ namespace Reconnect.MouseEvents
             OnCursorClick();
         }
 
+        void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+        {
+            if (IsPointerOver)
+                OnCursorBeginDrag();
+        }
+        
+        void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+        {
+            if (IsPointerOver)
+                OnCursorEndDrag();
+        }
     }
 }
