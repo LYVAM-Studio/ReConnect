@@ -12032,9 +12032,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "This planet looks deserted, you\u2019re going to die of thirst if you
-    don\u2019t find a way to hydrate.\n\nThose two large pumps seem to be part of
-    a water purification system. Restart them so you can hydrate."
+  m_text: 'This planet looks deserted, you''re going to die of thirst if you don''t
+    find a way to hydrate.
+
+
+    Those two large pumps seem to be part of a water
+    purification system. Restart them so you can hydrate.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 36e43138767212f4ea61d435a63fd40f, type: 2}
   m_sharedMaterial: {fileID: -8663939566707639799, guid: 36e43138767212f4ea61d435a63fd40f, type: 2}
