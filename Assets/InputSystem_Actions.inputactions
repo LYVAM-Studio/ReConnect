@@ -1071,6 +1071,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MobAttack",
+                    "type": "Button",
+                    "id": "00947cbd-5954-46f6-b38e-5ddefb565108",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1172,6 +1181,17 @@
                     "action": "CancelKnockOut",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "e8e82fe8-9231-4716-9885-e4c241f0e4b7",
+                    "path": "<Keyboard>/h",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MobAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

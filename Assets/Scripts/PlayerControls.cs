@@ -1095,6 +1095,15 @@ namespace Reconnect
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MobAttack"",
+                    ""type"": ""Button"",
+                    ""id"": ""00947cbd-5954-46f6-b38e-5ddefb565108"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1196,6 +1205,17 @@ namespace Reconnect
                     ""action"": ""CancelKnockOut"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e8e82fe8-9231-4716-9885-e4c241f0e4b7"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MobAttack"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1300,6 +1320,7 @@ namespace Reconnect
             m_CheatCodes_KnockOut = m_CheatCodes.FindAction("KnockOut", throwIfNotFound: true);
             m_CheatCodes_PopulateLessons = m_CheatCodes.FindAction("PopulateLessons", throwIfNotFound: true);
             m_CheatCodes_CancelKnockOut = m_CheatCodes.FindAction("CancelKnockOut", throwIfNotFound: true);
+            m_CheatCodes_MobAttack = m_CheatCodes.FindAction("MobAttack", throwIfNotFound: true);
         }
 
         ~@PlayerControls()
@@ -1717,6 +1738,7 @@ namespace Reconnect
         private readonly InputAction m_CheatCodes_KnockOut;
         private readonly InputAction m_CheatCodes_PopulateLessons;
         private readonly InputAction m_CheatCodes_CancelKnockOut;
+        private readonly InputAction m_CheatCodes_MobAttack;
         public struct CheatCodesActions
         {
             private @PlayerControls m_Wrapper;
@@ -1724,6 +1746,7 @@ namespace Reconnect
             public InputAction @KnockOut => m_Wrapper.m_CheatCodes_KnockOut;
             public InputAction @PopulateLessons => m_Wrapper.m_CheatCodes_PopulateLessons;
             public InputAction @CancelKnockOut => m_Wrapper.m_CheatCodes_CancelKnockOut;
+            public InputAction @MobAttack => m_Wrapper.m_CheatCodes_MobAttack;
             public InputActionMap Get() { return m_Wrapper.m_CheatCodes; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1742,6 +1765,9 @@ namespace Reconnect
                 @CancelKnockOut.started += instance.OnCancelKnockOut;
                 @CancelKnockOut.performed += instance.OnCancelKnockOut;
                 @CancelKnockOut.canceled += instance.OnCancelKnockOut;
+                @MobAttack.started += instance.OnMobAttack;
+                @MobAttack.performed += instance.OnMobAttack;
+                @MobAttack.canceled += instance.OnMobAttack;
             }
 
             private void UnregisterCallbacks(ICheatCodesActions instance)
@@ -1755,6 +1781,9 @@ namespace Reconnect
                 @CancelKnockOut.started -= instance.OnCancelKnockOut;
                 @CancelKnockOut.performed -= instance.OnCancelKnockOut;
                 @CancelKnockOut.canceled -= instance.OnCancelKnockOut;
+                @MobAttack.started -= instance.OnMobAttack;
+                @MobAttack.performed -= instance.OnMobAttack;
+                @MobAttack.canceled -= instance.OnMobAttack;
             }
 
             public void RemoveCallbacks(ICheatCodesActions instance)
@@ -1858,6 +1887,7 @@ namespace Reconnect
             void OnKnockOut(InputAction.CallbackContext context);
             void OnPopulateLessons(InputAction.CallbackContext context);
             void OnCancelKnockOut(InputAction.CallbackContext context);
+            void OnMobAttack(InputAction.CallbackContext context);
         }
     }
 }

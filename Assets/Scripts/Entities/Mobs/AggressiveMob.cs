@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 namespace Reconnect.Pathfinding
@@ -21,7 +23,32 @@ namespace Reconnect.Pathfinding
         private int _isDeadHash;
         private int _isRunningHash;
         private int _isAttackingHash;
-        
+
+        private PlayerControls _controls;
+
+        private new void Awake()
+        {
+            base.Awake();
+
+            _controls = new PlayerControls();
+            _controls.CheatCodes.MobAttack.performed += OnMobAttack;
+        }
+
+        private void OnEnable()
+        {
+            _controls.Enable();
+        }
+
+        private void OnDisable()
+        {
+            _controls.Disable();
+        }
+
+        private void OnDestroy()
+        {
+            _controls.CheatCodes.MobAttack.performed -= OnMobAttack;
+        }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -97,5 +124,10 @@ namespace Reconnect.Pathfinding
         
         public void AttackAnimation() => _animator.SetTrigger(_isAttackingHash);
         public void DeathAnimation() => _animator.SetTrigger(_isDeadHash);
+
+        private void OnMobAttack(InputAction.CallbackContext ctx)
+        {
+            AttackAnimation();
+        }
     }
 }
