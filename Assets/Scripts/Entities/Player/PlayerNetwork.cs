@@ -236,11 +236,12 @@ namespace Reconnect.Player
         [Command]
         public void CmdSetPlayersLevel(uint level)
         {
+            Debug.Log("Command set level called");
             uint old = GameManager.Level;
             GameManager.Level = level;
             if (isClient)
                 GameManager.OnLevelChange(old, GameManager.Level);
-            GameManager.Instance.LevelTrigger(level - 1);
+            GameManager.Instance.LevelTrigger(level - 1, this);
             RpcSetPlayerLevel(level);
         }
 
@@ -258,6 +259,48 @@ namespace Reconnect.Player
         {
             if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
                 MenuManager.Instance.BackToPreviousMenu();
+        }
+
+        [ClientRpc]
+        public void RpcSetActiveGameObject(NetworkIdentity objectIdentity, bool value)
+        {
+            objectIdentity.gameObject.SetActive(value);
+        }
+        
+        [ClientRpc]
+        public void RpcSetEnabledAnimation(NetworkIdentity objectIdentity, bool value)
+        {
+            if (!objectIdentity.TryGetComponent(out Animation objectAnimation))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No Animation component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectAnimation.enabled = value;
+        }
+        
+        [ClientRpc]
+        public void RpcSetEnabledAudio(NetworkIdentity objectIdentity, bool value)
+        {
+            if (!objectIdentity.TryGetComponent(out AudioSource objectAudio))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No AudioSource component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectAudio.enabled = value;
+        }
+        
+        [ClientRpc]
+        public void RpcSetEnabledLight(NetworkIdentity objectIdentity, bool value)
+        {
+            if (!objectIdentity.TryGetComponent(out Light objectLight))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No Light component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectLight.enabled = value;
         }
     }
 }
