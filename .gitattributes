@@ -14,9 +14,9 @@
 *.physicsMaterial2D merge=unityyamlmerge eol=lf
 *.physicMaterial merge=unityyamlmerge eol=lf
 *.asset filter=lfs diff=lfs merge=lfs -text
-+*TerrainData.asset    -text
-+LightingData.asset    -text
-+NavMesh*.asset        -text
+*TerrainData.asset filter=lfs diff=lfs merge=lfs -text
+LightingData.asset filter=lfs diff=lfs merge=lfs -text
+NavMesh*.asset filter=lfs diff=lfs merge=lfs -text
 *.meta merge=unityyamlmerge eol=lf
 *.controller merge=unityyamlmerge eol=lf
 
