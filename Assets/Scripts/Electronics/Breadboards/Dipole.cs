@@ -1,21 +1,61 @@
 using System;
-using Reconnect.Electronics.Graphs;
+using Mirror;
+using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.MouseEvents;
+using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Reconnect.Electronics.Breadboards
 {
-    public class Dipole : MonoBehaviour, IDipole, ICursorHandle
+    public class Dipole : ComponentSync, IDipole, ICursorHandle
     {
-        public Breadboard Breadboard { get; set; }
-        public Vector2Int Pole1 { get; set; }
-        public Vector2Int Pole2 { get; set; }
         bool ICursorHandle.IsPointerDown { get; set; }
-        public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
+        bool ICursorHandle.IsPointerOver { get; set; }
+        
+        public Breadboard Breadboard => breadboardNetIdentity != null
+            ? breadboardNetIdentity.GetComponent<BreadboardHolder>().breadboard
+            : null;
+        
+        [SyncVar]
+        private Vector2Int _pole1;
 
+        [SyncVar]
+        private Vector2Int _pole2;
+
+        public Vector2Int Pole1
+        {
+            get => _pole1;
+            set
+            {
+                if (!isServer)
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set Pole1"));
+                    return;
+                }
+                _pole1 = value;
+            }
+        }
+
+        public Vector2Int Pole2
+        {
+            get => _pole2;
+            set
+            {
+                if (!isServer)
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set Pole2"));
+                    return;
+                }
+                _pole2 = value;
+            }
+        }
+
+        public Vector3 MainPoleAnchor => _isHorizontal ? new Vector3(-0.5f, 0, 0) : new Vector3(0, 0.5f, 0);
+        
         // Whether this object is rotated or not
+        [SyncVar]
         private bool _isHorizontal;
         
         // Whether this object is rotated or not
@@ -24,6 +64,11 @@ namespace Reconnect.Electronics.Breadboards
             get => _isHorizontal;
             set
             {
+                if (!isServer)
+                {
+                    Debug.LogException(new UnauthorizedActionFromClientException("Client cannot set IsHorizontal"));
+                    return;
+                }
                 transform.localEulerAngles = value ? new Vector3(0, 0, 90) : Vector3.zero;
                 _isHorizontal = value;
             }
@@ -33,35 +78,44 @@ namespace Reconnect.Electronics.Breadboards
         private Vector3 _deltaCursor;
         
         // The last position occupied by this component
-        private Vector3 _lastLocalPosition;
+        [NonSerialized]
+        public Vector3 LastLocalPosition;
         
         // Whether this was rotated or not on its last position
-        private bool _wasHorizontal;
+        [SyncVar]
+        public bool wasHorizontal;
 
         // The component responsible for the outlines
         private Outline _outline;
 
+        [SyncVar]
         private bool _isLocked = false;
         public bool IsLocked
         {
             get => _isLocked;
             set 
             {
+                if (!isServer)
+                {
+                    Debug.LogException( new UnauthorizedActionFromClientException("Client cannot set IsLocked"));
+                    return;
+                }
                 _isLocked = value;
                 if (_isLocked) _outline.enabled = false;
             }
         }
-        
-        public Vertex Inner { get; set; }
+        public Uid InnerUid { get; set; }
         
         // Control map
         private PlayerControls _controls;
         
         // Dragging status of the dipole
-        private bool _isBeingDragged;
+        [SyncVar]
+        public bool isBeingDragged;
         
-        private void Awake()
+        private new void Awake()
         {
+            base.Awake();
             if (!TryGetComponent(out _outline))
                 throw new ComponentNotFoundException("No Outline component found on this Dipole.");
             
@@ -71,9 +125,15 @@ namespace Reconnect.Electronics.Breadboards
             _controls.Breadboard.Rotate.performed += OnRotate;
         }
 
-        private void Start()
+        private new void Start()
         {
-            _lastLocalPosition = transform.localPosition;
+            base.Start();
+            LastLocalPosition = transform.localPosition;
+        }
+
+        public override void OnStartServer()
+        {
+            wasHorizontal = IsHorizontal;
         }
 
         private void OnEnable()
@@ -104,63 +164,67 @@ namespace Reconnect.Electronics.Breadboards
         
         void ICursorHandle.OnCursorDown()
         {
-            if (_isLocked) return;
-            _isBeingDragged = true;
-            _lastLocalPosition = transform.localPosition;
-            _wasHorizontal = _isHorizontal;
+            if (Breadboard.IsCircuitOn)
+            {
+                Breadboard.KnockOutOnEdit();
+                return;
+            }
             
+            if (_isLocked) return;
+
+            isBeingDragged = true;
             _deltaCursor = transform.position - Breadboard.breadboardHolder.GetFlattenedCursorPos();
         }
         
         void ICursorHandle.OnCursorUp()
         {
             if (_isLocked) return;
-            EndDrag();
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException(
+                    "No PlayerNetwork component has been found on the local player");
+            playerNetwork.CmdDipoleEndDrag(netIdentity);
+            isBeingDragged = false;
         }
 
-        private void RollbackPosition()
-        {
-            // Restore the last valid position and rotation
-            transform.localPosition = _lastLocalPosition;
-            IsHorizontal = _wasHorizontal;
-        }
-
-        private void EndDrag()
-        {
-            _isBeingDragged = false;
-            
-            if (Breadboard.TryGetClosestValidPos(this, out var closest, out var newPole1, out var newPole2))
-            {
-                transform.localPosition = closest;
-                Pole1 = newPole1;
-                Pole2 = newPole2;
-            }
-            else
-            {
-                RollbackPosition();
-            }
-        }
+        public void SetLocalPosition(Vector3 value) => transform.localPosition = value;
+        public void SetPosition(Vector3 value) => transform.position = value;
 
         void ICursorHandle.OnCursorDrag()
         {
             if (_isLocked) return;
-            transform.position = Vector3.MoveTowards(
+            if (!isBeingDragged) return;
+            if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            playerNetwork.CmdSetDipolePosition(netIdentity,
+                Vector3.MoveTowards(
                 Breadboard.breadboardHolder.GetFlattenedCursorPos() + _deltaCursor,
                 Breadboard.breadboardHolder.cam.transform.position,
-                Breadboard.transform.lossyScale.x * 0.2f);
+                Breadboard.transform.lossyScale.x * 0.2f));
         }
         
         private void OnRotate(InputAction.CallbackContext context)
         {
-            if (_isBeingDragged)
-                IsHorizontal ^= true; // Toggles the rotation
+            if (isBeingDragged)
+            {
+                if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
+                    throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+                playerNetwork.CmdSetHorizontalDipole(netIdentity, !IsHorizontal);
+            }
         }
 
         // Returns to last pos when the player exists the breadboard holder
-        public void OnBreadBoardExit()
+        public void OnBreadBoardExit(NetworkConnection clientConnection)
         {
-            if (_isBeingDragged)
-                RollbackPosition();
+            SetLocalPosition(LastLocalPosition);
+            IsHorizontal = wasHorizontal;
+            if (!clientConnection.identity.TryGetComponent(out PlayerNetwork playerNetwork))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No PlayerNetwork component has been found on the client player"));
+                return;
+            }
+            playerNetwork.TargetForceHideTooltip(netIdentity);
+            playerNetwork.TargetStopDragging(netIdentity);
         }
     }
 }
