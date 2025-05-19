@@ -5406,7 +5406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5389469409864873062
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5926,7 +5926,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5008100586115424281}
-  - component: {fileID: 8230984411912758977}
   - component: {fileID: 1377389696476252726}
   - component: {fileID: 7844612169672202668}
   - component: {fileID: 5115270862380824079}
@@ -5957,39 +5956,6 @@ Transform:
   - {fileID: 5389469409864873062}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8230984411912758977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5028337126911305549}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2fb2afdb231bc14dafd5e5e207a4810, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  title: Title of the exercise
-  instructions: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ornare,
-    diam eget ornare tincidunt, dolor elit tristique neque, et pulvinar nisi dui
-    eget dui. Fusce quis molestie neque.
-
-
-    - aaaa
-
-    - bbbb
-
-
-    Maecenas
-    lacinia et nibh sed fermentum. Phasellus dictum, risus eu posuere varius, eros
-    diam pharetra orci, vitae sagittis erat mi non nibh.'
-  footer: You can provide here some additional information about the exercise givent
-    to the player.
-  titleMesh: {fileID: 2579705229138331626}
-  instructionMesh: {fileID: 4487943292119486414}
-  footerMesh: {fileID: 0}
-  leftPanel: {fileID: 2898458357505282573}
-  rightPanel: {fileID: 0}
 --- !u!114 &1377389696476252726
 MonoBehaviour:
   m_ObjectHideFlags: 0

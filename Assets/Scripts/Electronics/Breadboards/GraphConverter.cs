@@ -17,9 +17,9 @@ namespace Reconnect.Electronics.Breadboards
             PlaceDipoles(grid, breadboard.Dipoles);
             
             var input = new CircuitInput("input", (int)breadboard.CircuitInfo.InputTension, (int)breadboard.CircuitInfo.InputIntensity);
-            Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 0, 3), input);
+            Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, breadboard.CircuitInfo.InputPoint.x, 0), input);
             var output = new CircuitOutput("output");
-            Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, 7, 3), output);
+            Vertex.AddReciprocalAdjacent(GetVertexOrNewAt(grid, breadboard.CircuitInfo.OutputPoint.x, 7), output);
             var graph = new Graph("Main graph", input, output, UidDictionary.Get<ElecComponent>(breadboard.TargetUid));
             foreach (Vertex v in grid)
                 if (v is not null)
@@ -74,22 +74,22 @@ namespace Reconnect.Electronics.Breadboards
                 UidDictionary.Get<Vertex>(d.InnerUid).ClearAdjacent();
         }
 
-        private static Vertex GetVertexOrNewAt(Vertex[,] grid, int h, int w)
+        private static Vertex GetVertexOrNewAt(Vertex[,] grid, int x, int y)
         {
-            if (grid[h, w] is null)
+            if (grid[y, x] is null)
             {
-                grid[h, w] = new Vertex($"({h}, {w})");
+                grid[y, x] = new Vertex($"({y}, {x})");
             }
 
-            return grid[h, w];
+            return grid[y, x];
         }
 
         private static void PlaceWires(Vertex[,] grid, List<WireScript> wires)
         {
             foreach (var w in wires)
             {
-                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.y, w.Pole1.x);
-                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.y, w.Pole2.x);
+                Vertex v1 = GetVertexOrNewAt(grid, w.Pole1.x, w.Pole1.y);
+                Vertex v2 = GetVertexOrNewAt(grid, w.Pole2.x, w.Pole2.y);
                 Vertex.AddReciprocalAdjacent(v1, v2);
             }
         }
@@ -98,8 +98,8 @@ namespace Reconnect.Electronics.Breadboards
         {
             foreach (var d in dipoles)
             {
-                Vertex v1 = GetVertexOrNewAt(grid, d.Pole1.y, d.Pole1.x);
-                Vertex v2 = GetVertexOrNewAt(grid, d.Pole2.y, d.Pole2.x);
+                Vertex v1 = GetVertexOrNewAt(grid, d.Pole1.x, d.Pole1.y);
+                Vertex v2 = GetVertexOrNewAt(grid, d.Pole2.x, d.Pole2.y);
                 Vertex.AddReciprocalAdjacent(v1, UidDictionary.Get<Vertex>(d.InnerUid));
                 Vertex.AddReciprocalAdjacent(UidDictionary.Get<Vertex>(d.InnerUid), v2);
             }

@@ -4,8 +4,6 @@ using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.CircuitLoading;
 using Reconnect.Electronics.Components;
 using Reconnect.Electronics.Graphs;
-using Reconnect.Menu;
-using Reconnect.Player;
 
 namespace Electronics.Breadboards
 {
@@ -34,7 +32,7 @@ namespace Electronics.Breadboards
                 return BreadboardResult.ShortCircuit;
             }
             
-            // WriteReport(circuitGraph, breadboard, intensity);
+            WriteReport(circuitGraph, breadboard, intensity);
 
             if (breadboard.CircuitInfo.TargetQuantity is CircuitInfo.Quantity.Tension)
             {
