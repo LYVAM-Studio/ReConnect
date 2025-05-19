@@ -21,9 +21,9 @@ namespace Reconnect.Game
         private static readonly string[] LessonSpritesNames =
         {
             "Reading a circuit diagram",
-            "Intensity in a circuit",
-            "Tension in a circuit",
             "Resistance in a circuit",
+            "Tension in a circuit",
+            "Intensity in a circuit",
             "Resistance color code"
         };
         
