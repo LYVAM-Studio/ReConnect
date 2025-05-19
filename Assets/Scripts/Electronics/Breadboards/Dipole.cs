@@ -131,11 +131,6 @@ namespace Reconnect.Electronics.Breadboards
             LastLocalPosition = transform.localPosition;
         }
 
-        public override void OnStartServer()
-        {
-            wasHorizontal = IsHorizontal;
-        }
-
         private void OnEnable()
         {
             _controls.Enable();
