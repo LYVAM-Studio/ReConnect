@@ -48,7 +48,7 @@ namespace Reconnect.Interactions
         public void SetNearest()
         {
             // Make it glow more
-            Outline.OutlineWidth = 5;
+            Outline.OutlineWidth = 10;
         }
     }
 }
