@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
@@ -6,11 +7,14 @@ using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Game
 {
     public class GameManager : NetworkBehaviour
     {
+        [NonSerialized] public static GameManager Instance;
+        
         public static uint Level;
 
         private static readonly List<Sprite> LessonsByLevel = new();
@@ -26,7 +30,18 @@ namespace Reconnect.Game
             "Intensity in a circuit",
             "Resistance color code"
         };
-        
+        [Header("Level triggered objects")]
+        [SerializeField] private Transform lights;
+        private static Transform _staticLights;
+        [SerializeField] private Transform doors;
+        private static Transform _staticDoors;
+        [SerializeField] private Transform fans;
+        private static Transform _staticFans;
+        [SerializeField] private Transform pumps;
+        private static Transform _staticPumps;
+
+        [Header("Level triggers datas")] 
+        [SerializeField] private float doorTargetYPosotion;
         public static void OnLevelChange(uint oldLevel, uint newLevel)
         {
             if (newLevel == 0)
@@ -84,7 +99,12 @@ namespace Reconnect.Game
 
         public override void OnStartServer()
         {
+            Instance = this;
             Level = 1;
+            _staticPumps = pumps;
+            _staticFans = fans;
+            _staticDoors = doors;
+            _staticLights = lights;
         }
 
         private IEnumerator WaitForLocalPlayer()
@@ -95,10 +115,85 @@ namespace Reconnect.Game
                 throw new ComponentNotFoundException("No PlayerGetter found on the local player");
             playerGetter.Network.CmdGetPlayerLevel();
         }
-        
-        public static void LevelUp()
+
+        public void LevelTrigger(uint level)
         {
-            Level++;
+            switch (level)
+            {
+                case 2 :
+                    TriggerLevel2();
+                    break;
+                case 3 :
+                    TriggerLevel3();
+                    break;
+                case 4 :
+                    TriggerLevel4();
+                    break;
+                case 5 :
+                    TriggerLevel5();
+                    break;
+            }
+        }
+
+        private void TriggerLevel2()
+        {
+            foreach (Transform triggeredLight in lights)
+            {
+                triggeredLight.gameObject.SetActive(true);
+            }
+        }
+
+        private IEnumerator OpenDoor(Transform door)
+        {
+            while (doorTargetYPosotion - door.localPosition.y > 0.01f)
+            {
+                Debug.Log("door are moving...");
+                door.localPosition += new Vector3(0, Time.deltaTime * 2f, 0);
+                yield return null;
+            }
+            Debug.Log("door are moved.");
+            door.localPosition = new Vector3(door.localPosition.x, doorTargetYPosotion, door.localPosition.z);
+        }
+        
+        private void TriggerLevel3()
+        {
+            foreach (Transform door in doors)
+            {
+                StartCoroutine(OpenDoor(door));
+            }
+        }
+        
+        private void TriggerLevel4()
+        {
+            foreach (Transform fan in fans)
+            {
+                if (!fan.TryGetComponent(out Animation fanAnimation))
+                {
+                    Debug.LogException(new ComponentNotFoundException($"No Animation component found on this fan {fan.name}"));
+                    continue;
+                }
+                if (!fan.TryGetComponent(out AudioSource fanAudio))
+                {
+                    Debug.LogException(new ComponentNotFoundException($"No AudioSource component found on this fan {fan.name}"));
+                    continue;
+                }
+                fanAnimation.enabled = true;
+                fanAudio.enabled = true;
+            }
+        }
+        
+        private void TriggerLevel5()
+        {
+            foreach (Transform pump in pumps)
+            {
+                if (!pump.TryGetComponent(out Animation pumpAnimation))
+                {
+                    Debug.LogException(new ComponentNotFoundException($"No Animation component found on this pump {pump.name}"));
+                    continue;
+                }
+                
+                pumpAnimation.enabled = true;
+            }
         }
         
     }

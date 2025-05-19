@@ -3,6 +3,7 @@ using Electronics.Breadboards;
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
+using Reconnect.Game;
 using Reconnect.Menu;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
@@ -97,6 +98,8 @@ namespace Reconnect.Electronics.Breadboards
                 case BreadboardResult.Success :
                     ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
                     target.DoAction();
+                    playerNetwork.RpcExitBreadboardMenu();
+                    playerNetwork.CmdSetPlayersLevel(GameManager.Level + 1);
                     break;
                 case BreadboardResult.Failure :
                     IsOn = false;
