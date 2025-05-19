@@ -200,6 +200,7 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Pole1 = sourcePoint;
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;
+            dipoleScript.wasHorizontal = dipoleScript.IsHorizontal;
             dipoleScript.IsLocked = isLocked;
             dipoleScript.InnerUid = innerUid;
             Dipoles.Add(dipoleScript);
@@ -232,6 +233,7 @@ namespace Reconnect.Electronics.Breadboards
             dipoleScript.Pole1 = sourcePoint;
             dipoleScript.Pole2 = destinationPoint;
             dipoleScript.IsHorizontal = (destinationPoint - sourcePoint).y == 0;
+            dipoleScript.wasHorizontal = dipoleScript.IsHorizontal;
             dipoleScript.IsLocked = isLocked;
             dipoleScript.InnerUid = innerUid;
             Dipoles.Add(dipoleScript);
