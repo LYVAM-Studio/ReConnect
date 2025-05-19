@@ -116,30 +116,33 @@ namespace Reconnect.Game
             playerGetter.Network.CmdGetPlayerLevel();
         }
 
-        public void LevelTrigger(uint level)
+        public void LevelTrigger(uint level, PlayerNetwork playerNetwork)
         {
             switch (level)
             {
                 case 2 :
-                    TriggerLevel2();
+                    TriggerLevel2(playerNetwork);
                     break;
                 case 3 :
                     TriggerLevel3();
                     break;
                 case 4 :
-                    TriggerLevel4();
+                    TriggerLevel4(playerNetwork);
                     break;
                 case 5 :
-                    TriggerLevel5();
+                    TriggerLevel5(playerNetwork);
                     break;
             }
         }
 
-        private void TriggerLevel2()
+        private void TriggerLevel2(PlayerNetwork playerNetwork)
         {
             foreach (Transform triggeredLight in lights)
             {
-                triggeredLight.gameObject.SetActive(true);
+                Debug.Log($"lamp {triggeredLight.name} turned on");
+                if(!triggeredLight.TryGetComponent(out NetworkIdentity lightIdentity))
+                    Debug.LogException(new ComponentNotFoundException("No network identity on the target light"));
+                playerNetwork.RpcSetEnabledLight(lightIdentity, true);
             }
         }
 
@@ -163,36 +166,24 @@ namespace Reconnect.Game
             }
         }
         
-        private void TriggerLevel4()
+        private void TriggerLevel4(PlayerNetwork playerNetwork)
         {
             foreach (Transform fan in fans)
             {
-                if (!fan.TryGetComponent(out Animation fanAnimation))
-                {
-                    Debug.LogException(new ComponentNotFoundException($"No Animation component found on this fan {fan.name}"));
-                    continue;
-                }
-                if (!fan.TryGetComponent(out AudioSource fanAudio))
-                {
-                    Debug.LogException(new ComponentNotFoundException($"No AudioSource component found on this fan {fan.name}"));
-                    continue;
-                }
-                fanAnimation.enabled = true;
-                fanAudio.enabled = true;
+                if(!fan.TryGetComponent(out NetworkIdentity fanIdentity))
+                    Debug.LogException(new ComponentNotFoundException("No network identity on the target fan"));
+                playerNetwork.RpcSetEnabledAnimation(fanIdentity, true);
+                playerNetwork.RpcSetEnabledAudio(fanIdentity, true);
             }
         }
         
-        private void TriggerLevel5()
+        private void TriggerLevel5(PlayerNetwork playerNetwork)
         {
             foreach (Transform pump in pumps)
             {
-                if (!pump.TryGetComponent(out Animation pumpAnimation))
-                {
-                    Debug.LogException(new ComponentNotFoundException($"No Animation component found on this pump {pump.name}"));
-                    continue;
-                }
-                
-                pumpAnimation.enabled = true;
+                if(!pump.TryGetComponent(out NetworkIdentity pumpIdentity))
+                    Debug.LogException(new ComponentNotFoundException("No network identity on the target pump"));
+                playerNetwork.RpcSetEnabledAnimation(pumpIdentity, true);
             }
         }
         
