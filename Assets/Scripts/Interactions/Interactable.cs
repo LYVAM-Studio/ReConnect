@@ -1,14 +1,19 @@
+using Mirror;
+using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Reconnect.Interactions
 {
     [RequireComponent(typeof(Outline))]
-    public abstract class Interactable : MonoBehaviour
+    public abstract class Interactable : NetworkBehaviour
     {
         protected Outline Outline;
 
-        protected void Start()
+        [SyncVar]
+        public uint level;
+        protected void Awake()
         {
             if (!TryGetComponent(out Outline))
                 throw new ComponentNotFoundException("No Outline component has been found attached to this interactable.");
