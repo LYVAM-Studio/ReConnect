@@ -1276,50 +1276,6 @@
                     "action": "SetLevel",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ef33eb7a-20ae-4e37-800e-17bce709515d",
-                    "path": "<Keyboard>/6",
-                    "interactions": "Press",
-                    "processors": "Scale(factor=6)",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "SetLevel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "71bb16ad-c7c1-4250-abef-570d2a42b0ac",
-                    "path": "<Keyboard>/7",
-                    "interactions": "Press",
-                    "processors": "Scale(factor=7)",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "SetLevel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a5251c65-76fc-4192-b876-e2f53743e747",
-                    "path": "<Keyboard>/8",
-                    "interactions": "Press",
-                    "processors": "Scale(factor=8)",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "SetLevel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "008d65ce-fc3e-4d6a-b53b-4d7e37f0629f",
-                    "path": "<Keyboard>/9",
-                    "interactions": "Press",
-                    "processors": "Scale(factor=9)",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "SetLevel",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }
