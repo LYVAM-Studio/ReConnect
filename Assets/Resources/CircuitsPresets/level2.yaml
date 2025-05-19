@@ -1,0 +1,46 @@
+title: Resistors
+input-tension: 100
+input-intensity: 16
+target-value: 38
+target-quantity: tension
+input-x-pos: 3
+output-x-pos: 5
+components:
+  - resistor:
+    name: R10
+    x-pos: 0
+    y-pos: 1
+    direction: s
+    resistance: 10
+  - resistor:
+    name: R20
+    x-pos: 0
+    y-pos: 2
+    direction: s
+    resistance: 20
+  - resistor:
+    name: R30
+    x-pos: 0
+    y-pos: 3
+    direction: s
+    resistance: 30
+  - resistor:
+    name: R40
+    x-pos: 0
+    y-pos: 4
+    direction: s
+    resistance: 40
+  - resistor:
+    name: R50
+    x-pos: 0
+    y-pos: 5
+    direction: s
+    resistance: 50
+    
+  - lamp:
+    name: target lamp
+    x-pos: 5
+    y-pos: 6
+    direction: s
+    target: true
+    locked: true

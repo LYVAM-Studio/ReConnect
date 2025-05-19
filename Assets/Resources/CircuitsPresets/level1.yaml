@@ -1,47 +1,61 @@
-title: Read a circuit diagram
-input-tension: 120
+title: Circuit diagram
+input-tension: 150
 input-intensity: 16
-target-value: 120
+target-value: 40
 target-quantity: tension
-input-x-pos: 3
-output-x-pos: 3
+input-x-pos: 4
+output-x-pos: 4
 components:
-  - lamp:
-    name: L1
-    x-pos: 3
-    y-pos: 5
-    direction: s
-    resistance: 250
-    target: true
-    locked: true
   - resistor:
-    name: R1
-    x-pos: 5
+    name: R30
+    x-pos: 0
+    y-pos: 2
+    direction: s
+    resistance: 30
+  - resistor:
+    name: R22
+    x-pos: 0
     y-pos: 3
     direction: s
-    resistance: 250
+    resistance: 22
+  - resistor:
+    name: R34
+    x-pos: 0
+    y-pos: 4
+    direction: s
+    resistance: 34
+  - resistor:
+    name: R68
+    x-pos: 1
+    y-pos: 2
+    direction: s
+    resistance: 68
+  - resistor:
+    name: R84
+    x-pos: 1
+    y-pos: 3
+    direction: s
+    resistance: 84
+  - resistor:
+    name: R70
+    x-pos: 1
+    y-pos: 4
+    direction: s
+    resistance: 70
+    
+  # locked components:
+  
   - wire:
-    x-pos: 3
+    name: locked wire
+    x-pos: 4
     y-pos: 0
     direction: s
     locked: true
-  - wire:
-    x-pos: 3
-    y-pos: 1
-    direction: s
-    locked: true
-  - wire:
-    x-pos: 3
-    y-pos: 2
-    direction: s
-    locked: true
-  - wire:
-    x-pos: 3
-    y-pos: 4
-    direction: s
-    locked: true
-  - wire:
-    x-pos: 3
+  - lamp:
+    name: light
+    x-pos: 4
     y-pos: 6
     direction: s
+    resistance: 20
+    target: true
     locked: true
