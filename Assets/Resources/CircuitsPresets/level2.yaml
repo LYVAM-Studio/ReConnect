@@ -42,5 +42,6 @@ components:
     x-pos: 5
     y-pos: 6
     direction: s
+    resistance: 38
     target: true
     locked: true
