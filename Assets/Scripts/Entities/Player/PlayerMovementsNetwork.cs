@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Mirror;
 using Reconnect.Menu;
 using Reconnect.Utils;
 using UnityEngine;
