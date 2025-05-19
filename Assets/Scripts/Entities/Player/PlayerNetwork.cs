@@ -218,16 +218,6 @@ namespace Reconnect.Player
             MenuManager.Instance.SetKnockOutReason(reason);
             playerMovements.KnockOut();
         }
-
-        [Command]
-        public void CmdSetPlayersLevel(uint level)
-        {
-            uint old = GameManager.Level;
-            GameManager.Level = level;
-            if (isClient)
-                GameManager.OnLevelChange(old, GameManager.Level);
-            RpcSetPlayerLevel(level);
-        }
         
         [Command]
         public void CmdGetPlayerLevel()
@@ -242,6 +232,17 @@ namespace Reconnect.Player
             GameManager.Level = level;
             GameManager.OnLevelChange(old, level);
         }
+        
+        [Command]
+        public void CmdSetPlayersLevel(uint level)
+        {
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
+            GameManager.Instance.LevelTrigger(level - 1);
+            RpcSetPlayerLevel(level);
+        }
 
         [ClientRpc]
         private void RpcSetPlayerLevel(uint level)
@@ -251,18 +252,12 @@ namespace Reconnect.Player
             GameManager.Level = level;
             GameManager.OnLevelChange(old, level);
         }
-        
-        [Command]
-        public void CmdLevelUpPlayers()
-        {
-            RpcLevelUpPlayers();
-        }
-        
+
         [ClientRpc]
-        private void RpcLevelUpPlayers()
+        public void RpcExitBreadboardMenu()
         {
-            GameManager.Level += 1;
-            GameManager.OnLevelChange(GameManager.Level - 1, GameManager.Level);
+            if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                MenuManager.Instance.BackToPreviousMenu();
         }
     }
 }
