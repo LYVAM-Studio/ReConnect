@@ -1038,6 +1038,15 @@ namespace Reconnect
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MissionBrief"",
+                    ""type"": ""Button"",
+                    ""id"": ""68e213db-7c5b-43c4-b114-5fe2a830000f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1060,6 +1069,17 @@ namespace Reconnect
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Lessons"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d96e7679-9deb-4a79-9b11-c6ad61d51826"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MissionBrief"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1091,6 +1111,15 @@ namespace Reconnect
                     ""name"": ""CancelKnockOut"",
                     ""type"": ""Button"",
                     ""id"": ""d133ebf4-7f5c-4e5a-8d2e-41996da834f4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SetLevel"",
+                    ""type"": ""Button"",
+                    ""id"": ""e9830537-67af-452a-8076-cf7eac67ab0d"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1216,6 +1245,105 @@ namespace Reconnect
                     ""action"": ""MobAttack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""269adec3-d2c0-4e80-ae6f-f135ee9d38c3"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4176b2af-16bf-4c66-8ec0-4d15439bf80f"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=2)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aef28b6b-849c-4f1c-940d-f09310dbddcc"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=3)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f3d401a5-e942-4f74-8b11-ac5b1e04625b"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=4)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2e11a989-a3f4-4b77-8580-0247e49a1d00"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=5)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ef33eb7a-20ae-4e37-800e-17bce709515d"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=6)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""71bb16ad-c7c1-4250-abef-570d2a42b0ac"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=7)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a5251c65-76fc-4192-b876-e2f53743e747"",
+                    ""path"": ""<Keyboard>/8"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=8)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""008d65ce-fc3e-4d6a-b53b-4d7e37f0629f"",
+                    ""path"": ""<Keyboard>/9"",
+                    ""interactions"": ""Press"",
+                    ""processors"": ""Scale(factor=9)"",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SetLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1315,11 +1443,13 @@ namespace Reconnect
             m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
             m_Menu_Esc = m_Menu.FindAction("Esc", throwIfNotFound: true);
             m_Menu_Lessons = m_Menu.FindAction("Lessons", throwIfNotFound: true);
+            m_Menu_MissionBrief = m_Menu.FindAction("MissionBrief", throwIfNotFound: true);
             // CheatCodes
             m_CheatCodes = asset.FindActionMap("CheatCodes", throwIfNotFound: true);
             m_CheatCodes_KnockOut = m_CheatCodes.FindAction("KnockOut", throwIfNotFound: true);
             m_CheatCodes_PopulateLessons = m_CheatCodes.FindAction("PopulateLessons", throwIfNotFound: true);
             m_CheatCodes_CancelKnockOut = m_CheatCodes.FindAction("CancelKnockOut", throwIfNotFound: true);
+            m_CheatCodes_SetLevel = m_CheatCodes.FindAction("SetLevel", throwIfNotFound: true);
             m_CheatCodes_MobAttack = m_CheatCodes.FindAction("MobAttack", throwIfNotFound: true);
         }
 
@@ -1683,12 +1813,14 @@ namespace Reconnect
         private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
         private readonly InputAction m_Menu_Esc;
         private readonly InputAction m_Menu_Lessons;
+        private readonly InputAction m_Menu_MissionBrief;
         public struct MenuActions
         {
             private @PlayerControls m_Wrapper;
             public MenuActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
             public InputAction @Esc => m_Wrapper.m_Menu_Esc;
             public InputAction @Lessons => m_Wrapper.m_Menu_Lessons;
+            public InputAction @MissionBrief => m_Wrapper.m_Menu_MissionBrief;
             public InputActionMap Get() { return m_Wrapper.m_Menu; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1704,6 +1836,9 @@ namespace Reconnect
                 @Lessons.started += instance.OnLessons;
                 @Lessons.performed += instance.OnLessons;
                 @Lessons.canceled += instance.OnLessons;
+                @MissionBrief.started += instance.OnMissionBrief;
+                @MissionBrief.performed += instance.OnMissionBrief;
+                @MissionBrief.canceled += instance.OnMissionBrief;
             }
 
             private void UnregisterCallbacks(IMenuActions instance)
@@ -1714,6 +1849,9 @@ namespace Reconnect
                 @Lessons.started -= instance.OnLessons;
                 @Lessons.performed -= instance.OnLessons;
                 @Lessons.canceled -= instance.OnLessons;
+                @MissionBrief.started -= instance.OnMissionBrief;
+                @MissionBrief.performed -= instance.OnMissionBrief;
+                @MissionBrief.canceled -= instance.OnMissionBrief;
             }
 
             public void RemoveCallbacks(IMenuActions instance)
@@ -1738,6 +1876,7 @@ namespace Reconnect
         private readonly InputAction m_CheatCodes_KnockOut;
         private readonly InputAction m_CheatCodes_PopulateLessons;
         private readonly InputAction m_CheatCodes_CancelKnockOut;
+        private readonly InputAction m_CheatCodes_SetLevel;
         private readonly InputAction m_CheatCodes_MobAttack;
         public struct CheatCodesActions
         {
@@ -1746,6 +1885,7 @@ namespace Reconnect
             public InputAction @KnockOut => m_Wrapper.m_CheatCodes_KnockOut;
             public InputAction @PopulateLessons => m_Wrapper.m_CheatCodes_PopulateLessons;
             public InputAction @CancelKnockOut => m_Wrapper.m_CheatCodes_CancelKnockOut;
+            public InputAction @SetLevel => m_Wrapper.m_CheatCodes_SetLevel;
             public InputAction @MobAttack => m_Wrapper.m_CheatCodes_MobAttack;
             public InputActionMap Get() { return m_Wrapper.m_CheatCodes; }
             public void Enable() { Get().Enable(); }
@@ -1765,6 +1905,9 @@ namespace Reconnect
                 @CancelKnockOut.started += instance.OnCancelKnockOut;
                 @CancelKnockOut.performed += instance.OnCancelKnockOut;
                 @CancelKnockOut.canceled += instance.OnCancelKnockOut;
+                @SetLevel.started += instance.OnSetLevel;
+                @SetLevel.performed += instance.OnSetLevel;
+                @SetLevel.canceled += instance.OnSetLevel;
                 @MobAttack.started += instance.OnMobAttack;
                 @MobAttack.performed += instance.OnMobAttack;
                 @MobAttack.canceled += instance.OnMobAttack;
@@ -1781,6 +1924,9 @@ namespace Reconnect
                 @CancelKnockOut.started -= instance.OnCancelKnockOut;
                 @CancelKnockOut.performed -= instance.OnCancelKnockOut;
                 @CancelKnockOut.canceled -= instance.OnCancelKnockOut;
+                @SetLevel.started -= instance.OnSetLevel;
+                @SetLevel.performed -= instance.OnSetLevel;
+                @SetLevel.canceled -= instance.OnSetLevel;
                 @MobAttack.started -= instance.OnMobAttack;
                 @MobAttack.performed -= instance.OnMobAttack;
                 @MobAttack.canceled -= instance.OnMobAttack;
@@ -1881,12 +2027,14 @@ namespace Reconnect
         {
             void OnEsc(InputAction.CallbackContext context);
             void OnLessons(InputAction.CallbackContext context);
+            void OnMissionBrief(InputAction.CallbackContext context);
         }
         public interface ICheatCodesActions
         {
             void OnKnockOut(InputAction.CallbackContext context);
             void OnPopulateLessons(InputAction.CallbackContext context);
             void OnCancelKnockOut(InputAction.CallbackContext context);
+            void OnSetLevel(InputAction.CallbackContext context);
             void OnMobAttack(InputAction.CallbackContext context);
         }
     }
