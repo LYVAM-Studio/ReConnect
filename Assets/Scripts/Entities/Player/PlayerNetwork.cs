@@ -257,6 +257,18 @@ namespace Reconnect.Player
             GameManager.Instance.LevelTrigger(level - 1, this);
             RpcSetPlayerLevel(level);
         }
+        
+        public void NotCmdSetPlayersLevel(uint level)
+        {
+            RpcExitBreadboardMenu();
+
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
+            GameManager.Instance.LevelTrigger(level - 1, this);
+            RpcSetPlayerLevel(level);
+        }
 
         [ClientRpc]
         private void RpcSetPlayerLevel(uint level)
