@@ -54,6 +54,18 @@ namespace Reconnect.Player
             breadboardHolder.breadboardSwitch.IsOn = value;
             breadboardHolder.breadboardSwitch.lastPlayerExecuting = connectionToClient.identity; // the player who sent the command
         }
+
+        [Command]
+        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity)
+        {
+            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided"));
+                return;
+            }
+            breadboardHolder.breadboardSwitch.ExecuteCircuit();
+        }
         
         [Command]
         public void CmdRequestUndoTargetAction(Uid targetId)
@@ -218,16 +230,6 @@ namespace Reconnect.Player
             MenuManager.Instance.SetKnockOutReason(reason);
             playerMovements.KnockOut();
         }
-
-        [Command]
-        public void CmdSetPlayersLevel(uint level)
-        {
-            uint old = GameManager.Level;
-            GameManager.Level = level;
-            if (isClient)
-                GameManager.OnLevelChange(old, GameManager.Level);
-            RpcSetPlayerLevel(level);
-        }
         
         [Command]
         public void CmdGetPlayerLevel()
@@ -242,7 +244,38 @@ namespace Reconnect.Player
             GameManager.Level = level;
             GameManager.OnLevelChange(old, level);
         }
+        
+        [Command(requiresAuthority = false)]
+        public void CmdSetPlayersLevel(uint level)
+        {
+            RpcExitBreadboardMenu();
 
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
+            GameManager.Instance.LevelTrigger(level - 1, this);
+            RpcSetPlayerLevel(level);
+        }
+        
+        public void NotCmdSetPlayersLevel(uint level)
+        {
+            RpcExitBreadboardMenu();
+
+            uint old = GameManager.Level;
+            GameManager.Level = level;
+            if (isClient)
+                GameManager.OnLevelChange(old, GameManager.Level);
+            GameManager.Instance.LevelTrigger(level - 1, this);
+            RpcSetPlayerLevel(level);
+        }
+
+        [ClientRpc]
+        public void RpcForceHideTooltip()
+        {
+            ToolTipManager.Instance.ForceHide = true;
+        }
+        
         [ClientRpc]
         private void RpcSetPlayerLevel(uint level)
         {
@@ -251,18 +284,57 @@ namespace Reconnect.Player
             GameManager.Level = level;
             GameManager.OnLevelChange(old, level);
         }
-        
-        [Command]
-        public void CmdLevelUpPlayers()
+
+        [ClientRpc]
+        public void RpcExitBreadboardMenu()
         {
-            RpcLevelUpPlayers();
+            if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                MenuManager.Instance.BackToPreviousMenu();
+            else
+                MenuManager.Instance.CorruptHistory();
+
+        }
+
+        [ClientRpc]
+        public void RpcSetActiveGameObject(NetworkIdentity objectIdentity, bool value)
+        {
+            objectIdentity.gameObject.SetActive(value);
         }
         
         [ClientRpc]
-        private void RpcLevelUpPlayers()
+        public void RpcSetEnabledAnimation(NetworkIdentity objectIdentity, bool value)
         {
-            GameManager.Level += 1;
-            GameManager.OnLevelChange(GameManager.Level - 1, GameManager.Level);
+            if (!objectIdentity.TryGetComponent(out Animation objectAnimation))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No Animation component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectAnimation.enabled = value;
+        }
+        
+        [ClientRpc]
+        public void RpcSetEnabledAudio(NetworkIdentity objectIdentity, bool value)
+        {
+            if (!objectIdentity.TryGetComponent(out AudioSource objectAudio))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No AudioSource component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectAudio.enabled = value;
+        }
+        
+        [ClientRpc]
+        public void RpcSetEnabledLight(NetworkIdentity objectIdentity, bool value)
+        {
+            if (!objectIdentity.TryGetComponent(out Light objectLight))
+            {
+                Debug.LogException(new ComponentNotFoundException($"No Light component found on this object {objectIdentity.name}"));
+                return;
+            }
+
+            objectLight.enabled = value;
         }
     }
 }

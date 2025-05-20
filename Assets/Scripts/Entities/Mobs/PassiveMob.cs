@@ -26,6 +26,8 @@ namespace Reconnect.Pathfinding
         /// The distance between the last target and the current target. It takes into account the y component which is not directly managed by the navmesh agent. 
         /// </summary>
         private float _targetDistance;
+
+        private bool _hasBeenInitialized;
         
         public override void OnStartServer()
         {
@@ -35,11 +37,13 @@ namespace Reconnect.Pathfinding
             MaxMovementRadius = maxMovementRadius;
             
             _previousY = model.transform.position.y;
+
+            _hasBeenInitialized = true;
         }
 
         private void Update()
         {
-            if (!isServer) return;
+            if (!isServer || !_hasBeenInitialized) return;
             
             // make the model spin
             model.transform.localEulerAngles +=

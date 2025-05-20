@@ -42,10 +42,6 @@ namespace Reconnect.Menu
         [SerializeField] private GameObject level3Menu;
         [SerializeField] private GameObject level4Menu;
         [SerializeField] private GameObject level5Menu;
-        [SerializeField] private GameObject level6Menu;
-        [SerializeField] private GameObject level7Menu;
-        [SerializeField] private GameObject level8Menu;
-        [SerializeField] private GameObject level9Menu;
         
         [Header("TextMeshPro references")]
         [SerializeField] private TMP_InputField hostPort;
@@ -184,10 +180,6 @@ namespace Reconnect.Menu
             level3Menu.SetActive(menu is MenuState.Level3);
             level4Menu.SetActive(menu is MenuState.Level4);
             level5Menu.SetActive(menu is MenuState.Level5);
-            level6Menu.SetActive(menu is MenuState.Level6);
-            level7Menu.SetActive(menu is MenuState.Level7);
-            level8Menu.SetActive(menu is MenuState.Level8);
-            level9Menu.SetActive(menu is MenuState.Level9);
             CurrentMenuState = menu;
             
             if (cursorState is CursorState.Shown)
@@ -232,11 +224,7 @@ namespace Reconnect.Menu
             level3Menu.SetActive(CurrentMenuState is MenuState.Level3);
             level4Menu.SetActive(CurrentMenuState is MenuState.Level4);
             level5Menu.SetActive(CurrentMenuState is MenuState.Level5);
-            level6Menu.SetActive(CurrentMenuState is MenuState.Level6);
-            level7Menu.SetActive(CurrentMenuState is MenuState.Level7);
-            level8Menu.SetActive(CurrentMenuState is MenuState.Level8);
-            level9Menu.SetActive(CurrentMenuState is MenuState.Level9);
-            
+
             if (CurrentCursorState is CursorState.Shown)
             {
                 Cursor.visible = true;
@@ -323,7 +311,9 @@ namespace Reconnect.Menu
         
         public void SetMenuToMissionBrief(uint level)
         {
-            if (level == 0 || level > 9)
+            if (level == 6)
+                return;
+            if (level == 0 || level > 6)
                 throw new ArgumentOutOfRangeException(nameof(level));
             LockPlayer();
             FreeLookCamera.InputAxisController.enabled = false;
@@ -422,6 +412,11 @@ namespace Reconnect.Menu
 #else 
             Application.Quit();
 #endif
+        }
+
+        public void CorruptHistory()
+        {
+            _history.CorruptHistory();
         }
     }
 }

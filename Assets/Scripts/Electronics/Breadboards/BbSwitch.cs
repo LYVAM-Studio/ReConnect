@@ -1,9 +1,9 @@
-using System;
+using System.Collections;
 using Electronics.Breadboards;
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
-using Reconnect.Menu;
+using Reconnect.Game;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -61,7 +61,21 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            
             playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
+            StartCoroutine(WaitForAnimationEnd(playerNetwork));
+        }
+
+        private IEnumerator WaitForAnimationEnd(PlayerNetwork playerNetwork)
+        {
+            AnimatorStateInfo state;
+            do
+            {
+                state = _animator.GetCurrentAnimatorStateInfo(0);
+                yield return null;
+            } while (!state.IsName("IdleDown"));
+            
+            playerNetwork.CmdExecuteCircuit(netIdentity);
         }
 
         public void OnSwitchStartUp()
@@ -72,14 +86,8 @@ namespace Reconnect.Electronics.Breadboards
             playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetUid);
         }
         
-        public void OnSwitchIdleDown()
-        {
-            if (!isServer)
-                return;
-            ExecuteCircuit();
-        }
-        
-        private void ExecuteCircuit()
+        [Server]
+        public void ExecuteCircuit()
         {
             if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
@@ -97,6 +105,7 @@ namespace Reconnect.Electronics.Breadboards
                 case BreadboardResult.Success :
                     ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
                     target.DoAction();
+                    playerNetwork.NotCmdSetPlayersLevel(breadboard.breadboardHolder.level + 1);
                     break;
                 case BreadboardResult.Failure :
                     IsOn = false;
