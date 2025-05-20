@@ -105,7 +105,7 @@ namespace Reconnect.Electronics.Breadboards
                 case BreadboardResult.Success :
                     ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
                     target.DoAction();
-                    playerNetwork.NotCmdSetPlayersLevel(GameManager.Level + 1);
+                    playerNetwork.NotCmdSetPlayersLevel(breadboard.breadboardHolder.level + 1);
                     break;
                 case BreadboardResult.Failure :
                     IsOn = false;
