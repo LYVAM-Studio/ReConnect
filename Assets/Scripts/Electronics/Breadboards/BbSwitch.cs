@@ -1,10 +1,9 @@
-using System;
+using System.Collections;
 using Electronics.Breadboards;
 using Mirror;
 using Reconnect.Electronics.Breadboards.NetworkSync;
 using Reconnect.Electronics.Components;
 using Reconnect.Game;
-using Reconnect.Menu;
 using Reconnect.MouseEvents;
 using Reconnect.Player;
 using Reconnect.Utils;
@@ -62,7 +61,20 @@ namespace Reconnect.Electronics.Breadboards
         {
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
+            
             playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
+            StartCoroutine(WaitForAnimationEnd());
+        }
+
+        private IEnumerator WaitForAnimationEnd()
+        {
+            AnimatorStateInfo state;
+            do
+            {
+                state = _animator.GetCurrentAnimatorStateInfo(0);
+                yield return null;
+            } while (!state.IsName("IdleDown"));
+            ExecuteCircuit();
         }
 
         public void OnSwitchStartUp()
@@ -71,13 +83,6 @@ namespace Reconnect.Electronics.Breadboards
             if (!NetworkClient.localPlayer.TryGetComponent(out PlayerNetwork playerNetwork))
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetUid);
-        }
-        
-        public void OnSwitchIdleDown()
-        {
-            if (!isServer)
-                return;
-            ExecuteCircuit();
         }
         
         private void ExecuteCircuit()
@@ -98,7 +103,6 @@ namespace Reconnect.Electronics.Breadboards
                 case BreadboardResult.Success :
                     ElecComponent target = UidDictionary.Get<ElecComponent>(breadboard.TargetUid);
                     target.DoAction();
-                    playerNetwork.RpcExitBreadboardMenu();
                     playerNetwork.CmdSetPlayersLevel(GameManager.Level + 1);
                     break;
                 case BreadboardResult.Failure :
