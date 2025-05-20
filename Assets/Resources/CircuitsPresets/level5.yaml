@@ -1,0 +1,92 @@
+title: Tension in a circuit
+input-tension: 230
+input-intensity: 16
+target-value: 0.23
+target-quantity: intensity
+input-x-pos: 6
+output-x-pos: 0
+components:
+  - lamp:
+    name: L1
+    x-pos: 0
+    y-pos: 5
+    direction: s
+    resistance: 465
+    target: true
+    locked: true
+  - wire:
+    name: locked wire
+    x-pos: 0
+    y-pos: 6
+    direction: s
+    locked: true
+  - resistor:
+    name: R0
+    x-pos: 1
+    y-pos: 0
+    direction: e
+    resistance: 289
+    tolerance: 0.1
+  - resistor:
+    name: R1
+    x-pos: 0
+    y-pos: 1
+    direction: e
+    resistance: 182
+    tolerance: 10
+  - resistor:
+    name: R2
+    x-pos: 1
+    y-pos: 2
+    direction: s
+    resistance: 42
+    tolerance: 0.5
+  - resistor:
+    name: R3
+    x-pos: 4
+    y-pos: 1
+    direction: s
+    resistance: 920
+    tolerance: 5
+  - resistor:
+    name: R4
+    x-pos: 7
+    y-pos: 2
+    direction: s
+    resistance: 220
+    tolerance: 0.1
+  - resistor:
+    name: R5
+    x-pos: 4
+    y-pos: 3
+    direction: s
+    resistance: 470
+    tolerance: 1
+  - resistor:
+    name: R6
+    x-pos: 0
+    y-pos: 4
+    direction: e
+    resistance: 4200
+    tolerance: 0.5
+  - resistor:
+    name: R7
+    x-pos: 6
+    y-pos: 5
+    direction: e
+    resistance: 6571
+    tolerance: 10
+  - resistor:
+    name: R8
+    x-pos: 2
+    y-pos: 6
+    direction: e
+    resistance: 365
+    tolerance: 5
+  - resistor:
+    name: R9
+    x-pos: 4
+    y-pos: 6
+    direction: s
+    resistance: 47
+    tolerance: 0.1

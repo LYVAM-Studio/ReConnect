@@ -28,6 +28,9 @@ namespace Reconnect.Interactions
         // This method is called by the player when this interactable enters its range.
         public void OnEnterPlayerRange()
         {
+            Outline.OutlineMode = Outline.Mode.OutlineVisible;
+            Outline.OutlineColor = Color.white;
+            Outline.OutlineWidth = 2.5f;
             Outline.enabled = true;
         }
 
@@ -48,7 +51,7 @@ namespace Reconnect.Interactions
         public void SetNearest()
         {
             // Make it glow more
-            Outline.OutlineWidth = 5;
+            Outline.OutlineWidth = 10;
         }
     }
 }

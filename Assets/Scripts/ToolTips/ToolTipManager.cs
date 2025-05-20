@@ -9,6 +9,8 @@ namespace Reconnect.ToolTips
     public class ToolTipManager : MonoBehaviour
     {
         public static ToolTipManager Instance;
+        
+        public bool ForceHide { get; set; }
 
         private readonly Dictionary<int, ToolTipWindow> _toolTips = new();
 
@@ -49,6 +51,8 @@ namespace Reconnect.ToolTips
         
         public void ShowToolTip(int id)
         {
+            if (ForceHide)
+                return;
             if (!_toolTips.TryGetValue(id, out var tooltip))
                 throw new ArgumentException($"No tooltip with id {id} has been found.");
             tooltip.gameObject.SetActive(true);
