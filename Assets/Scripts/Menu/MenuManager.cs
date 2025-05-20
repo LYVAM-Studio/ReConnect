@@ -11,16 +11,18 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Reconnect.Audio;
+
 
 namespace Reconnect.Menu
 {
     public class MenuManager : MonoBehaviour
     {
         public static MenuManager Instance;
-        
+
         [Header("Multiplayer parameters")]
         [SerializeField] private ReconnectNetworkManager networkManager;
-        
+
         [Header("Menu canvas")]
         [SerializeField] private GameObject mainMenu;
         [SerializeField] private GameObject multiplayerMenu;
@@ -34,14 +36,14 @@ namespace Reconnect.Menu
         [SerializeField] private GameObject connectionFailed;
         [SerializeField] private GameObject quitMenu;
         [SerializeField] private GameObject newLessonMenu;
-        
+
         [Header("Level Mission Briefs")]
         [SerializeField] private GameObject level1Menu;
         [SerializeField] private GameObject level2Menu;
         [SerializeField] private GameObject level3Menu;
         [SerializeField] private GameObject level4Menu;
         [SerializeField] private GameObject level5Menu;
-        
+
         [Header("TextMeshPro references")]
         [SerializeField] private TMP_InputField hostPort;
         [SerializeField] private TMP_InputField serverAddress;
@@ -50,12 +52,12 @@ namespace Reconnect.Menu
         [SerializeField] private TMP_Text timerText;
         [SerializeField] private TMP_Text errorMsg;
         [SerializeField] private TMP_Text hudLevelText;
-        
+
         [Header("Other useful references")]
         [SerializeField] private NewLessonMenuController newLessonController;
         [NonSerialized] public BreadboardHolder BreadBoardHolder;
-        
-        
+
+
         public MenuState CurrentMenuState { get; private set; }
         public CursorState CurrentCursorState { get; private set; }
         public bool IsPlayerLocked { get; private set; }
@@ -63,20 +65,20 @@ namespace Reconnect.Menu
 
         private readonly History _history = new();
         private PlayerControls _controls;
-        
+
         private void Awake()
         {
             if (Instance is not null)
                 throw new Exception("A MenuController has already been instantiated.");
-            
+
             Instance = this;
 
             _controls = new PlayerControls();
             _controls.Menu.Esc.performed += OnEscPressed;
             _controls.Menu.Lessons.performed += OnToggleLessonsMenu;
             _controls.Menu.MissionBrief.performed += OnToggleMissionBrief;
-            
-            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
+
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory: true);
         }
 
         private void OnEnable()
@@ -99,12 +101,12 @@ namespace Reconnect.Menu
         private void OnEscPressed(InputAction.CallbackContext ctx)
         {
             if (CurrentMenuState is MenuState.KnockOut) return;
-            
+
             if (!_history.IsEmpty())
             {
                 if (CurrentMenuState is MenuState.BreadBoard)
                     BreadBoardHolder?.Activate(false);
-                
+
                 BackToPreviousMenu();
             }
             else
@@ -125,7 +127,7 @@ namespace Reconnect.Menu
                 }
             }
         }
-        
+
         private void OnToggleLessonsMenu(InputAction.CallbackContext ctx)
         {
             if (CurrentMenuState is MenuState.None)
@@ -139,7 +141,7 @@ namespace Reconnect.Menu
                 BackToPreviousMenu();
             }
         }
-        
+
         private void OnToggleMissionBrief(InputAction.CallbackContext ctx)
         {
             if (CurrentMenuState is MenuState.None)
@@ -153,14 +155,14 @@ namespace Reconnect.Menu
                 BackToPreviousMenu();
             }
         }
-        
+
         public void SetMenuTo(MenuState menu, CursorState cursorState, bool forceClearHistory = false)
         {
             if (forceClearHistory)
                 _history.Clear();
             else
                 _history.Push(CurrentMenuState, CurrentCursorState);
-                
+
             mainMenu.SetActive(menu is MenuState.Main);
             multiplayerMenu.SetActive(menu is MenuState.Multiplayer);
             settingsMenu.SetActive(menu is MenuState.Settings);
@@ -179,7 +181,7 @@ namespace Reconnect.Menu
             level4Menu.SetActive(menu is MenuState.Level4);
             level5Menu.SetActive(menu is MenuState.Level5);
             CurrentMenuState = menu;
-            
+            AudioManager.Instance?.PlayButtonClick();
             if (cursorState is CursorState.Shown)
             {
                 Cursor.visible = true;
@@ -203,7 +205,7 @@ namespace Reconnect.Menu
             }
 
             (CurrentMenuState, CurrentCursorState) = _history.Pop();
-            
+
             mainMenu.SetActive(CurrentMenuState is MenuState.Main);
             multiplayerMenu.SetActive(CurrentMenuState is MenuState.Multiplayer);
             settingsMenu.SetActive(CurrentMenuState is MenuState.Settings);
@@ -221,7 +223,7 @@ namespace Reconnect.Menu
             level3Menu.SetActive(CurrentMenuState is MenuState.Level3);
             level4Menu.SetActive(CurrentMenuState is MenuState.Level4);
             level5Menu.SetActive(CurrentMenuState is MenuState.Level5);
-
+            AudioManager.Instance?.PlayButtonClick();
             if (CurrentCursorState is CursorState.Shown)
             {
                 Cursor.visible = true;
@@ -232,7 +234,7 @@ namespace Reconnect.Menu
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-            
+
             if (CurrentMenuState is MenuState.None)
                 UnLockPlayer();
         }
@@ -257,13 +259,13 @@ namespace Reconnect.Menu
 
             IsPlayerLocked = locked;
         }
-        
+
         public void OpenImageInViewer(Sprite sprite)
         {
             SetMenuTo(MenuState.ImageViewer, CursorState.Shown);
             ImageViewerManager.Instance.LoadImage(sprite);
         }
-        
+
         public void CloseImageViewer()
         {
             BackToPreviousMenu();
@@ -274,13 +276,13 @@ namespace Reconnect.Menu
         {
             // the player is locked from the call
             SetMenuTo(MenuState.KnockOut, CursorState.Locked);
-            
+
             for (uint i = seconds; i > 0; i--)
             {
                 timerText.text = i.ToString();
                 yield return new WaitForSeconds(1);
             }
-            
+
             BackToPreviousMenu();
             // the player is unlocked after the call
         }
@@ -304,7 +306,7 @@ namespace Reconnect.Menu
             FreeLookCamera.InputAxisController.enabled = false;
             SetMenuTo(MenuState.NewLesson, CursorState.Shown);
         }
-        
+
         public void SetMenuToMissionBrief(uint level)
         {
             if (level == 6)
@@ -315,12 +317,12 @@ namespace Reconnect.Menu
             FreeLookCamera.InputAxisController.enabled = false;
             SetMenuTo((MenuState)level, CursorState.Shown);
         }
-        
+
         public void SetLevel(uint level)
         {
             hudLevelText.text = $"Level : {level}";
         }
-        
+
         public void RunSingleplayerMode()
         {
             SetMenuTo(MenuState.Connection, CursorState.Shown);
@@ -330,8 +332,8 @@ namespace Reconnect.Menu
             networkManager.StartHost();
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
         }
-        
-        public void RunHostMode()   
+
+        public void RunHostMode()
         {
             if (!ushort.TryParse(hostPort.text, out ushort port))
             {
@@ -339,14 +341,14 @@ namespace Reconnect.Menu
                 errorMsg.text = "Invalid port\n\nTry again with a valid port";
                 return;
             }
-            
+
             SetMenuTo(MenuState.Connection, CursorState.Shown);
             GameMode = PlayMode.MultiHost;
             ReconnectNetworkManager.SetConnectionPort(port);
             networkManager.StartHost();
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
         }
-        
+
         public async void RunMultiplayerMode()
         {
             if (!ushort.TryParse(serverPort.text, out ushort port))
@@ -355,14 +357,14 @@ namespace Reconnect.Menu
                 errorMsg.text = "Invalid port\n\nTry again with a valid port";
                 return;
             }
-            
+
             try
             {
                 SetMenuTo(MenuState.Connection, CursorState.Shown);
-                
+
                 networkManager.networkAddress = serverAddress.text;
                 ReconnectNetworkManager.SetConnectionPort(port);
-                
+
                 bool success = await networkManager.StartClientAsync();
                 if (success)
                 {
@@ -397,10 +399,10 @@ namespace Reconnect.Menu
             if (currentCam.Priority == 2)
                 currentCam.Priority = 0;
             FreeLookCamera.InputAxisController.enabled = true;
-            
-            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory:true);
+
+            SetMenuTo(MenuState.Main, CursorState.Shown, forceClearHistory: true);
         }
-        
+
         public void QuitGame()
         {
 #if UNITY_EDITOR
