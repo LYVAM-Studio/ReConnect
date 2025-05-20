@@ -40,7 +40,7 @@ namespace Reconnect.Electronics.Breadboards
             _mainCam = Camera.main;
             _raycastPlane = new Plane(
                 transform.forward,
-                transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
+                breadboard.LocalToWorld(new Vector3(0, 0, -0.5f)));
             breadboard.circuitToLoad = circuitYaml;
         }
 
@@ -107,5 +107,36 @@ namespace Reconnect.Electronics.Breadboards
             _lastFrame = Time.frameCount;
             return _lastRaycast;
         }
+        
+        // private void OnDrawGizmos()
+        // {
+        //     // Recompute the plane in editor mode for visualization
+        //     Plane debugPlane = new Plane(
+        //         transform.forward,
+        //         transform.position - transform.rotation * (0.5f * transform.lossyScale.x * transform.forward));
+        //
+        //     // Get a point on the plane and draw the normal
+        //     Vector3 center = debugPlane.ClosestPointOnPlane(transform.position);
+        //     Vector3 normal = debugPlane.normal;
+        //
+        //     Gizmos.color = Color.green;
+        //     Gizmos.DrawRay(center, normal);
+        //
+        //     // Draw a quad to represent the plane (approximate)
+        //     Vector3 right = Vector3.Cross(normal, Vector3.up);
+        //     if (right == Vector3.zero) right = Vector3.Cross(normal, Vector3.forward);
+        //     Vector3 up = Vector3.Cross(normal, right);
+        //
+        //     float size = 1f;
+        //     Vector3 p1 = center + (right + up) * size;
+        //     Vector3 p2 = center + (right - up) * size;
+        //     Vector3 p3 = center + (-right - up) * size;
+        //     Vector3 p4 = center + (-right + up) * size;
+        //
+        //     Gizmos.DrawLine(p1, p2);
+        //     Gizmos.DrawLine(p2, p3);
+        //     Gizmos.DrawLine(p3, p4);
+        //     Gizmos.DrawLine(p4, p1);
+        // }
     }
 }
