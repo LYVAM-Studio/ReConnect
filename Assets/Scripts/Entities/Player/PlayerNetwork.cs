@@ -56,15 +56,15 @@ namespace Reconnect.Player
         }
 
         [Command]
-        public void CmdExecuteCircuit(NetworkIdentity bbSwitchIdentity)
+        public void CmdExecuteCircuit(NetworkIdentity bbHolderIdentity)
         {
-            if (!bbSwitchIdentity.TryGetComponent(out BbSwitch bbSwitch))
+            if (!bbHolderIdentity.TryGetComponent(out BreadboardHolder breadboardHolder))
             {
                 Debug.LogException(
-                    new ComponentNotFoundException("No BbSwitch component has been found on the identity provided"));
+                    new ComponentNotFoundException("No BreadboardHolder component has been found on the identity provided"));
                 return;
             }
-            bbSwitch.ExecuteCircuit();
+            breadboardHolder.breadboardSwitch.ExecuteCircuit();
         }
         
         [Command]
