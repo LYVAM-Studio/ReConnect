@@ -7,7 +7,6 @@ using Reconnect.Menu.Lessons;
 using Reconnect.Player;
 using Reconnect.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Reconnect.Game
 {
@@ -32,16 +31,24 @@ namespace Reconnect.Game
         };
         [Header("Level triggered objects")]
         [SerializeField] private Transform lights;
-        private static Transform _staticLights;
         [SerializeField] private Transform doors;
-        private static Transform _staticDoors;
         [SerializeField] private Transform fans;
-        private static Transform _staticFans;
         [SerializeField] private Transform pumps;
-        private static Transform _staticPumps;
 
         [Header("Level triggers datas")] 
         [SerializeField] private float doorTargetYPosotion;
+        
+        [Header("Breadboards")] 
+        [SerializeField] private Outline breadboardLevel1;
+        private static Outline _staticBreadboardLevel1;
+        [SerializeField] private Outline breadboardLevel2;
+        private static Outline _staticBreadboardLevel2;
+        [SerializeField] private Outline breadboardLevel3;
+        private static Outline _staticBreadboardLevel3;
+        [SerializeField] private Outline breadboardLevel4;
+        private static Outline _staticBreadboardLevel4;
+        [SerializeField] private Outline breadboardLevel5;
+        private static Outline _staticBreadboardLevel5;
         public static void OnLevelChange(uint oldLevel, uint newLevel)
         {
             if (newLevel == 0)
@@ -60,6 +67,49 @@ namespace Reconnect.Game
             {
                 _lessonsInventoryManager.AddItem(LessonsByLevel[(int)level - 1].name, LessonsByLevel[(int)level - 1]);
             }
+
+            ShowOutlineBreadboard(newLevel);
+        }
+
+        private static void ShowOutlineBreadboard(uint level)
+        {
+            _staticBreadboardLevel1.enabled = false;
+            _staticBreadboardLevel2.enabled = false;
+            _staticBreadboardLevel3.enabled = false;
+            _staticBreadboardLevel4.enabled = false;
+            _staticBreadboardLevel5.enabled = false;
+            
+            switch (level)
+            {
+                case 1:
+                    _staticBreadboardLevel1.enabled = true;
+                    _staticBreadboardLevel1.OutlineWidth = 10;
+                    _staticBreadboardLevel1.OutlineColor = Color.yellow;
+                    break;
+                case 2:
+                    _staticBreadboardLevel2.enabled = true;
+                    _staticBreadboardLevel2.OutlineWidth = 10;
+                    _staticBreadboardLevel2.OutlineColor = Color.yellow;
+                    break;
+                case 3:
+                    _staticBreadboardLevel3.enabled = true;
+                    _staticBreadboardLevel3.OutlineWidth = 10;
+                    _staticBreadboardLevel3.OutlineColor = Color.yellow;
+                    break;
+                case 4:
+                    _staticBreadboardLevel4.enabled = true;
+                    _staticBreadboardLevel4.OutlineWidth = 10;
+                    _staticBreadboardLevel4.OutlineColor = Color.yellow;
+                    break;
+                case 5:
+                    _staticBreadboardLevel5.enabled = true;
+                    _staticBreadboardLevel5.OutlineWidth = 10;
+                    _staticBreadboardLevel5.OutlineColor = Color.yellow;
+                    break;
+                default:
+                    Debug.LogWarning($"Unhandled breadboard level: {level}");
+                    break;
+            }
         }
         
         private void Awake()
@@ -68,6 +118,11 @@ namespace Reconnect.Game
                 throw new ComponentNotFoundException(
                     "No component LessonsInventoryManager has been found on the GameManager");
             LoadSpritesFromNames();
+            _staticBreadboardLevel1 = breadboardLevel1;
+            _staticBreadboardLevel2 = breadboardLevel2;
+            _staticBreadboardLevel3 = breadboardLevel3;
+            _staticBreadboardLevel4 = breadboardLevel4;
+            _staticBreadboardLevel5 = breadboardLevel5;
         }
         
         
@@ -101,10 +156,6 @@ namespace Reconnect.Game
         {
             Instance = this;
             Level = 1;
-            _staticPumps = pumps;
-            _staticFans = fans;
-            _staticDoors = doors;
-            _staticLights = lights;
         }
 
         private IEnumerator WaitForLocalPlayer()
