@@ -81,7 +81,7 @@ components:
     x-pos: 2
     y-pos: 6
     direction: e
-    resistance: 356
+    resistance: 365
     tolerance: 5
   - resistor:
     name: R9
