@@ -85,26 +85,31 @@ namespace Reconnect.Game
                     _staticBreadboardLevel1.enabled = true;
                     _staticBreadboardLevel1.OutlineWidth = 10;
                     _staticBreadboardLevel1.OutlineColor = Color.yellow;
+                    _staticBreadboardLevel1.OutlineMode = Outline.Mode.OutlineAll;
                     break;
                 case 2:
                     _staticBreadboardLevel2.enabled = true;
                     _staticBreadboardLevel2.OutlineWidth = 10;
                     _staticBreadboardLevel2.OutlineColor = Color.yellow;
+                    _staticBreadboardLevel2.OutlineMode = Outline.Mode.OutlineAll;
                     break;
                 case 3:
                     _staticBreadboardLevel3.enabled = true;
                     _staticBreadboardLevel3.OutlineWidth = 10;
                     _staticBreadboardLevel3.OutlineColor = Color.yellow;
+                    _staticBreadboardLevel3.OutlineMode = Outline.Mode.OutlineAll;
                     break;
                 case 4:
                     _staticBreadboardLevel4.enabled = true;
                     _staticBreadboardLevel4.OutlineWidth = 10;
                     _staticBreadboardLevel4.OutlineColor = Color.yellow;
+                    _staticBreadboardLevel4.OutlineMode = Outline.Mode.OutlineAll;
                     break;
                 case 5:
                     _staticBreadboardLevel5.enabled = true;
                     _staticBreadboardLevel5.OutlineWidth = 10;
                     _staticBreadboardLevel5.OutlineColor = Color.yellow;
+                    _staticBreadboardLevel5.OutlineMode = Outline.Mode.OutlineAll;
                     break;
                 default:
                     Debug.LogWarning($"Unhandled breadboard level: {level}");
