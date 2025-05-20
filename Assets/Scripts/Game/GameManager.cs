@@ -5,6 +5,7 @@ using Mirror;
 using Reconnect.Menu;
 using Reconnect.Menu.Lessons;
 using Reconnect.Player;
+using Reconnect.ToolTips;
 using Reconnect.Utils;
 using UnityEngine;
 
@@ -184,6 +185,7 @@ namespace Reconnect.Game
                     break;
                 case 4 :
                     TriggerLevel4(playerNetwork);
+                    ToolTipManager.Instance.ForceHide = true;
                     break;
                 case 5 :
                     TriggerLevel5(playerNetwork);
