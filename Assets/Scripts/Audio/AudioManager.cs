@@ -7,6 +7,7 @@ namespace Reconnect.Audio
     {
         public static AudioManager Instance;
         private AudioSource musicSource;
+        private AudioSource footstepSource;
 
         [Header("Volume Controls")]
         [Range(0f, 1f)] public float ambianceVolume = 1f;
@@ -37,6 +38,12 @@ namespace Reconnect.Audio
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            if (footstepSource == null)
+        {
+            footstepSource = gameObject.AddComponent<AudioSource>();
+            footstepSource.loop = false;
+            footstepSource.playOnAwake = false;
+        }
         }
 
         private void PlayClip(AudioClip clip, float volume)
@@ -79,7 +86,15 @@ namespace Reconnect.Audio
             AudioClip[] selectedClips = isRunning ? runningClips : footstepClips;
             if (selectedClips == null || selectedClips.Length == 0) return;
             int randomIndex = Random.Range(0, selectedClips.Length);
-            PlayClip(selectedClips[randomIndex], movementVolume);
+            AudioClip clip = selectedClips[randomIndex];
+
+            if (!footstepSource.isPlaying)
+            {
+                footstepSource.clip = clip;
+                footstepSource.volume = movementVolume;
+                footstepSource.pitch = isRunning ? 1.5f : 1.0f;
+                footstepSource.Play();
+            }
         }
 
         public void PlayDoorOpen()
