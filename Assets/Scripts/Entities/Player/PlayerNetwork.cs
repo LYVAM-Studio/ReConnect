@@ -54,6 +54,18 @@ namespace Reconnect.Player
             breadboardHolder.breadboardSwitch.IsOn = value;
             breadboardHolder.breadboardSwitch.lastPlayerExecuting = connectionToClient.identity; // the player who sent the command
         }
+
+        [Command]
+        public void CmdExecuteCircuit(NetworkIdentity bbSwitchIdentity)
+        {
+            if (!bbSwitchIdentity.TryGetComponent(out BbSwitch bbSwitch))
+            {
+                Debug.LogException(
+                    new ComponentNotFoundException("No BbSwitch component has been found on the identity provided"));
+                return;
+            }
+            bbSwitch.ExecuteCircuit();
+        }
         
         [Command]
         public void CmdRequestUndoTargetAction(Uid targetId)

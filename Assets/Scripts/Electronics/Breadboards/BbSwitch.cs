@@ -74,7 +74,11 @@ namespace Reconnect.Electronics.Breadboards
                 state = _animator.GetCurrentAnimatorStateInfo(0);
                 yield return null;
             } while (!state.IsName("IdleDown"));
-            ExecuteCircuit();
+
+            if (!lastPlayerExecuting.TryGetComponent(out PlayerNetwork playerNetwork))
+                throw new ComponentNotFoundException(
+                    "No component PlayerNetwork has been found on the lastPlayerExecuting");
+            playerNetwork.CmdExecuteCircuit(netIdentity);
         }
 
         public void OnSwitchStartUp()
@@ -85,7 +89,8 @@ namespace Reconnect.Electronics.Breadboards
             playerNetwork.CmdRequestUndoTargetAction(breadboard.TargetUid);
         }
         
-        private void ExecuteCircuit()
+        [Server]
+        public void ExecuteCircuit()
         {
             if (lastPlayerExecuting is null)
                 throw new UnreachableCaseException("The Breadboard Switch cannot be down without anyone clicking it");
