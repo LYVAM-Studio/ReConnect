@@ -63,10 +63,10 @@ namespace Reconnect.Electronics.Breadboards
                 throw new ComponentNotFoundException("No component PlayerNetwork has been found on the local player");
             
             playerNetwork.CmdSetSwitchAnimation(netIdentity, !IsOn);
-            StartCoroutine(WaitForAnimationEnd());
+            StartCoroutine(WaitForAnimationEnd(playerNetwork));
         }
 
-        private IEnumerator WaitForAnimationEnd()
+        private IEnumerator WaitForAnimationEnd(PlayerNetwork playerNetwork)
         {
             AnimatorStateInfo state;
             do
@@ -74,10 +74,7 @@ namespace Reconnect.Electronics.Breadboards
                 state = _animator.GetCurrentAnimatorStateInfo(0);
                 yield return null;
             } while (!state.IsName("IdleDown"));
-
-            if (!lastPlayerExecuting.TryGetComponent(out PlayerNetwork playerNetwork))
-                throw new ComponentNotFoundException(
-                    "No component PlayerNetwork has been found on the lastPlayerExecuting");
+            
             playerNetwork.CmdExecuteCircuit(netIdentity);
         }
 
