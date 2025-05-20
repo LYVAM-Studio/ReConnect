@@ -311,7 +311,9 @@ namespace Reconnect.Menu
         
         public void SetMenuToMissionBrief(uint level)
         {
-            if (level == 0 || level > 5)
+            if (level == 6)
+                return;
+            if (level == 0 || level > 6)
                 throw new ArgumentOutOfRangeException(nameof(level));
             LockPlayer();
             FreeLookCamera.InputAxisController.enabled = false;
