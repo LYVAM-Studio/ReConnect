@@ -12,7 +12,7 @@ namespace Reconnect.Physics
         public readonly float
             OuterBaseGravity = -5f; // gravity strength outside the base (lower to have the moon effect)
 
-        private bool _isInBase = false;
+        private bool _isInBase = true;
         public float Gravity => _isInBase ? InBaseGravity : OuterBaseGravity;
 
         public void ToggleGravity() => _isInBase = !_isInBase;
