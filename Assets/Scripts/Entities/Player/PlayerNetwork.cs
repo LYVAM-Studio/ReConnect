@@ -271,6 +271,12 @@ namespace Reconnect.Player
         }
 
         [ClientRpc]
+        public void RpcForceHideTooltip()
+        {
+            ToolTipManager.Instance.ForceHide = true;
+        }
+        
+        [ClientRpc]
         private void RpcSetPlayerLevel(uint level)
         {
             if (isServer) return;
