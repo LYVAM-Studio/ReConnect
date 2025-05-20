@@ -23,7 +23,6 @@ namespace Reconnect.Menu
         
         [Header("Menu canvas")]
         [SerializeField] private GameObject mainMenu;
-        [SerializeField] private GameObject singleplayerMenu;
         [SerializeField] private GameObject multiplayerMenu;
         [SerializeField] private GameObject settingsMenu;
         [SerializeField] private GameObject pauseMenu;
@@ -163,7 +162,6 @@ namespace Reconnect.Menu
                 _history.Push(CurrentMenuState, CurrentCursorState);
                 
             mainMenu.SetActive(menu is MenuState.Main);
-            singleplayerMenu.SetActive(menu is MenuState.Singleplayer);
             multiplayerMenu.SetActive(menu is MenuState.Multiplayer);
             settingsMenu.SetActive(menu is MenuState.Settings);
             pauseMenu.SetActive(menu is MenuState.Pause);
@@ -207,7 +205,6 @@ namespace Reconnect.Menu
             (CurrentMenuState, CurrentCursorState) = _history.Pop();
             
             mainMenu.SetActive(CurrentMenuState is MenuState.Main);
-            singleplayerMenu.SetActive(CurrentMenuState is MenuState.Singleplayer);
             multiplayerMenu.SetActive(CurrentMenuState is MenuState.Multiplayer);
             settingsMenu.SetActive(CurrentMenuState is MenuState.Settings);
             pauseMenu.SetActive(CurrentMenuState is MenuState.Pause);
@@ -290,7 +287,6 @@ namespace Reconnect.Menu
 
         public void LockPlayer() => LockPlayer(true);
         public void UnLockPlayer() => LockPlayer(false);
-        public void SetMenuToSingleplayer() => SetMenuTo(MenuState.Singleplayer, CursorState.Shown);
         public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
         public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
         public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
