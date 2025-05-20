@@ -139,7 +139,6 @@ namespace Reconnect.Game
         {
             foreach (Transform triggeredLight in lights)
             {
-                Debug.Log($"lamp {triggeredLight.name} turned on");
                 if(!triggeredLight.TryGetComponent(out NetworkIdentity lightIdentity))
                     Debug.LogException(new ComponentNotFoundException("No network identity on the target light"));
                 playerNetwork.RpcSetEnabledLight(lightIdentity, true);
@@ -150,11 +149,9 @@ namespace Reconnect.Game
         {
             while (doorTargetYPosotion - door.localPosition.y > 0.01f)
             {
-                Debug.Log("door are moving...");
                 door.localPosition += new Vector3(0, Time.deltaTime * 2f, 0);
                 yield return null;
             }
-            Debug.Log("door are moved.");
             door.localPosition = new Vector3(door.localPosition.x, doorTargetYPosotion, door.localPosition.z);
         }
         

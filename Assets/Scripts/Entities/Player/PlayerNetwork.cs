@@ -236,7 +236,8 @@ namespace Reconnect.Player
         [Command]
         public void CmdSetPlayersLevel(uint level)
         {
-            Debug.Log("Command set level called");
+            RpcExitBreadboardMenu();
+
             uint old = GameManager.Level;
             GameManager.Level = level;
             if (isClient)
@@ -257,8 +258,7 @@ namespace Reconnect.Player
         [ClientRpc]
         public void RpcExitBreadboardMenu()
         {
-            if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
-                MenuManager.Instance.BackToPreviousMenu();
+            MenuManager.Instance.CorruptHistory();
         }
 
         [ClientRpc]

@@ -411,5 +411,10 @@ namespace Reconnect.Menu
             Application.Quit();
 #endif
         }
+
+        public void CorruptHistory()
+        {
+            _history.CorruptHistory();
+        }
     }
 }
