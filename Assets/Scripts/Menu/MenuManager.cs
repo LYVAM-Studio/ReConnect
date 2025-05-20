@@ -181,7 +181,28 @@ namespace Reconnect.Menu
             level4Menu.SetActive(menu is MenuState.Level4);
             level5Menu.SetActive(menu is MenuState.Level5);
             CurrentMenuState = menu;
-            AudioManager.Instance?.PlayButtonClick();
+
+            if (CurrentMenuState is MenuState.BreadBoard)
+            {
+                AudioManager.Instance?.PlayBreadboardOpen();
+            }
+            if (CurrentMenuState is MenuState.NewLesson)
+            {
+                AudioManager.Instance?.PlayLevelUP();
+            }
+            if (CurrentMenuState is MenuState.ConnectionFailed)
+            {
+                AudioManager.Instance?.PlayError();
+            }
+            if (CurrentMenuState is MenuState.Main)
+            {
+                AudioManager.Instance?.PlayMusicMenu();
+            }
+            else
+            {
+                AudioManager.Instance?.PlayButtonClick();
+            }
+            
             if (cursorState is CursorState.Shown)
             {
                 Cursor.visible = true;
@@ -201,6 +222,7 @@ namespace Reconnect.Menu
             if (_history.IsEmpty())
             {
                 Debug.LogWarning("Cannot go back with an empty history");
+                
                 return;
             }
 
@@ -223,7 +245,28 @@ namespace Reconnect.Menu
             level3Menu.SetActive(CurrentMenuState is MenuState.Level3);
             level4Menu.SetActive(CurrentMenuState is MenuState.Level4);
             level5Menu.SetActive(CurrentMenuState is MenuState.Level5);
-            AudioManager.Instance?.PlayButtonClick();
+
+            if (CurrentMenuState is MenuState.BreadBoard)
+            {
+                AudioManager.Instance?.PlayBreadboardOpen();
+            }
+            if (CurrentMenuState is MenuState.NewLesson)
+            {
+                AudioManager.Instance?.PlayLevelUP();
+            }
+            if (CurrentMenuState is MenuState.ConnectionFailed)
+            {
+                AudioManager.Instance?.PlayError();
+            }
+            if (CurrentMenuState is MenuState.Main)
+            {
+                AudioManager.Instance?.PlayMusicMenu();
+            }
+            else
+            {
+                AudioManager.Instance?.PlayButtonClick();
+            }
+
             if (CurrentCursorState is CursorState.Shown)
             {
                 Cursor.visible = true;
@@ -331,6 +374,7 @@ namespace Reconnect.Menu
             ReconnectNetworkManager.SetConnectionPort(7777);
             networkManager.StartHost();
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
+            AudioManager.Instance?.StopMusic(); // Stop music when the game load
         }
 
         public void RunHostMode()
@@ -346,6 +390,7 @@ namespace Reconnect.Menu
             GameMode = PlayMode.MultiHost;
             ReconnectNetworkManager.SetConnectionPort(port);
             networkManager.StartHost();
+            AudioManager.Instance?.StopMusic(); // Stop music when the game load
             SetMenuTo(MenuState.None, CursorState.Locked, forceClearHistory: true);
         }
 
@@ -375,6 +420,7 @@ namespace Reconnect.Menu
                 {
                     BackToPreviousMenu();
                     SetMenuTo(MenuState.ConnectionFailed, CursorState.Shown);
+                    
                     errorMsg.text = "Connection failed\n\nPlease try again";
                 }
             }

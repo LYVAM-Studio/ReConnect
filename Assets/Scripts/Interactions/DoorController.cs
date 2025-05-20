@@ -1,5 +1,7 @@
 using UnityEngine;
 using Reconnect.Audio;
+using System.Collections;
+
 public class DoorController : MonoBehaviour
 {
     [Header("Door Settings")]
@@ -11,13 +13,25 @@ public class DoorController : MonoBehaviour
     private Vector3 closedPosition;
     private Vector3 openPosition;
 
+    private AudioSource audioSource;
+    private bool canTrigger = false; // Prevents early trigger on scene load
+
     void Start()
     {
+    
         if (door != null)
         {
             closedPosition = door.position;
             openPosition = closedPosition + Vector3.up * slideUpDistance;
         }
+
+        audioSource = door.GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = door.gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+
+        // Start coroutine to delay trigger activation
+        StartCoroutine(EnableTriggerAfterDelay(0.5f)); // 0.5s delay can be adjusted
     }
 
     void Update()
@@ -32,15 +46,33 @@ public class DoorController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Entree
-        AudioManager.Instance.sfxSource.PlayOneShot(AudioManager.Instance.doorOpen);
+        if (!canTrigger) return;
+
         isPlayerNearby = true;
+        if (AudioManager.Instance != null && AudioManager.Instance.doorOpen != null)
+        {
+            audioSource.clip = AudioManager.Instance.doorOpen;
+            audioSource.volume = AudioManager.Instance.ambianceVolume;
+            audioSource.Play();
+        }
     }
 
     void OnTriggerExit(Collider other)
     {
-        // Sortie
-        AudioManager.Instance.sfxSource.PlayOneShot(AudioManager.Instance.doorClose);
+        if (!canTrigger) return;
+
         isPlayerNearby = false;
+        if (AudioManager.Instance != null && AudioManager.Instance.doorClose != null)
+        {
+            audioSource.clip = AudioManager.Instance.doorClose;
+            audioSource.volume = AudioManager.Instance.ambianceVolume;
+            audioSource.Play();
+        }
+    }
+
+    private IEnumerator EnableTriggerAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canTrigger = true;
     }
 }
