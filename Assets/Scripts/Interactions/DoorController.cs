@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using Reconnect.Audio;
 public class DoorController : MonoBehaviour
 {
     [Header("Door Settings")]
@@ -33,12 +33,14 @@ public class DoorController : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         // Entree
+        AudioManager.Instance.sfxSource.PlayOneShot(AudioManager.Instance.doorOpen);
         isPlayerNearby = true;
     }
 
     void OnTriggerExit(Collider other)
     {
         // Sortie
+        AudioManager.Instance.sfxSource.PlayOneShot(AudioManager.Instance.doorClose);
         isPlayerNearby = false;
     }
 }
