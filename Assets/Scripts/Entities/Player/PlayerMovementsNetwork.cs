@@ -5,6 +5,7 @@ using Reconnect.Menu;
 using Reconnect.Utils;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Reconnect.Audio;
 
 namespace Reconnect.Player
 {
@@ -99,8 +100,31 @@ namespace Reconnect.Player
             HandleAnimation();
             HandleRotation2();
             HandleMovements();
+            HandleFootsteps();
         }
 
+    private float _footstepTimer = 0f;
+    private float _footstepInterval = 0.5f;
+        private void HandleFootsteps()
+        {
+            // Only play footsteps if grounded, moving, and not crouching or jumping
+            if (CharacterController.isGrounded && _isMovementPressed && !_isCrouching && !_isJumping)
+            {
+                // Set interval based on running or walking
+                _footstepInterval = _isRunning ? 0.3f : 0.5f;
+
+                _footstepTimer += Time.deltaTime;
+                if (_footstepTimer >= _footstepInterval)
+                {
+                    AudioManager.Instance.PlayFootstep(_isRunning);
+                    _footstepTimer = 0f;
+                }
+            }
+            else
+            {
+                _footstepTimer = _footstepInterval; // Reset timer so sound plays immediately when moving again
+            }
+        }
         private void OnEnable()
         {
             PlayerControls.Player.Enable();
