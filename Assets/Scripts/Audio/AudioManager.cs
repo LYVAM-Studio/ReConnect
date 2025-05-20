@@ -14,6 +14,8 @@ namespace Reconnect.Audio
         [Range(0f, 1f)] public float interfaceVolume = 0.5f;
         [Range(0f, 1f)] public float movementVolume = 1f;
 
+        [Range(0f, 1f)] public float musicVolume = 1f;
+
         [Header("Ambiance")]
         public AudioClip doorOpen;
         public AudioClip doorClose;
@@ -39,11 +41,11 @@ namespace Reconnect.Audio
             Instance = this;
             DontDestroyOnLoad(gameObject);
             if (footstepSource == null)
-        {
-            footstepSource = gameObject.AddComponent<AudioSource>();
-            footstepSource.loop = false;
-            footstepSource.playOnAwake = false;
-        }
+            {
+                footstepSource = gameObject.AddComponent<AudioSource>();
+                footstepSource.loop = false;
+                footstepSource.playOnAwake = false;
+            }
         }
 
         private void PlayClip(AudioClip clip, float volume)
@@ -116,7 +118,7 @@ namespace Reconnect.Audio
                 musicSource.loop = true;
             }
             musicSource.clip = musicMenu;
-            musicSource.volume = interfaceVolume;
+            musicSource.volume = musicVolume;
             musicSource.Play();
         }
 
@@ -143,5 +145,11 @@ namespace Reconnect.Audio
             movementVolume = Mathf.Clamp01(value);
         }
 
+        public void SetMusicVolume(float value)
+        {
+            musicVolume = Mathf.Clamp01(value);
+            if (musicSource != null)
+                musicSource.volume = musicVolume;
+        }
     }
 }
