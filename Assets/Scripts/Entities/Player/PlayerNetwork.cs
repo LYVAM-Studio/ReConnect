@@ -245,7 +245,7 @@ namespace Reconnect.Player
             GameManager.OnLevelChange(old, level);
         }
         
-        [Command]
+        [Command(requiresAuthority = false)]
         public void CmdSetPlayersLevel(uint level)
         {
             RpcExitBreadboardMenu();
@@ -270,7 +270,11 @@ namespace Reconnect.Player
         [ClientRpc]
         public void RpcExitBreadboardMenu()
         {
-            MenuManager.Instance.CorruptHistory();
+            if (MenuManager.Instance.CurrentMenuState is MenuState.BreadBoard)
+                MenuManager.Instance.BackToPreviousMenu();
+            else
+                MenuManager.Instance.CorruptHistory();
+
         }
 
         [ClientRpc]
