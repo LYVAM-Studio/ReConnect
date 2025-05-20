@@ -49,12 +49,12 @@ namespace Reconnect.Pathfinding
             // Check that the given aggressive spawners are placed around the navmesh
             foreach (Transform childTransform in aggressiveSpawners)
                 if (!NavMesh.SamplePosition(childTransform.position, out NavMeshHit _, 10f, NavMesh.AllAreas))
-                    throw new ArgumentException($"The given aggressive mob spawner '{childTransform.gameObject.name}' is not close enough to the navmesh.");
+                    Debug.LogException(new ArgumentException($"The given aggressive mob spawner '{childTransform.gameObject.name}' is not close enough to the navmesh."));
             
             // Check that the given passive spawners are placed around the navmesh
             foreach (Transform childTransform in passiveSpawners)
                 if (!NavMesh.SamplePosition(childTransform.position, out NavMeshHit _, 10f, NavMesh.AllAreas))
-                    throw new ArgumentException($"The given passive mob spawner '{childTransform.gameObject.name}' is not close enough to the navmesh.");
+                    Debug.LogException(new ArgumentException($"The given passive mob spawner '{childTransform.gameObject.name}' is not close enough to the navmesh."));
             
             StartCoroutine(SpawnPassiveMobs());
             
