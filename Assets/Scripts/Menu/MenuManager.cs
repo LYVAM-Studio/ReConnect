@@ -26,7 +26,6 @@ namespace Reconnect.Menu
         [Header("Menu canvas")]
         [SerializeField] private GameObject mainMenu;
         [SerializeField] private GameObject multiplayerMenu;
-        [SerializeField] private GameObject settingsMenu;
         [SerializeField] private GameObject pauseMenu;
         [SerializeField] private GameObject hudMenu;
         [SerializeField] private GameObject lessonsMenu;
@@ -165,7 +164,6 @@ namespace Reconnect.Menu
 
             mainMenu.SetActive(menu is MenuState.Main);
             multiplayerMenu.SetActive(menu is MenuState.Multiplayer);
-            settingsMenu.SetActive(menu is MenuState.Settings);
             pauseMenu.SetActive(menu is MenuState.Pause);
             lessonsMenu.SetActive(menu is MenuState.Lessons);
             imageViewerMenu.SetActive(menu is MenuState.ImageViewer);
@@ -230,7 +228,6 @@ namespace Reconnect.Menu
 
             mainMenu.SetActive(CurrentMenuState is MenuState.Main);
             multiplayerMenu.SetActive(CurrentMenuState is MenuState.Multiplayer);
-            settingsMenu.SetActive(CurrentMenuState is MenuState.Settings);
             pauseMenu.SetActive(CurrentMenuState is MenuState.Pause);
             lessonsMenu.SetActive(CurrentMenuState is MenuState.Lessons);
             imageViewerMenu.SetActive(CurrentMenuState is MenuState.ImageViewer);
@@ -333,7 +330,6 @@ namespace Reconnect.Menu
         public void LockPlayer() => LockPlayer(true);
         public void UnLockPlayer() => LockPlayer(false);
         public void SetMenuToMultiplayer() => SetMenuTo(MenuState.Multiplayer, CursorState.Shown);
-        public void SetMenuToSettings() => SetMenuTo(MenuState.Settings, CursorState.Shown);
         public void SetMenuToQuit() => SetMenuTo(MenuState.Quit, CursorState.Shown);
 
         public void SetKnockOutReason(string reason)
