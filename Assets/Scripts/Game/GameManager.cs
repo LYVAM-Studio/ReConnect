@@ -185,7 +185,6 @@ namespace Reconnect.Game
                     break;
                 case 4 :
                     TriggerLevel4(playerNetwork);
-                    ToolTipManager.Instance.ForceHide = true;
                     break;
                 case 5 :
                     TriggerLevel5(playerNetwork);
@@ -230,6 +229,8 @@ namespace Reconnect.Game
                 playerNetwork.RpcSetEnabledAnimation(fanIdentity, true);
                 playerNetwork.RpcSetEnabledAudio(fanIdentity, true);
             }
+
+            playerNetwork.RpcForceHideTooltip();
         }
         
         private void TriggerLevel5(PlayerNetwork playerNetwork)
