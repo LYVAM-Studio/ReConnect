@@ -1,19 +1,16 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 namespace Reconnect.Audio
 {
     public class AudioManager : MonoBehaviour
     {
         public static AudioManager Instance;
-
-        [Header("Sources")]
-        public AudioSource sfxSource;
+        private AudioSource musicSource;
 
         [Header("Volume Controls")]
         [Range(0f, 1f)] public float ambianceVolume = 1f;
-        [Range(0f, 1f)] public float interfaceVolume = 1f;
+        [Range(0f, 1f)] public float interfaceVolume = 0.5f;
         [Range(0f, 1f)] public float movementVolume = 1f;
 
         [Header("Ambiance")]
@@ -25,12 +22,96 @@ namespace Reconnect.Audio
         public AudioClip error;
         public AudioClip breadboardopen;
         public AudioClip musicMenu;
+        public AudioClip levelUP;
 
         [Header("Movement")]
         public AudioClip[] footstepClips;
         public AudioClip[] runningClips;
 
-        private int lastMusicIndex = -1;
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        private void PlayClip(AudioClip clip, float volume)
+        {
+            if (clip == null) return;
+            AudioSource source = gameObject.AddComponent<AudioSource>();
+            source.clip = clip;
+            source.volume = volume;
+            source.Play();
+            StartCoroutine(DestroySourceWhenDone(source));
+        }
+
+        private IEnumerator DestroySourceWhenDone(AudioSource source)
+        {
+            yield return new WaitWhile(() => source.isPlaying);
+            Destroy(source);
+        }
+
+        public void PlayButtonClick()
+        {
+            PlayClip(buttonClick, interfaceVolume);
+        }
+
+        public void PlayError()
+        {
+            PlayClip(error, interfaceVolume);
+        }
+
+        public void PlayLevelUP()
+        {
+            PlayClip(levelUP, interfaceVolume);
+        }
+
+        public void PlayBreadboardOpen()
+        {
+            PlayClip(breadboardopen, interfaceVolume);
+        }
+        public void PlayFootstep(bool isRunning)
+        {
+            AudioClip[] selectedClips = isRunning ? runningClips : footstepClips;
+            if (selectedClips == null || selectedClips.Length == 0) return;
+            int randomIndex = Random.Range(0, selectedClips.Length);
+            PlayClip(selectedClips[randomIndex], movementVolume);
+        }
+
+        public void PlayDoorOpen()
+        {
+            PlayClip(doorOpen, ambianceVolume);
+        }
+
+        public void PlayDoorClose()
+        {
+            PlayClip(doorClose, ambianceVolume);
+        }
+
+        public void PlayMusicMenu()
+        {
+            if (musicMenu == null) return;
+            if (musicSource == null)
+            {
+                musicSource = gameObject.AddComponent<AudioSource>();
+                musicSource.loop = true;
+            }
+            musicSource.clip = musicMenu;
+            musicSource.volume = interfaceVolume;
+            musicSource.Play();
+        }
+
+        public void StopMusic()
+        {
+            if (musicSource != null && musicSource.isPlaying)
+            {
+                musicSource.Stop();
+            }
+        }
 
         public void SetAmbianceVolume(float value)
         {
@@ -47,56 +128,5 @@ namespace Reconnect.Audio
             movementVolume = Mathf.Clamp01(value);
         }
 
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-
-        public void PlayButtonClick()
-        {
-            sfxSource.PlayOneShot(buttonClick, interfaceVolume);
-        }
-
-        public void PlayError()
-        {
-            sfxSource.PlayOneShot(error, interfaceVolume);
-        }
-
-        public void PlayFootstep(bool isRunning)
-        {
-            AudioClip[] selectedClips;
-            if (isRunning)
-            {
-                selectedClips = runningClips;
-            }
-            else
-            {
-                selectedClips = footstepClips;
-            }
-
-            if (selectedClips == null || selectedClips.Length == 0)
-                return;
-
-            int randomIndex = Random.Range(0, selectedClips.Length);
-            AudioClip chosenClip = selectedClips[randomIndex];
-
-            sfxSource.PlayOneShot(chosenClip, movementVolume);
-        }
-
-        public void PlayDoorOpen()
-        {
-            sfxSource.PlayOneShot(doorOpen, ambianceVolume);
-        }
-
-        public void PlayDoorClose()
-        {
-            sfxSource.PlayOneShot(doorClose, ambianceVolume);
-        }
     }
 }
