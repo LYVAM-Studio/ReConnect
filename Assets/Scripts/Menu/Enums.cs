@@ -13,7 +13,6 @@ namespace Reconnect.Menu
         Level8,
         Level9,
         Main,
-        Singleplayer,
         Multiplayer,
         Settings,
         Pause,
