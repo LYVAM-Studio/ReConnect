@@ -1,8 +1,8 @@
 # ReConnect
+
 <p align="center" width="100%">
     <img src="doc/logo-reconnect-round.png" alt="reconnect-logo" height="300"/>
 </p>
-
 
 ## About the Game
 
@@ -27,7 +27,3 @@ Then, use Unity Hub to open the project with right version of the Unity Editor.
 ### Gantt Chart
 
 ![gantt-chart.png](doc/gantt-chart.png)
-
-### Task distribution
-
-![task-distribution.jpg](doc/task-distribution.jpg)
